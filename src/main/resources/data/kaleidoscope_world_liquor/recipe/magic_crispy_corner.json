@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "ILI",
+    "III"
+  ],
+  "key": {
+    "I": "minecraft:gold_nugget",
+    "L": "minecraft:cookie"
+  },
+  "result": {
+    "id": "kaleidoscope_twilight:magic_crispy_corner",
+    "count": 1
+  }
+}

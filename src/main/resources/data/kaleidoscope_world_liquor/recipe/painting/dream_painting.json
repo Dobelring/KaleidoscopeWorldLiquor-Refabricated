@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:item_frame",
+    "minecraft:lime_wool"
+  ],
+  "result": {
+    "id": "kaleidoscope_tavern:dream_painting"
+  }
+}

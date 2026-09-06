@@ -1,0 +1,12 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea",
+  "transform": {
+    "origin": "center",
+    "rotation": [
+      0,
+      -0.70710678,
+      0,
+      -0.70710678
+    ]
+  }
+}

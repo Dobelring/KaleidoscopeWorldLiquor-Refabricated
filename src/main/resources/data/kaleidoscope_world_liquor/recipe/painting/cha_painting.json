@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:item_frame",
+    "minecraft:magenta_wool"
+  ],
+  "result": {
+    "id": "kaleidoscope_tavern:cha_painting"
+  }
+}

@@ -1,0 +1,83 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name = "Fuzs Mod Resources"
+		url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+	}
+	maven {
+		url = "https://api.modrinth.com/maven"
+	}
+	maven {
+		name = "Jared's maven"
+		url = "https://maven.blamejared.com/"
+	}
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/kaleidoscope_world_liquor.accessWidener")
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// ForgeConfigAPIPort (NeoForge config API on Fabric)
+	modImplementation ("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.11.1")
+
+	// Kaleidoscope Tavern (前置酒馆) — 文件依赖
+	modImplementation files("libs/kaleidoscope_tavern-1.2.0.5-fabric+mc1.21.11.jar")
+
+	// JEI（1.21.11 只适配 JEI）
+	modCompileOnly "mezz.jei:jei-1.21.11-fabric:27.4.0.15"
+	// Jade
+	modImplementation "maven.modrinth:jade:21.1.6+fabric"
+	// MixinExtras（@ModifyExpressionValue 等，@Expression 需 >=0.5.0-beta.1）
+	include("io.github.llamalad7:mixinextras-fabric:0.5.4")
+	modImplementation("io.github.llamalad7:mixinextras-fabric:0.5.4")
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": inputs.properties.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	inputs.property "archivesName", project.base.archivesName
+
+	from("LICENSE") {
+		rename { "${it}_${inputs.properties.archivesName}"}
+	}
+}
