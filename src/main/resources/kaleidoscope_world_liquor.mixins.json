@@ -1,0 +1,37 @@
+{
+  "required": true,
+  "minVersion": "0.8.7",
+  "package": "com.bmt.kaleidoscope_world_liquor.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
+  "mixins": [
+    "MultiJumpFallDamageMixin",
+    "BoatMixin",
+    "accessor.LivingEntityAccessor",
+    "accessor.BarrelBlockEntityAccessor",
+    "accessor.ItemCombinerMenuAccessor",
+    "CaptainGiftMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "GuiGraphicsMixin",
+    "TapBlockMixin",
+    "AnvilMenuMixin",
+    "LivingEntityUseItemMixin",
+    "PlayerMixin",
+    "BlockEntityTypeMixin",
+    "BottleBlockItemShakerMixin"
+  ],
+  "client": [
+    "ClientPlayerEntityMixin",
+    "CameraMixin",
+    "EntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

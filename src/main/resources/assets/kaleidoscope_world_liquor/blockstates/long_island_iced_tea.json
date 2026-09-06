@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "rotation=0,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=0,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=1,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=1,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=2,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=2,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=3,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=3,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=4,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=4,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=5,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=5,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=6,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=6,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=7,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=7,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=8,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=8,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=9,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=9,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=10,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=10,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=11,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=11,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=12,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=12,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=13,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=13,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=14,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=14,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=15,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    },
+    "rotation=15,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/long_island_iced_tea"
+    }
+  }
+}

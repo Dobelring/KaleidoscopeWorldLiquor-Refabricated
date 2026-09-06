@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=1": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=2": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=3": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=4": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=5": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=6": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=7": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=8": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=9": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=10": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=11": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=12": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=13": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=14": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    },
+    "level=15": {
+      "model": "kaleidoscope_world_liquor:block/milk"
+    }
+  }
+}
