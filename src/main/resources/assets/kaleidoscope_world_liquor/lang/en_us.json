@@ -187,5 +187,17 @@
   "tag.kaleidoscope_tavern.cocktail_ingredient_red": "Red Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_white": "White Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_yellow": "Yellow Cocktail Ingredient",
-  "emi.category.kaleidoscope_world_liquor.freezer": "Freezer"
+  "emi.category.kaleidoscope_world_liquor.freezer": "Freezer",
+  "block.kaleidoscope_world_liquor.doll_0": "Doll",
+  "item.kaleidoscope_world_liquor.doll_0": "Doll",
+  "block.kaleidoscope_world_liquor.doll_1": "Doll",
+  "item.kaleidoscope_world_liquor.doll_1": "Doll",
+  "block.kaleidoscope_world_liquor.doll_2": "Doll",
+  "item.kaleidoscope_world_liquor.doll_2": "Doll",
+  "block.kaleidoscope_world_liquor.doll_3": "Doll",
+  "item.kaleidoscope_world_liquor.doll_3": "Doll",
+  "block.kaleidoscope_world_liquor.doll_4": "Doll",
+  "item.kaleidoscope_world_liquor.doll_4": "Doll",
+  "block.kaleidoscope_world_liquor.doll_5": "Doll",
+  "item.kaleidoscope_world_liquor.doll_5": "Doll"
 }
