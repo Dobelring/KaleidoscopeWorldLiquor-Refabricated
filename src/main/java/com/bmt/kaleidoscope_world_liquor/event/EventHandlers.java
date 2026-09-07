@@ -46,7 +46,8 @@ public final class EventHandlers {
     public static void register() {
         // ===== 淘金热：击败生物双倍掉落 =====
         ServerLivingEntityEvents.ALLOW_DAMAGE.register(EventHandlers::tequilaCapDamage);
-        ServerLivingEntityEvents.AFTER_DEATH.register(EventHandlers::onLivingDrops);
+        // 破势并入 ALLOW_DAMAGE（tequilaCapDamage 内处理，避免无敌帧吞伤）
+        ServerLivingEntityEvents.AFTER_DEATH.register(EventHandlers::onLivingDeath);
         // ===== 淘金热：挖方块双倍掉落 =====
         PlayerBlockBreakEvents.AFTER.register(EventHandlers::onBlockBreak);
         // ===== 骨粉扩散（春野之息）与冰霜行者：玩家 tick =====
@@ -89,6 +90,31 @@ public final class EventHandlers {
             return false;
         }
         }
+        // 破势（ground_crit）：地面近战 20%+10%/级 → 暴击 1.5 倍（非原版跳劈时）
+        // Fabric 无伤害修改事件，与龙舌兰同款 cancel+重打一次结算（AFTER_DAMAGE 补刀会被无敌帧吞）
+        if (source.getDirectEntity() instanceof LivingEntity critAttacker
+                && critAttacker instanceof Player critPlayer
+                && critPlayer.hasEffect(ModEffects.GROUND_CRIT)
+                && isMeleeAttack(source)
+                && !CRIT_PROCESSING.contains(entity.getUUID())) {
+            int critAmplifier = critPlayer.getEffect(ModEffects.GROUND_CRIT).getAmplifier();
+            double totalCritChance = 0.2 + critAmplifier * 0.1;
+            if (!isVanillaCrit(critPlayer) && RANDOM.nextDouble() < totalCritChance) {
+                CRIT_PROCESSING.add(entity.getUUID());
+                try {
+                    critPlayer.crit(entity);
+                    DamageSource critSource = entity.damageSources().playerAttack(critPlayer);
+                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
+                            && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
+                        return false;
+                    }
+                    // 结算失败则放行原伤害
+                    return true;
+                } finally {
+                    CRIT_PROCESSING.remove(entity.getUUID());
+                }
+            }
+        }
         // 手肘击（elbow_strike）攻击音效
         if (source.getEntity() instanceof LivingEntity attacker && attacker.hasEffect(ModEffects.ELBOW_STRIKE)) {
             attacker.playSound(com.bmt.kaleidoscope_world_liquor.init.ModSounds.ICE_TEA_EAT, 0.6F, 1.0F);
@@ -121,8 +147,25 @@ public final class EventHandlers {
         return true;
     }
 
-    /** 斩首掉头（AFTER_DEATH）：目标被标记秒杀或攻击者有斩首效果时补头 */
-    private static void onLivingDrops(LivingEntity entity, net.minecraft.world.damagesource.DamageSource source) {
+    /** 斩首掉头 + 淘金热双倍掉落（AFTER_DEATH）：目标被标记秒杀或攻击者有斩首效果时补头；
+     *  攻击者有淘金热时按概率复制死亡位置 2 格内的掉落物（1.21.1 同款） */
+    private static void onLivingDeath(LivingEntity entity, net.minecraft.world.damagesource.DamageSource source) {
+        // 淘金热：复制掉落物
+        if (source.getEntity() instanceof LivingEntity attacker && attacker.hasEffect(ModEffects.TREASURE_GUIDE)) {
+            int amplifier = attacker.getEffect(ModEffects.TREASURE_GUIDE).getAmplifier();
+            double totalChance = 0.15 + amplifier * 0.05;
+            if (RANDOM.nextDouble() < totalChance) {
+                java.util.List<ItemEntity> drops = entity.level().getEntitiesOfClass(
+                        ItemEntity.class, entity.getBoundingBox().inflate(2.0), itemEntity -> itemEntity.isAlive());
+                for (ItemEntity itemEntity : new ArrayList<>(drops)) {
+                    ItemStack extraStack = itemEntity.getItem().copy();
+                    ItemEntity extraEntity = new ItemEntity(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), extraStack);
+                    extraEntity.setDefaultPickUpDelay();
+                    entity.level().addFreshEntity(extraEntity);
+                }
+            }
+        }
+        // 斩首掉头
         var attackerOpt = source.getEntity() instanceof LivingEntity l && l.hasEffect(ModEffects.BEHEADING) ? java.util.Optional.of(l) : java.util.Optional.<LivingEntity>empty();
         boolean beheadingKill = attackerOpt.isPresent() && !entity.getType().is(ModTags.BOSSES);
         if (!beheadingKill) {
@@ -134,6 +177,27 @@ public final class EventHandlers {
                 serverLevel.addFreshEntity(new ItemEntity(serverLevel, entity.getX(), entity.getY(), entity.getZ(), head));
             }
         }
+    }
+
+    /** 破势（ground_crit）：地面近战 20%+10%/级 触发暴击 ×1.5（非原版跳劈时）；
+     *  Fabric 无伤害修改事件，用 AFTER_DAMAGE 补 0.5 倍额外伤害 + 暴击粒子 */
+    private static final java.util.Set<java.util.UUID> CRIT_PROCESSING = new java.util.HashSet<>();
+
+    private static boolean isMeleeAttack(DamageSource source) {
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE) || source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION)) {
+            return false;
+        }
+        return source.getEntity() != null && source.getDirectEntity() != null
+                ? source.getDirectEntity() == source.getEntity() : false;
+    }
+
+    private static boolean isVanillaCrit(Player player) {
+        return !player.onGround()
+                && !player.onClimbable()
+                && !player.isInWater()
+                && !player.hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS)
+                && !player.isPassenger()
+                && player.getDeltaMovement().y < 0.0;
     }
 
     private static ItemStack getEntityHead(LivingEntity entity) {

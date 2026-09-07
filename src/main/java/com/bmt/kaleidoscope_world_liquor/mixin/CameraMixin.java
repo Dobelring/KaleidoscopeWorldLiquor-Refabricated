@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(Camera.class)
 public abstract class CameraMixin {
-    @Shadow protected abstract void setPosition(double x, double y, double z);
+    @Shadow private Vec3 position;
+    @Shadow private org.joml.Quaternionf rotation;
 
     @Inject(method = "setup", at = @At("TAIL"))
     private void kwl$adjustEyePosition(net.minecraft.world.level.Level level, net.minecraft.world.entity.Entity focusedEntity,
@@ -24,8 +25,9 @@ public abstract class CameraMixin {
             double eyeHeight = player.getEyeHeight();
             double bbHeight = player.getBbHeight();
             double offset = bbHeight - 2.0 * eyeHeight;
-            Vec3 pos = player.getPosition(partialTick);
-            this.setPosition(pos.x, pos.y + offset, pos.z);
+            // 只偏移相机位置（保留原相机逻辑），并加 540.35° 滚转实现倒置视角
+            this.position = new Vec3(this.position.x, this.position.y + offset, this.position.z);
+            this.rotation.rotateZ((float) Math.toRadians(540.3539364174444));
         }
     }
 }

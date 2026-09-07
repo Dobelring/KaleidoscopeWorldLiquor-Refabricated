@@ -67,7 +67,8 @@ public final class DrinkingSounds {
 
     public static void onStart(LivingEntity entity, ItemStack stack) {
         if (entity instanceof Player player) {
-            if (isCoolIceTea(stack) || isSourPlum(stack)) {
+            // isIceTeaItem 涵盖 cool_tea 与 smc 冰红茶：两者都要记录吞咽计数
+            if (isIceTeaItem(stack) || isSourPlum(stack)) {
                 drinkingTicksMap.put(player.getUUID(), 0);
             }
         }

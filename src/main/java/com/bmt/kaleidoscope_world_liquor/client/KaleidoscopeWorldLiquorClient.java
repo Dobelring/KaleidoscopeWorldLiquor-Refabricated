@@ -21,6 +21,8 @@ public final class KaleidoscopeWorldLiquorClient implements ClientModInitializer
         registerFluidRender();
         registerRenderLayers();
         ClientRenderers.register();
+        com.bmt.kaleidoscope_world_liquor.client.event.HostileDetectionHandler.register();
+        com.bmt.kaleidoscope_world_liquor.client.render.TreasureSenseRenderer.register();
     }
 
     private void registerFluidRender() {

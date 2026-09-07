@@ -77,8 +77,9 @@ public final class BrewCommands {
                 source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.not_barrel"));
                 return null;
             }
-            BlockEntity be = source.getLevel().getBlockEntity(pos);
-            if (!(be instanceof BarrelBlockEntity barrel)) {
+            // 酒桶是 3x3x3 多格方块，BE 只在原点——用 tavern 的解析方法找原点
+            BarrelBlockEntity barrel = BarrelBlock.getBarrelEntity(source.getLevel(), pos, state);
+            if (barrel == null) {
                 source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.barrel_invalid"));
                 return null;
             }

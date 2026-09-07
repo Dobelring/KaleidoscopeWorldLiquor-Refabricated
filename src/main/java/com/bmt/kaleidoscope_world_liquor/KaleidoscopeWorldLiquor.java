@@ -57,7 +57,6 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         EventHandlers.register();
         DollInteractionEvents.register();
         MusicDiscEvents.register();
-        MiscEvents.register();
         MiscEvents.registerBrewAccelerator();
         BrewCommands.register();
         FreezerTapBehavior.register();

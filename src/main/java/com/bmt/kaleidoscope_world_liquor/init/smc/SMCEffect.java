@@ -17,26 +17,27 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SMCEffect extends MobEffect {
     public static final String SMC_MODID = "smc";
-    private static final Identifier KNOCKBACK_ID = Identifier.fromNamespaceAndPath("kaleidoscope_world_liquor", "elbow_strike_knockback");
+    private static final Identifier KNOCKBACK_ID = Identifier.fromNamespaceAndPath("smc", "elbow_strike_knockback");
 
     public SMCEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xFF9300);
     }
 
+    // 原版 SMCEffect：ATTACK_KNOCKBACK（攻击击退）+3.0*(amp+1)，transient 修饰符
     @Override
     public void addAttributeModifiers(@NotNull AttributeMap attributes, int amplifier) {
         super.addAttributeModifiers(attributes, amplifier);
         double knockbackBonus = 3.0 * (amplifier + 1);
-        AttributeInstance attribute = attributes.getInstance(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance attribute = attributes.getInstance(Attributes.ATTACK_KNOCKBACK);
         if (attribute != null) {
-            attribute.addOrReplacePermanentModifier(new AttributeModifier(KNOCKBACK_ID, knockbackBonus, AttributeModifier.Operation.ADD_VALUE));
+            attribute.addTransientModifier(new AttributeModifier(KNOCKBACK_ID, knockbackBonus, AttributeModifier.Operation.ADD_VALUE));
         }
     }
 
     @Override
     public void removeAttributeModifiers(@NotNull AttributeMap attributes) {
         super.removeAttributeModifiers(attributes);
-        AttributeInstance attribute = attributes.getInstance(Attributes.KNOCKBACK_RESISTANCE);
+        AttributeInstance attribute = attributes.getInstance(Attributes.ATTACK_KNOCKBACK);
         if (attribute != null) {
             attribute.removeModifier(KNOCKBACK_ID);
         }

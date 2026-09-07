@@ -1,6 +1,6 @@
 {
-  "item.smc.ice_tea": "Ice Tea",
-  "block.smc.ice_tea": "Ice Tea",
   "effect.smc.elbow_strike": "Elbow Strike",
-  "effect.smc.elbow_strike.description": "Increases knockback and plays a special sound effect on-hit"
+  "effect.smc.elbow_strike.description": "Increases knockback and plays a special sound effect on-hit",
+  "item.smc.ice_tea": "Ice Tea",
+  "block.smc.ice_tea": "Ice Tea"
 }

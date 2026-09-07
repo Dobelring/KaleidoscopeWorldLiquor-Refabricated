@@ -41,8 +41,9 @@ public final class CaptainGiftHelper {
             BlockPos pos = new BlockPos(sourcePos.getX() + offset[0], sourcePos.getY() + offset[1], sourcePos.getZ() + offset[2]);
             FluidState fluidState = level.getFluidState(pos);
             if (!fluidState.isEmpty() && fluidState.is(FluidTags.WATER)) {
-                VoxelShape shape = Shapes.block().move(pos.getX(), pos.getY() + fluidState.getHeight(level, pos), pos.getZ());
-                if (Shapes.joinIsNotEmpty(shape, Shapes.create(livingEntity.getBoundingBox().move(0.5, 0.0, 0.5)), BooleanOp.AND)) {
+                // 1.20.1 原版：getOwnHeight（流面自高），碰撞体 inflate(0.5)
+                VoxelShape shape = Shapes.block().move(pos.getX(), pos.getY() + fluidState.getOwnHeight(), pos.getZ());
+                if (Shapes.joinIsNotEmpty(shape, Shapes.create(livingEntity.getBoundingBox().inflate(0.5)), BooleanOp.AND)) {
                     double height = shape.max(Direction.Axis.Y) - livingEntity.getY() - 1.0;
                     if (highestWaterY < height) {
                         highestWaterY = height;
@@ -52,9 +53,10 @@ public final class CaptainGiftHelper {
             }
         }
         if (foundWater) {
-            livingEntity.setDeltaMovement(livingEntity.getDeltaMovement().x, 0.0, livingEntity.getDeltaMovement().z);
+            // 1.20.1 原版：只清摔落距离 + 置着地（可跳跃）。
+            // 不得动 deltaMovement / noGravity——多加 noGravity 会让玩家离开水面后永久漂浮不下落
             livingEntity.fallDistance = 0.0F;
-            livingEntity.setNoGravity(true);
+            livingEntity.setOnGround(true);
             return new Vec3(original.x, highestWaterY, original.z);
         }
         return original;

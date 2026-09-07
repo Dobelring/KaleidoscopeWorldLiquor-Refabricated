@@ -48,7 +48,11 @@ public class DollBlock extends HorizontalDirectionalBlock implements SimpleWater
     public DollBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
+                // 默认朝向必须 SOUTH（doll mod 原版同款）：酒柜 BER 用 defaultBlockState
+                // 渲染，single 路径旋转角=-facing*90，默认 SOUTH 时玩偶面朝柜外；
+                // 默认 NORTH 会让酒柜内的玩偶背对玩家。地面放置由 getStateForPlacement
+                // 覆写，不受影响。
+                .setValue(FACING, Direction.SOUTH)
                 .setValue(WATERLOGGED, false));
     }
 

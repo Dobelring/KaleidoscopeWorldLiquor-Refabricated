@@ -8,12 +8,15 @@
     "UseItemEventsMixin",
     "LivingEntityMixin",
     "EntityMixin",
-    "CaptainGiftMixin"
+    "CaptainGiftMixin",
+    "BoatMixin"
   ],
   "client": [
     "CameraMixin",
     "ClientPlayerMixin",
-    "GuiGraphicsMixin"
+    "GuiGraphicsMixin",
+    "EntityRendererMixin",
+    "ReverseGravityStrafeMixin"
   ],
   "server": [],
   "injectors": {

@@ -28,6 +28,7 @@ public abstract class EntityMixin implements IGlowingEntity {
     @Shadow public abstract float getXRot();
     @Shadow public abstract void turn(double yaw, double pitch);
     @Shadow protected abstract boolean getSharedFlag(int flag);
+    @Shadow protected abstract void setSharedFlag(int flag, boolean value);
 
     @Unique
     private boolean kaleidoscope_world_liquor$modGlowing = false;
@@ -40,9 +41,11 @@ public abstract class EntityMixin implements IGlowingEntity {
             this.kaleidoscope_world_liquor$originalGlowing = this.getSharedFlag(6);
             this.kaleidoscope_world_liquor$modGlowing = true;
             ((Entity) (Object) this).setGlowingTag(true);
+            this.setSharedFlag(6, true);
         } else {
             this.kaleidoscope_world_liquor$modGlowing = false;
             ((Entity) (Object) this).setGlowingTag(this.kaleidoscope_world_liquor$originalGlowing);
+            this.setSharedFlag(6, this.kaleidoscope_world_liquor$originalGlowing);
         }
     }
 

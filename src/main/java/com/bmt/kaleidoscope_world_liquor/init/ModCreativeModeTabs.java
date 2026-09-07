@@ -70,7 +70,8 @@ public final class ModCreativeModeTabs {
             output.accept(KTItems.POCHI_PUDDING);
             output.accept(KTItems.MAGIC_CRISPY_CORNER);
         }
-        output.accept(SMCItems.SMC_ICE_TEA_ITEM);
+        // smc 冰红茶照 1.20.1/1.21.1：创造栏给最高品质（否则无 tooltip 品质/buff、喝了无效果）
+        output.accept(com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
     }
 
     private static void furniture(CreativeModeTab.Output output) {

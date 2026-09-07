@@ -45,7 +45,7 @@ public abstract class LivingEntityMixin {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof Player player && player.hasEffect(ModEffects.REVERSE_GRAVITY)) {
             boolean isOnCeiling = !entity.level().noCollision(entity.getBoundingBox().move(0.0, 0.1, 0.0));
-            entity.setNoGravity(isOnCeiling);
+            entity.setOnGround(isOnCeiling);
         }
     }
 
