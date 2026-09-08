@@ -9,15 +9,29 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import com.bmt.kaleidoscope_world_liquor.mixin.accessor.BarrelBlockEntityAccessor;
+import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
 
 /**
  * /brew add | /brew max（准心指向酿造中的酒桶，提升/拉满酿造等级）。
- * 1.21.11 直接调 tavern 的 advanceBrewLevel（第 9 步在 tavern 侧新增的公开方法）。
+ * 升级走 liquor 自带 accessor（适配任意 tavern 构建），不依赖 tavern 侧新增的公开方法。
  */
 public final class BrewCommands {
     private BrewCommands() {
+    }
+
+    /**
+     * 自包含的酿造升级（与 1.20.1/1.21.1 同款 accessor 姿势，语义与 tavern
+     * advanceBrewLevel 一致）：等级 +1 封顶 BREWING_FINISHED(6)、按新等级重推
+     * 发酵时长、refresh 同步客户端。不依赖 tavern 侧新增的公开方法。
+     */
+    static void advanceBrewLevel(BarrelBlockEntity barrel) {
+        BarrelBlockEntityAccessor accessor = (BarrelBlockEntityAccessor) barrel;
+        accessor.setBrewLevel(Math.min(barrel.getBrewLevel() + 1, IBarrel.BREWING_FINISHED));
+        accessor.setBrewTime(accessor.invokeGetBrewTimeForLevel());
+        barrel.refresh();
     }
 
     public static void register() {
@@ -42,7 +56,7 @@ public final class BrewCommands {
             source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.max_level"));
             return 0;
         }
-        barrel.advanceBrewLevel();
+        advanceBrewLevel(barrel);
         source.sendSuccess(() -> Component.translatable("message.kaleidoscope_world_liquor.command.add_success", barrel.getBrewLevel()), false);
         return 1;
     }
@@ -57,7 +71,7 @@ public final class BrewCommands {
             return 0;
         }
         while (!barrel.isMaxBrewLevel()) {
-            barrel.advanceBrewLevel();
+            advanceBrewLevel(barrel);
         }
         source.sendSuccess(() -> Component.translatable("message.kaleidoscope_world_liquor.command.max_success"), false);
         return 1;

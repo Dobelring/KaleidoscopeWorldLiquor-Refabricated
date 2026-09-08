@@ -12,7 +12,8 @@
     "LivingEntityMixin",
     "EntityMixin",
     "CaptainGiftMixin",
-    "BoatMixin"
+    "BoatMixin",
+    "accessor.BarrelBlockEntityAccessor"
   ],
   "client": [
     "CameraMixin",

@@ -67,8 +67,8 @@ public final class MiscEvents {
                 player.sendOverlayMessage(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.max_level"));
                 return InteractionResult.FAIL;
             }
-            // 升级（原版音效：附魔台使用音）
-            barrel.advanceBrewLevel();
+            // 升级（原版音效：附魔台使用音）——accessor 路线，不依赖 tavern 侧新增方法
+            com.bmt.kaleidoscope_world_liquor.event.BrewCommands.advanceBrewLevel(barrel);
             cooldowns.addCooldown(stack, 2400);
             level.playSound(null, pos, net.minecraft.sounds.SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, 1.2F);
             player.sendOverlayMessage(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.success", barrel.getBrewLevel()));
