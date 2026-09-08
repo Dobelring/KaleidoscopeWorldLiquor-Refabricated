@@ -10,6 +10,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.level.block.Block;
 
+/**
+ * 8 幅作者画：物品=AuthorPaintingItem（背包 tooltip 作者行；放出后 WTHIT 不显示）。
+ * 手持渲染=item 模型 parent=kaleidoscope_tavern:item/painting_base（画框 3D+全姿势）。
+ */
 public class ModPaintings {
    public static final Block BFXM_PAINTING = new PaintingBlock();
    public static final Block BMT_PAINTING = new PaintingBlock();
@@ -19,14 +23,14 @@ public class ModPaintings {
    public static final Block RABBIT_PAINTING = new PaintingBlock();
    public static final Block CH_PAINTING = new PaintingBlock();
    public static final Block QXXY_PAINTING = new PaintingBlock();
-   public static final Item BFXM_PAINTING_ITEM = new BlockItem(BFXM_PAINTING, new Properties());
-   public static final Item BMT_PAINTING_ITEM = new BlockItem(BMT_PAINTING, new Properties());
-   public static final Item DREAM_PAINTING_ITEM = new BlockItem(DREAM_PAINTING, new Properties());
-   public static final Item CHA_PAINTING_ITEM = new BlockItem(CHA_PAINTING, new Properties());
-   public static final Item CHEN_PAINTING_ITEM = new BlockItem(CHEN_PAINTING, new Properties());
-   public static final Item RABBIT_PAINTING_ITEM = new BlockItem(RABBIT_PAINTING, new Properties());
-   public static final Item CH_PAINTING_ITEM = new BlockItem(CH_PAINTING, new Properties());
-   public static final Item QXXY_PAINTING_ITEM = new BlockItem(QXXY_PAINTING, new Properties());
+   public static final Item BFXM_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(BFXM_PAINTING, new Properties());
+   public static final Item BMT_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(BMT_PAINTING, new Properties());
+   public static final Item DREAM_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(DREAM_PAINTING, new Properties());
+   public static final Item CHA_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(CHA_PAINTING, new Properties());
+   public static final Item CHEN_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(CHEN_PAINTING, new Properties());
+   public static final Item RABBIT_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(RABBIT_PAINTING, new Properties());
+   public static final Item CH_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(CH_PAINTING, new Properties());
+   public static final Item QXXY_PAINTING_ITEM = new com.bmt.kaleidoscope_world_liquor.item.AuthorPaintingItem(QXXY_PAINTING, new Properties());
 
    public static void registerPaintings() {
       Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "bfxm_painting"), BFXM_PAINTING);

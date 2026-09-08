@@ -3,6 +3,7 @@ package com.bmt.kaleidoscope_world_liquor.init;
 import com.bmt.kaleidoscope_world_liquor.KaleidoscopeWorldLiquor;
 import com.bmt.kaleidoscope_world_liquor.integration.KaleidoscopeDollIntegration;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -86,5 +87,12 @@ public class ModCreativeModeTabs {
    public static void registerTabs() {
       Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "kaleidoscope_world_liquor_tab"), KALEIDOSCOPE_WORLD_LIQUOR_TAB);
       Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "kaleidoscope_world_liquor_furniture_tab"), KALEIDOSCOPE_WORLD_LIQUOR_FURNITURE_TAB);
+      // 8 幅作者画挂在 tavern 装饰栏 MASTER_MARISA_PAINTING 之后（1.20.1 原版 putAfter 同位）
+      ItemGroupEvents.modifyEntriesEvent(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB,
+         ResourceLocation.fromNamespaceAndPath("kaleidoscope_tavern", "tavern_deco"))).register(entries -> entries.addAfter(
+         com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems.MASTER_MARISA_PAINTING,
+         ModPaintings.BFXM_PAINTING_ITEM, ModPaintings.BMT_PAINTING_ITEM, ModPaintings.CHEN_PAINTING_ITEM,
+         ModPaintings.DREAM_PAINTING_ITEM, ModPaintings.CHA_PAINTING_ITEM, ModPaintings.RABBIT_PAINTING_ITEM,
+         ModPaintings.CH_PAINTING_ITEM, ModPaintings.QXXY_PAINTING_ITEM));
    }
 }
