@@ -32,9 +32,13 @@ public final class ModItems {
     private ModItems() {
     }
 
-    /** 1.21.11 的自定义唱片：纯物品 + jukebox_playable 组件指向 jukebox_song 数据（随机双曲在 sounds.json） */
+    /** 1.21.11 的自定义唱片：纯物品 + jukebox_playable 组件指向 jukebox_song 数据。
+     *  默认挂长曲；放入唱片机时由 MusicDiscEvents 随机改写为具体曲目的 song
+     *  （双曲时长不同，混播随机会让音符粒子/比较器与实际音乐失配） */
     public static final ResourceKey<JukeboxSong> JUKEBOX_SONG_RANDOM_DISC =
             ResourceKey.create(Registries.JUKEBOX_SONG, PortHelper.id("random_disc"));
+    public static final ResourceKey<JukeboxSong> JUKEBOX_SONG_RANDOM_DISC_SHORT =
+            ResourceKey.create(Registries.JUKEBOX_SONG, PortHelper.id("random_disc_short"));
 
     // ========== 注册辅助（照 cookery 范式） ==========
     public static Item registerItem(ResourceKey<Item> key, Function<Item.Properties, Item> factory, Item.Properties properties) {

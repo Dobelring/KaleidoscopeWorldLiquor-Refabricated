@@ -61,6 +61,11 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     private RecipeHolder<FreezerRecipe> cachedRecipe = null;
     @Nullable
     private RecipeHolder<FreezerRecipe> recipe = null;
+    /**
+     * loadAdditional（区块加载/数据同步路径）禁止触碰世界（setBlockAndUpdate 会经
+     * getChunk 阻塞等待未加载完的邻块 → 服务器 watchdog 死锁），配方重查延迟到 tick。
+     */
+    private boolean pendingRecipeCheck = false;
 
     public FreezerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FREEZER_BE, pos, state);
@@ -110,6 +115,10 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
 
     public static void tick(Level level, BlockPos pos, BlockState state, FreezerBlockEntity be) {
         if (!level.isClientSide()) {
+            if (be.pendingRecipeCheck) {
+                be.pendingRecipeCheck = false;
+                be.checkForMatchingRecipe();
+            }
             if (be.needsRecipeRestore && be.pendingRecipeId != null) {
                 be.restoreRecipe();
                 be.needsRecipeRestore = false;
@@ -369,8 +378,9 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
             this.needsRecipeRestore = false;
             this.recipe = null;
         }
+        // 不在此处直接重查配方：区块加载路径触碰世界有死锁风险，置标记延迟到 tick
         if (level != null && !level.isClientSide()) {
-            this.checkForMatchingRecipe();
+            this.pendingRecipeCheck = true;
         }
     }
 

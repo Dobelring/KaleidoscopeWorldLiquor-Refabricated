@@ -3,13 +3,17 @@
   "minVersion": "0.8",
   "package": "com.bmt.kaleidoscope_world_liquor.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
   "mixins": [
     "DoubleDamageMixin",
     "UseItemEventsMixin",
     "LivingEntityMixin",
     "EntityMixin",
     "CaptainGiftMixin",
-    "BoatMixin"
+    "BoatMixin",
+    "accessor.BarrelBlockEntityAccessor"
   ],
   "client": [
     "CameraMixin",

@@ -93,6 +93,24 @@ public final class MusicDiscEvents {
             }
             return InteractionResult.PASS;
         });
+        // 模组唱片放入唱片机前随机选定曲目（长/短），使 length_in_seconds 与实际音乐一致——
+        // 否则声音层随机会让短曲播完后唱片机仍按长曲时长发音符粒子（1.21.1 终态方案）
+        UseBlockCallback.EVENT.register(MusicDiscEvents::onRightClickInsertRecord);
+    }
+
+    private static InteractionResult onRightClickInsertRecord(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (level.isClientSide() || hand != InteractionHand.MAIN_HAND
+                || !stack.is(com.bmt.kaleidoscope_world_liquor.init.ModItems.CUSTOM_RECORD)
+                || !(level.getBlockState(hitResult.getBlockPos()).getBlock() instanceof net.minecraft.world.level.block.JukeboxBlock)) {
+            return InteractionResult.PASS;
+        }
+        var song = level.random.nextBoolean()
+                ? com.bmt.kaleidoscope_world_liquor.init.ModItems.JUKEBOX_SONG_RANDOM_DISC
+                : com.bmt.kaleidoscope_world_liquor.init.ModItems.JUKEBOX_SONG_RANDOM_DISC_SHORT;
+        stack.set(DataComponents.JUKEBOX_PLAYABLE,
+                new JukeboxPlayable(new net.minecraft.world.item.EitherHolder<>(song)));
+        return InteractionResult.PASS;
     }
 
     /** 唱片 tooltip："可放置"（暗灰斜体）。1.21.11 挂 item tooltip 需要客户端 mixin；此处静态工具方法供 mixin 调用 */

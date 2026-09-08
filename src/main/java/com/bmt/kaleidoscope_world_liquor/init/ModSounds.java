@@ -16,8 +16,10 @@ public final class ModSounds {
     public static final SoundEvent CUSTOM_MUSIC_1 = register("custom_music_1");
     public static final SoundEvent CUSTOM_MUSIC_2 = register("custom_music_2");
     public static final SoundEvent POCHI_PUDDING_FEED = register("pochi_pudding_feed");
-    /** 唱片播放用的音效事件：sounds.json 中以相同权重随机播放两首曲子 */
-    public static final SoundEvent MUSIC_DISC_RANDOM_DISC = register("music_disc.random_disc");
+    /** 唱片两条曲目的独立 SoundEvent：jukebox_song 按 length_in_seconds 发音符，
+     *  混播随机双曲会让短曲播完后音符继续跳到长曲时长，故每曲各绑一个音效事件 */
+    public static final SoundEvent MUSIC_DISC_RANDOM_DISC_LONG = register("music_disc.random_disc_long");
+    public static final SoundEvent MUSIC_DISC_RANDOM_DISC_SHORT = register("music_disc.random_disc_short");
 
     /** 玩偶右键音效（原版 kaleidoscope_doll:block.duck_toy，资产随 liquor 携带） */
     public static final SoundEvent DUCK_TOY = register("duck_toy");

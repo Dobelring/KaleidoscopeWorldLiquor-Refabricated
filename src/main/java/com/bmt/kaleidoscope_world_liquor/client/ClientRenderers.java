@@ -6,18 +6,13 @@ import com.bmt.kaleidoscope_world_liquor.client.render.block.FreezerBlockEntityR
 import com.bmt.kaleidoscope_world_liquor.event.MusicDiscEvents;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModEntities;
-import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Monster;
 
 /**
  * 客户端渲染接线：BER 注册、椅子 NoopRenderer、唱片 tooltip、敌对发光 tick。
@@ -41,19 +36,7 @@ public final class ClientRenderers {
                         .withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
             }
         });
-
-        // 冥视：客户端 tick 扫描附近敌对生物发光（1.20.1 RenderTick 同款）
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.level == null || client.isPaused()) {
-                return;
-            }
-            boolean hasEffect = client.player.hasEffect(ModEffects.HOSTILE_DETECTION);
-            double rangeSq = 1024.0;
-            for (Monster mob : client.level.getEntitiesOfClass(Monster.class,
-                    client.player.getBoundingBox().inflate(37.0), mob -> mob.isAlive())) {
-                boolean shouldGlow = hasEffect && mob instanceof Enemy && client.player.distanceToSqr(mob) <= rangeSq;
-                mob.setGlowingTag(shouldGlow);
-            }
-        });
+        // 冥视发光由 HostileDetectionHandler 负责（onInitializeClient 已注册；
+        // 此处不再内联一份——重复注册会绕过 IGlowingEntity 的发光分离机制，每 tick 清掉原版发光来源）
     }
 }

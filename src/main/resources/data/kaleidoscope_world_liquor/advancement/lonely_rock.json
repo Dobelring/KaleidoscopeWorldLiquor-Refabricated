@@ -1,8 +1,12 @@
 {
   "parent": "minecraft:husbandry/root",
   "display": {
-    "title": "孤独摇滚",
-    "description": "集齐波奇布丁、喜多夹心脆、凉山田筒、妙脆角！",
+    "title": {
+      "translate": "advancements.kaleidoscope_twilight.collect_all_twilight_snack.title"
+    },
+    "description": {
+      "translate": "advancements.kaleidoscope_twilight.collect_all_twilight_snack.description"
+    },
     "icon": {
       "id": "kaleidoscope_twilight:pochi_pudding"
     },

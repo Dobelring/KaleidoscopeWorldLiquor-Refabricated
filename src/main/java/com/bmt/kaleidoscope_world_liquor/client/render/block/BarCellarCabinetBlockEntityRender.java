@@ -2,21 +2,18 @@ package com.bmt.kaleidoscope_world_liquor.client.render.block;
 
 import com.bmt.kaleidoscope_world_liquor.block.BarCellarCabinetBlock;
 import com.bmt.kaleidoscope_world_liquor.blockentity.BarCellarCabinetBlockEntity;
-import com.github.ysbbbbbb.kaleidoscopetavern.util.RenderUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +88,9 @@ public class BarCellarCabinetBlockEntityRender implements BlockEntityRenderer<Ba
         poseStack.translate(-0.5, 0, -0.5);
         submitNodeCollector.submitBlockModel(
                 poseStack,
-                RenderTypes.entityCutoutNoCullZOffset(TextureAtlas.LOCATION_BLOCKS),
+                // 实体层渲染方块模型必须用 cutoutBlockSheet（tavern StorageBlockEntityRender 同款）；
+                // entityCutoutNoCullZOffset 会导致颜色错乱/像素粗/偶尔消失
+                Sheets.cutoutBlockSheet(),
                 model,
                 1.0F, 1.0F, 1.0F,
                 packedLight,

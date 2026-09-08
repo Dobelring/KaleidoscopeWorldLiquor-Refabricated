@@ -1,8 +1,6 @@
 {
-  "parent": "forge:block/fluid",
+  "parent": "minecraft:block/block",
   "textures": {
-    "particle": "kaleidoscope_world_liquor:block/milk_still",
-    "still": "kaleidoscope_world_liquor:block/milk_still",
-    "flowing": "kaleidoscope_world_liquor:block/milk_flowing"
+    "particle": "kaleidoscope_world_liquor:block/milk_still"
   }
 }
