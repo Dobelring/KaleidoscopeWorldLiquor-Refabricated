@@ -1,0 +1,76 @@
+{
+  "ice_tea_eat": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.ice_tea_eat",
+    "sounds": [
+      "kaleidoscope_world_liquor:ice_tea_eat"
+    ]
+  },
+  "cool_ice_tea_drink": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.cool_ice_tea_drink",
+    "sounds": [
+      "kaleidoscope_world_liquor:cool_ice_tea_drink"
+    ]
+  },
+  "sour_plum_drink": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.sour_plum_drink",
+    "sounds": [
+      "kaleidoscope_world_liquor:sour_plum_drink"
+    ]
+  },
+  "custom_record_placeholder": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.custom_record_placeholder",
+    "sounds": [
+      {
+        "name": "kaleidoscope_world_liquor:custom_music_1",
+        "stream": true
+      }
+    ]
+  },
+  "custom_music_1": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.custom_music_1",
+    "sounds": [
+      {
+        "name": "kaleidoscope_world_liquor:custom_music_1",
+        "stream": true
+      }
+    ]
+  },
+  "custom_music_2": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.custom_music_2",
+    "sounds": [
+      {
+        "name": "kaleidoscope_world_liquor:custom_music_2",
+        "stream": true
+      }
+    ]
+  },
+  "pochi_pudding_feed": {
+    "subtitle": "subtitles.kaleidoscope_world_liquor.pochi_pudding_feed",
+    "sounds": [
+      "kaleidoscope_world_liquor:pochi_pudding_feed"
+    ]
+  },
+  "music_disc.random_disc_long": {
+    "sounds": [
+      {
+        "name": "kaleidoscope_world_liquor:custom_music_2",
+        "stream": true
+      }
+    ]
+  },
+  "music_disc.random_disc_short": {
+    "sounds": [
+      {
+        "name": "kaleidoscope_world_liquor:custom_music_1",
+        "stream": true
+      }
+    ]
+  },
+  "duck_toy": {
+    "category": "neutral",
+    "subtitle": "subtitle.kaleidoscope_world_liquor.duck_toy",
+    "sounds": [
+      "kaleidoscope_world_liquor:block/duck_toy"
+    ]
+  }
+}

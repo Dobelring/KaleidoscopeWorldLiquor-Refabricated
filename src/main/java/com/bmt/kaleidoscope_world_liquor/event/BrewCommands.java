@@ -1,0 +1,106 @@
+package com.bmt.kaleidoscope_world_liquor.event;
+
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import com.bmt.kaleidoscope_world_liquor.mixin.accessor.BarrelBlockEntityAccessor;
+import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.IBarrel;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarrelBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.brew.BarrelBlockEntity;
+
+/**
+ * /brew add | /brew max（准心指向酿造中的酒桶，提升/拉满酿造等级）。
+ * 升级走 liquor 自带 accessor（适配任意 tavern 构建），不依赖 tavern 侧新增的公开方法。
+ */
+public final class BrewCommands {
+    private BrewCommands() {
+    }
+
+    /**
+     * 自包含的酿造升级（与 1.20.1/1.21.1 同款 accessor 姿势，语义与 tavern
+     * advanceBrewLevel 一致）：等级 +1 封顶 BREWING_FINISHED(6)、按新等级重推
+     * 发酵时长、refresh 同步客户端。不依赖 tavern 侧新增的公开方法。
+     */
+    static void advanceBrewLevel(BarrelBlockEntity barrel) {
+        BarrelBlockEntityAccessor accessor = (BarrelBlockEntityAccessor) barrel;
+        accessor.setBrewLevel(Math.min(barrel.getBrewLevel() + 1, IBarrel.BREWING_FINISHED));
+        accessor.setBrewTime(accessor.invokeGetBrewTimeForLevel());
+        barrel.refresh();
+    }
+
+    public static void register() {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
+                Commands.literal("brew")
+                        .requires(source -> source.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER))
+                        .then(Commands.literal("add").executes(ctx -> addOneLevel(ctx.getSource())))
+                        .then(Commands.literal("max").executes(ctx -> setMaxLevel(ctx.getSource())))
+        ));
+    }
+
+    private static int addOneLevel(CommandSourceStack source) {
+        BarrelBlockEntity barrel = raycastBarrel(source);
+        if (barrel == null) {
+            return 0;
+        }
+        if (!barrel.isBrewing()) {
+            source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.not_brewing"));
+            return 0;
+        }
+        if (barrel.isMaxBrewLevel()) {
+            source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.max_level"));
+            return 0;
+        }
+        advanceBrewLevel(barrel);
+        source.sendSuccess(() -> Component.translatable("message.kaleidoscope_world_liquor.command.add_success", barrel.getBrewLevel()), false);
+        return 1;
+    }
+
+    private static int setMaxLevel(CommandSourceStack source) {
+        BarrelBlockEntity barrel = raycastBarrel(source);
+        if (barrel == null) {
+            return 0;
+        }
+        if (!barrel.isBrewing()) {
+            source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.not_brewing"));
+            return 0;
+        }
+        while (!barrel.isMaxBrewLevel()) {
+            advanceBrewLevel(barrel);
+        }
+        source.sendSuccess(() -> Component.translatable("message.kaleidoscope_world_liquor.command.max_success"), false);
+        return 1;
+    }
+
+    private static BarrelBlockEntity raycastBarrel(CommandSourceStack source) {
+        try {
+            var player = source.getPlayerOrException();
+            HitResult hit = player.pick(5.0, 0.0F, false);
+            if (hit.getType() != HitResult.Type.BLOCK) {
+                source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.not_barrel"));
+                return null;
+            }
+            BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+            BlockState state = source.getLevel().getBlockState(pos);
+            if (!(state.getBlock() instanceof BarrelBlock)) {
+                source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.not_barrel"));
+                return null;
+            }
+            // 酒桶是 3x3x3 多格方块，BE 只在原点——用 tavern 的解析方法找原点
+            BarrelBlockEntity barrel = BarrelBlock.getBarrelEntity(source.getLevel(), pos, state);
+            if (barrel == null) {
+                source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.barrel_invalid"));
+                return null;
+            }
+            return barrel;
+        } catch (Exception e) {
+            source.sendFailure(Component.translatable("message.kaleidoscope_world_liquor.command.error"));
+            return null;
+        }
+    }
+}

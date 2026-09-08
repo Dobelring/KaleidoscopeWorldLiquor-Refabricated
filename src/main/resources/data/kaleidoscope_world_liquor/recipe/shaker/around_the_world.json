@@ -1,0 +1,11 @@
+{
+  "type": "kaleidoscope_tavern:shaker",
+  "ingredients": [
+    "#kaleidoscope_tavern:cocktail_ingredient_blue",
+    "#kaleidoscope_tavern:cocktail_ingredient_yellow",
+    "#kaleidoscope_tavern:cocktail_ingredient_red"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:around_the_world"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "kaleidoscope_tavern:barrel",
+  "carrier": "kaleidoscope_tavern:empty_bottle",
+  "fluid": "minecraft:water",
+  "ingredients": [
+    "minecraft:sweet_berries",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:sour_plum"
+  },
+  "unit_time": 2400
+}
