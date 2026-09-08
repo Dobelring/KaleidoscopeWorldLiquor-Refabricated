@@ -6,6 +6,7 @@ import com.bmt.kaleidoscope_world_liquor.init.smc.SMCItems;
 import com.bmt.kaleidoscope_world_liquor.util.PortHelper;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -18,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 /**
  * 两个创造栏：酒水栏 + 家具栏。条目顺序照 1.20.1 原版。
  * 冰柜/酒柜/酒窖柜物品在第 5 步注册后加入家具栏与酒水栏。
+ * 8 幅作者画加入 tavern 装饰栏（1.20.1 原版：putAfter MASTER_MARISA_PAINTING）；
+ * Fabric 侧用 append/position 尾插保持原版顺序：bfxm→bmt→chen→dream→cha→rabbit→ch→qxxy。
  */
 public final class ModCreativeModeTabs {
     private ModCreativeModeTabs() {
@@ -115,5 +118,13 @@ public final class ModCreativeModeTabs {
                 .icon(() -> new ItemStack(ModItems.BAR_STOOL_WHITE))
                 .displayItems((parameters, output) -> furniture(output))
                 .build());
+        // 8 幅作者画挂在 tavern 的 MASTER_MARISA_PAINTING 之后（1.20.1 原版 putAfter 同位）
+        ResourceKey<CreativeModeTab> tavernDecoTab = ResourceKey.create(
+                Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath("kaleidoscope_tavern", "tavern_deco"));
+        ItemGroupEvents.modifyEntriesEvent(tavernDecoTab).register(entries -> entries.addAfter(
+                com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems.MASTER_MARISA_PAINTING,
+                ModPaintings.BFXM_PAINTING, ModPaintings.BMT_PAINTING, ModPaintings.CHEN_PAINTING,
+                ModPaintings.DREAM_PAINTING, ModPaintings.CHA_PAINTING, ModPaintings.RABBIT_PAINTING,
+                ModPaintings.CH_PAINTING, ModPaintings.QXXY_PAINTING));
     }
 }
