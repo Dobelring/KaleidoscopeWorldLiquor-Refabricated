@@ -2,6 +2,7 @@ package com.bmt.kaleidoscope_world_liquor.event;
 
 import com.bmt.kaleidoscope_world_liquor.api.IGlowingEntity;
 import com.bmt.kaleidoscope_world_liquor.api.event.PlayerTickEvents;
+import com.bmt.kaleidoscope_world_liquor.effect.DoubleDamageEffect;
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +67,7 @@ public class EventHandlers {
    private static final Set<UUID> BEHEADED_ENTITIES = new HashSet<>();
    private static final Set<UUID> BEHEADING_PROCESSING = new HashSet<>();
    private static final Set<UUID> CRIT_PROCESSING = new HashSet<>();
+   private static final Set<UUID> DOUBLE_DAMAGE_PROCESSING = new HashSet<>();
 
    public static void register() {
       BrewAcceleratorEventHandler.register();
@@ -86,6 +88,24 @@ public class EventHandlers {
    private static boolean onLivingIncomingDamage(LivingEntity target, DamageSource source, float amount) {
       if (target.level().isClientSide || BEHEADING_PROCESSING.contains(target.getUUID())) {
          return true;
+      }
+
+      // 重斩（double_damage）：攻击者带效果时按 20%+20%/级 概率双倍伤害——
+      // Fabric ALLOW_DAMAGE 无改额语义，走 cancel+按新额二次结算（龙舌兰同范式）；
+      // applyDoubleDamage 内含暴击音/粒子，返回翻倍后的伤害额。
+      if (source.getEntity() instanceof LivingEntity attacker
+         && attacker.hasEffect(ModEffects.DOUBLE_DAMAGE_EFFECT)
+         && !DOUBLE_DAMAGE_PROCESSING.contains(target.getUUID())) {
+         DOUBLE_DAMAGE_PROCESSING.add(target.getUUID());
+         try {
+            float doubled = DoubleDamageEffect.applyDoubleDamage(attacker, source, amount);
+            if (doubled > amount) {
+               target.hurt(source, doubled);
+               return false;
+            }
+         } finally {
+            DOUBLE_DAMAGE_PROCESSING.remove(target.getUUID());
+         }
       }
 
       if (source.getDirectEntity() instanceof LivingEntity attacker) {
