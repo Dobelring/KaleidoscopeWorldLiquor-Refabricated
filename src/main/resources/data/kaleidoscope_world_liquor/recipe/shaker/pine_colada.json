@@ -1,0 +1,11 @@
+{
+  "type": "kaleidoscope_tavern:shaker",
+  "ingredients": [
+    "#kaleidoscope_tavern:cocktail_ingredient_white",
+    "#kaleidoscope_tavern:cocktail_ingredient_white",
+    "#kaleidoscope_tavern:cocktail_ingredient_yellow"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:pine_colada"
+  }
+}

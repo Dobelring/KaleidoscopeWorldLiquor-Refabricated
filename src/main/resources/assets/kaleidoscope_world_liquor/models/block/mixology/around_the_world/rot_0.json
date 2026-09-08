@@ -1,0 +1,6 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/mixology/around_the_world",
+  "transform": {
+    "origin": "center"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "parent": "minecraft:husbandry/root",
+  "display": {
+    "title": {
+      "translate": "advancements.kaleidoscope_twilight.collect_all_twilight_snack.title"
+    },
+    "description": {
+      "translate": "advancements.kaleidoscope_twilight.collect_all_twilight_snack.description"
+    },
+    "icon": {
+      "id": "kaleidoscope_twilight:pochi_pudding"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_ice_cone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "kaleidoscope_twilight:liangshan_ice_cone"
+            ]
+          }
+        ]
+      }
+    },
+    "get_crisp": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "kaleidoscope_twilight:kita_stuffed_crisp"
+            ]
+          }
+        ]
+      }
+    },
+    "get_pudding": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "kaleidoscope_twilight:pochi_pudding"
+            ]
+          }
+        ]
+      }
+    },
+    "get_corner": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "kaleidoscope_twilight:magic_crispy_corner"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "get_ice_cone"
+    ],
+    [
+      "get_crisp"
+    ],
+    [
+      "get_pudding"
+    ],
+    [
+      "get_corner"
+    ]
+  ]
+}

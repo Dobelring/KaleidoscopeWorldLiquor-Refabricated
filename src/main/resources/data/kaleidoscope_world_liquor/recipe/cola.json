@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:sugar",
+    "minecraft:ink_sac"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:cola",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "kaleidoscope_tavern:shaker",
+  "ingredients": [
+    "#kaleidoscope_tavern:cocktail_ingredient_dark_aqua",
+    "#kaleidoscope_tavern:cocktail_ingredient_green",
+    "#kaleidoscope_tavern:cocktail_ingredient_white"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:jerk"
+  }
+}

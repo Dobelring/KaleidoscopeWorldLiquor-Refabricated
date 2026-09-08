@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.bmt.kaleidoscope_world_liquor.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
+  "mixins": [
+    "DoubleDamageMixin",
+    "UseItemEventsMixin",
+    "LivingEntityMixin",
+    "EntityMixin",
+    "CaptainGiftMixin",
+    "BoatMixin"
+  ],
+  "client": [
+    "CameraMixin",
+    "ClientPlayerMixin",
+    "GuiGraphicsMixin",
+    "EntityRendererMixin",
+    "ReverseGravityStrafeMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
