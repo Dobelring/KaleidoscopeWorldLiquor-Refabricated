@@ -10,7 +10,7 @@
 
 ## Overview
 ![Minecraft](https://img.shields.io/badge/Minecraft-Java%20Edition-brightgreen)
-![Fabric](https://img.shields.io/badge/26.1.2-orange)
+![Fabric](https://img.shields.io/badge/1.21.1%20%7C%201.21.11%20%7C%2026.1.2%20%7C%2026.2-orange)
 ![License](https://img.shields.io/badge/License-MIT_+_CC_BY--NC--ND_4.0-lightgrey)
 
 ## Content
