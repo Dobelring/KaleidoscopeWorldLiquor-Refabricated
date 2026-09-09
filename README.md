@@ -30,7 +30,7 @@
 - **Kaleidoscope Doll (森罗物语：玩偶)**: 6 contributor dolls (doll_0 ~ doll_5) with author tooltips, craftable from pink wool in a stonecutter; feed them Pochi Pudding for a surprise.
 
 ## Build
-Requires JDK 21.
+Targets **Minecraft 26.1.2 (Fabric)** — branch `26.1.2-fabric`. Requires **JDK 25**.
 
 Dependency jars (Kaleidoscope Tavern, Kaleidoscope Doll) are committed under `libs/` and referenced directly by `build.gradle`.
 
@@ -43,4 +43,4 @@ The artifact is produced in `build/libs/`.
 ## License
 This project is a **Fabric port** of the original Kaleidoscope World Liquor (森罗酒馆：世界名酒). Code is licensed under **MIT**, assets under **CC BY-NC-ND 4.0** — see [LICENSE-CODE](LICENSE-CODE) and [LICENSE-ASSETS](LICENSE-ASSETS).
 
-Original mod by 白馒头 (BmtUltra), 辰笺渡月 (chenjdy / ChenjdyUltra), 白帆小喵L (Bfxm). Fabric port by [Dobelring](https://github.com/Dobelring).
+Original mod by [白馒头 (BmtUltra)](https://github.com/BmtUltra), [辰笺渡月 (chenjdy / ChenjdyUltra)](https://github.com/ChenjdyUltra), 白帆小喵L (Bfxm). Fabric port by [Dobelring](https://github.com/Dobelring).
