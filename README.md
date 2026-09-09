@@ -43,4 +43,4 @@ The artifact is produced in `build/libs/`.
 ## License
 This project is a **Fabric port** of the original Kaleidoscope World Liquor (森罗酒馆：世界名酒). Code is licensed under **MIT**, assets under **CC BY-NC-ND 4.0** — see [LICENSE-CODE](LICENSE-CODE) and [LICENSE-ASSETS](LICENSE-ASSETS).
 
-Original mod by [白馒头 (BmtUltra)](https://github.com/BmtUltra), [辰笺渡月 (chenjdy / ChenjdyUltra)](https://github.com/ChenjdyUltra), 白帆小喵L (Bfxm). Fabric port by [Dobelring](https://github.com/Dobelring).
+Original mod by [白馒头 (BmtUltra)](https://github.com/BmtUltra), [辰笺渡月 (chenjdy / ChenjdyUltra)](https://github.com/ChenjdyUltra), [白帆小喵L (bf_meow)](https://space.bilibili.com/492836494). Fabric port by [Dobelring](https://github.com/Dobelring).
