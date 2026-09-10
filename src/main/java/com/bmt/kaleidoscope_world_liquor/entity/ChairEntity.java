@@ -18,7 +18,9 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class ChairEntity extends Entity {
-    private static final double SEAT_HEIGHT = 0.65D;
+    // 座面顶=15/16（bar/stool/base.json 顶面 y=15）。1.20.1 原值 0.65 会让腿部插进凳体，
+    // 调到座面顶脚底贴面（1.21.11/26.1.2 同步修改）。
+    private static final double SEAT_HEIGHT = 0.9375D;
 
     public ChairEntity(EntityType<? extends ChairEntity> type, Level level) {
         super(type, level);
