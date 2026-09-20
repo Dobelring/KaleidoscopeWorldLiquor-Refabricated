@@ -31,6 +31,16 @@ import org.joml.Matrix4f;
 public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> {
    private final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
+   /** 冰柜内壁（液体/产物贴图）的绘制范围，按朝向取。 */
+   private static PanelBounds panelBounds(Direction facing) {
+      return switch (facing) {
+         case NORTH, SOUTH -> new PanelBounds(0.0625F, 0.125F, 0.9375F, 0.75F);
+         case EAST -> new PanelBounds(0.125F, 0.03125F, 0.75F, 0.9375F);
+         case WEST -> new PanelBounds(0.0625F, 0.03125F, 0.75F, 0.9375F);
+         default -> new PanelBounds(0.15625F, 0.0625F, 0.75F, 0.8125F);
+      };
+   }
+
    public FreezerRenderer(Context context) {
    }
 
@@ -44,7 +54,7 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
             this.drawFluid(be, poseStack, buffer, packedLight, facing);
          }
 
-         this.drawFloatingItems(be, poseStack, buffer, packedLight, facing);
+         this.drawFloatingItems(be, poseStack, buffer, packedLight);
 
          if (be.hasOutput() && be.getOutputTexture() != null) {
             this.drawResultTexture(be, poseStack, buffer, packedLight, facing);
@@ -83,36 +93,11 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
 
          float y = 0.25F;
          float maxHeight = 0.375F;
-         float x;
-         float z;
-         float width;
-         float depth;
-         switch (facing) {
-            case NORTH:
-            case SOUTH:
-               x = 0.0625F;
-               z = 0.125F;
-               width = 0.9375F;
-               depth = 0.75F;
-               break;
-            case EAST:
-               x = 0.125F;
-               z = 0.03125F;
-               width = 0.75F;
-               depth = 0.9375F;
-               break;
-            case WEST:
-               x = 0.0625F;
-               z = 0.03125F;
-               width = 0.75F;
-               depth = 0.9375F;
-               break;
-            default:
-               x = 0.15625F;
-               z = 0.0625F;
-               width = 0.75F;
-               depth = 0.8125F;
-         }
+         PanelBounds bounds = panelBounds(facing);
+         float x = bounds.x();
+         float z = bounds.z();
+         float width = bounds.width();
+         float depth = bounds.depth();
 
          float height = maxHeight * ((float)be.tank.getFluidAmount() / be.tank.getCapacity());
 
@@ -133,7 +118,7 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
       }
    }
 
-   private void drawFloatingItems(FreezerBlockEntity be, PoseStack poseStack, MultiBufferSource buffer, int packedLight, Direction facing) {
+   private void drawFloatingItems(FreezerBlockEntity be, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
       float baseY;
       if (be.tank.getFluid().isEmpty()) {
          baseY = 0.2F;
@@ -184,39 +169,16 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
          TextureAtlasSprite sprite = (TextureAtlasSprite)Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(textureLoc);
          VertexConsumer consumer = source.getBuffer(RenderType.translucent());
          Matrix4f matrix = poseStack.last().pose();
-         float x;
-         float z;
-         float width;
-         float depth;
-         switch (facing) {
-            case NORTH:
-            case SOUTH:
-               x = 0.0625F;
-               z = 0.125F;
-               width = 0.9375F;
-               depth = 0.75F;
-               break;
-            case EAST:
-               x = 0.125F;
-               z = 0.03125F;
-               width = 0.75F;
-               depth = 0.9375F;
-               break;
-            case WEST:
-               x = 0.0625F;
-               z = 0.03125F;
-               width = 0.75F;
-               depth = 0.9375F;
-               break;
-            default:
-               x = 0.15625F;
-               z = 0.0625F;
-               width = 0.75F;
-               depth = 0.8125F;
-         }
+         PanelBounds bounds = panelBounds(facing);
+         float x = bounds.x();
+         float z = bounds.z();
+         float width = bounds.width();
+         float depth = bounds.depth();
 
          float baseY = 0.75F;
-         float sinkOffset = (5 - count) * 0.08F;
+         // 数量 ≥3 后浮空高度固定，否则产出越多产物贴图越往下沉
+         float renderCount = Math.min(count, 3);
+         float sinkOffset = (5.0F - renderCount) * 0.08F;
          float y = baseY - sinkOffset;
          float u0 = sprite.getU0();
          float u1 = sprite.getU1();
@@ -231,5 +193,8 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
 
    public boolean shouldRenderOffScreen(@NotNull FreezerBlockEntity be) {
       return true;
+   }
+
+   private record PanelBounds(float x, float z, float width, float depth) {
    }
 }

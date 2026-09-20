@@ -6,17 +6,14 @@ import com.bmt.kaleidoscope_world_liquor.client.renderer.FreezerRenderer;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
 import com.bmt.kaleidoscope_world_liquor.init.ModCompatItems;
-import com.bmt.kaleidoscope_world_liquor.init.ModEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModFluids;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +25,6 @@ public final class Clients {
    }
 
    public static void registerRenderers() {
-      EntityRendererRegistry.register(ModEntities.OAK_LOG_STOOL, NoopRenderer::new);
       BlockEntityRenderers.register(ModBlockEntities.FREEZER_BE, FreezerRenderer::new);
       BlockEntityRenderers.register(ModBlockEntities.BAR_CABINET_BE, BarCabinetBlockEntityRender::new);
       BlockEntityRenderers.register(ModBlockEntities.BAR_CELLAR_CABINET_BE, BarCellarCabinetBlockEntityRender::new);
@@ -57,7 +53,7 @@ public final class Clients {
          ModBlocks.SKYY_VODKA, ModBlocks.JOHNNIE_WALKER, ModBlocks.LAFITE_1982, ModBlocks.STRONGBOW,
          ModBlocks.DASSAI, ModBlocks.KWAS_CHLEBOWY, ModBlocks.BAMBOO_LEAF_GREEN_LIQUOR, ModBlocks.COOL_TEA,
          ModBlocks.SOUR_PLUM, ModBlocks.JERK, ModBlocks.AROUND_THE_WORLD, ModBlocks.LONG_ISLAND_ICED_TEA,
-         ModBlocks.SHRIMP_COOKTAIL, ModBlocks.GIN_TONIC,
+         ModBlocks.SHRIMP_COOKTAIL, ModBlocks.GIN_TONIC, ModBlocks.HIGHBALL,
          ModCompatItems.ICE_TEA_BLOCK
       );
    }

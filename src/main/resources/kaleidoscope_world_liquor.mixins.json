@@ -12,13 +12,14 @@
     "accessor.LivingEntityAccessor",
     "accessor.BarrelBlockEntityAccessor",
     "accessor.ItemCombinerMenuAccessor",
+    "accessor.CreativeModeTabAccessor",
     "CaptainGiftMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "GuiGraphicsMixin",
     "TapBlockMixin",
     "AnvilMenuMixin",
-    "LivingEntityUseItemMixin",
+    "CreativeModeTabsMixin",
     "PlayerMixin",
     "BlockEntityTypeMixin",
     "BottleBlockItemShakerMixin"
@@ -26,7 +27,8 @@
   "client": [
     "ClientPlayerEntityMixin",
     "CameraMixin",
-    "EntityRendererMixin"
+    "EntityRendererMixin",
+    "CreativeModeInventoryScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

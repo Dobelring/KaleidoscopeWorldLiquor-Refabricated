@@ -36,6 +36,7 @@ import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
@@ -301,6 +302,26 @@ public class EventHandlers {
          if (duration % 40 == 0) {
             spreadBonemealOnPlants(player, amplifier);
          }
+      }
+
+      updateCreativeFlight(player);
+   }
+
+   /**
+    * 飞行 buff 的 mayfly 同步：加 buff 只补 mayfly（不动已有飞行状态），掉 buff 只在非创造/旁观下清除。
+    */
+   private static void updateCreativeFlight(Player player) {
+      Abilities abilities = player.getAbilities();
+      if (player.hasEffect(ModEffects.CREATIVE_FLIGHT)) {
+         if (!abilities.mayfly) {
+            abilities.mayfly = true;
+            player.onUpdateAbilities();
+         }
+      } else if (!player.isCreative() && !player.isSpectator() && (abilities.mayfly || abilities.flying)) {
+         abilities.flying = false;
+         abilities.mayfly = false;
+         player.onUpdateAbilities();
+         player.fallDistance = 0.0F;
       }
    }
 

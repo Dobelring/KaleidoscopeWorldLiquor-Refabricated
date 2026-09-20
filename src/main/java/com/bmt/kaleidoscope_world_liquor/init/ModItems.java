@@ -35,8 +35,8 @@ public class ModItems {
    public static final Item DASSAI = new DrinkBlockItem(ModBlocks.DASSAI);
    public static final Item KWAS_CHLEBOWY = new DrinkBlockItem(ModBlocks.KWAS_CHLEBOWY);
    public static final Item BAMBOO_LEAF_GREEN_LIQUOR = new DrinkBlockItem(ModBlocks.BAMBOO_LEAF_GREEN_LIQUOR);
-   public static final Item COOL_TEA = new DrinkBlockItem(ModBlocks.COOL_TEA);
-   public static final Item SOUR_PLUM = new DrinkBlockItem(ModBlocks.SOUR_PLUM);
+   public static final Item COOL_TEA = new com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.CoolTea(ModBlocks.COOL_TEA);
+   public static final Item SOUR_PLUM = new com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.SourPlum(ModBlocks.SOUR_PLUM);
    public static final Item COLA = new BottledDrinkItem(
          new Properties()
             .stacksTo(16)
@@ -57,6 +57,7 @@ public class ModItems {
    public static final Item SHRIMP_COOKTAIL = new CocktailBlockItem(ModBlocks.SHRIMP_COOKTAIL);
    public static final Item PINE_COLADA = new CocktailBlockItem(ModBlocks.PINE_COLADA);
    public static final Item GIN_TONIC = new CocktailBlockItem(ModBlocks.GIN_TONIC);
+   public static final Item HIGHBALL = new CocktailBlockItem(ModBlocks.HIGHBALL);
    public static final Item BAR_STOOL_BLACK = new BlockItem(ModBlocks.BAR_STOOL_BLACK, new Properties());
    public static final Item BAR_STOOL_WHITE = new BlockItem(ModBlocks.BAR_STOOL_WHITE, new Properties());
    public static final Item BAR_STOOL_LIGHT_GRAY = new BlockItem(ModBlocks.BAR_STOOL_LIGHT_GRAY, new Properties());
@@ -112,6 +113,7 @@ public class ModItems {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "shrimp_cocktail"), SHRIMP_COOKTAIL);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "pine_colada"), PINE_COLADA);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "gin_tonic"), GIN_TONIC);
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "highball"), HIGHBALL);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "bar_stool_black"), BAR_STOOL_BLACK);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "bar_stool_white"), BAR_STOOL_WHITE);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "bar_stool_light_gray"), BAR_STOOL_LIGHT_GRAY);

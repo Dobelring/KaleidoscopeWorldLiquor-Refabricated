@@ -9,7 +9,6 @@ import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
 import com.bmt.kaleidoscope_world_liquor.init.ModCompatItems;
 import com.bmt.kaleidoscope_world_liquor.init.ModCreativeModeTabs;
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
-import com.bmt.kaleidoscope_world_liquor.init.ModEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModFluids;
 import com.bmt.kaleidoscope_world_liquor.init.ModItems;
 import com.bmt.kaleidoscope_world_liquor.init.ModPaintings;
@@ -40,7 +39,6 @@ public class KaleidoscopeWorldLiquor implements ModInitializer {
       ModItems.registerItems();
       ModBlockEntities.registerBlockEntities();
       ModFluids.registerFluids();
-      ModEntities.registerEntities();
       ModSounds.registerSounds();
       ModPaintings.registerPaintings();
       ModRecipes.registerRecipes();

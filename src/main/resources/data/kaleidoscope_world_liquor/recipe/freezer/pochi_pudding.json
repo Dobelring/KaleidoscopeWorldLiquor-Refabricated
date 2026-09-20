@@ -11,7 +11,7 @@
     "count": 1,
     "id": "kaleidoscope_twilight:pochi_pudding"
   },
-  "craft_time": 1800,
+  "craft_time": 1200,
   "texture": "minecraft:block/snow",
   "extract_condition": {
     "item": "minecraft:bowl"

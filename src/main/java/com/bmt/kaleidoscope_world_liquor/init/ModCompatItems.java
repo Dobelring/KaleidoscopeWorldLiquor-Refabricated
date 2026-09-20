@@ -2,7 +2,6 @@ package com.bmt.kaleidoscope_world_liquor.init;
 
 import com.bmt.kaleidoscope_world_liquor.item.CompatFoodItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.DrinkBlock;
-import com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +45,7 @@ public final class ModCompatItems {
          }
       )
       .build();
-   public static final Item ICE_TEA = new DrinkBlockItem(ICE_TEA_BLOCK);
+   public static final Item ICE_TEA = new com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.IceTea(ICE_TEA_BLOCK);
 
    public static void register() {
       // kaleidoscope_twilight 命名空间

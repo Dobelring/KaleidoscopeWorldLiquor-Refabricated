@@ -118,6 +118,14 @@ public class ModEffects {
    public static final Holder<MobEffect> EXPLOSION_EFFECT = register("explosion", () -> new ExplosionEffect(16729344));
    public static final Holder<MobEffect> LEVEL_BOOST_EFFECT = register("level_boost", () -> new LevelBoostEffect(65280));
    public static final Holder<MobEffect> CONTINUOUS_HEAL_EFFECT = register("continuous_heal", ContinuousHealEffect::new);
+   // 纯状态标记：飞行能力由 EventHandlers#updateCreativeFlight 每 tick 同步，效果本身不做 tick 逻辑
+   public static final Holder<MobEffect> CREATIVE_FLIGHT = register(
+      "creative_flight", () -> new MobEffect(MobEffectCategory.BENEFICIAL, 8900346) {
+         public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+            return false;
+         }
+      }
+   );
 
    // smc 联动：当 smc 模组未加载时注册 smc:elbow_strike（冰红茶 datamap 引用此效果）
    public static final Holder<MobEffect> ELBOW_STRIKE = FabricLoader.getInstance().isModLoaded("smc")
