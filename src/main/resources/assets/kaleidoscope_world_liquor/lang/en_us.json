@@ -1,6 +1,5 @@
 {
   "itemGroup.kaleidoscope_world_liquor_tab": "Kaleidoscope World Liquors",
-  "itemGroup.kaleidoscope_world_liquor_furniture_tab": "Kaleidoscope World Liquors",
   "block.kaleidoscope_world_liquor.bombay_sapphire_gin": "Bombay Sapphire Gin",
   "item.kaleidoscope_world_liquor.bombay_sapphire_gin": "Bombay Sapphire Gin",
   "block.kaleidoscope_world_liquor.jack_daniel": "Jack Daniel's",
@@ -52,7 +51,6 @@
   "item.kaleidoscope_world_liquor.cola": "Cola",
   "item.kaleidoscope_world_liquor.custom_record": "Bar Music Disc",
   "block.kaleidoscope_world_liquor.wall_record": "Wall Record",
-  "jukebox_song.kaleidoscope_world_liquor.random_disc": "Plays random bar-style background music",
   "block.kaleidoscope_world_liquor.freezer": "Freezer",
   "block.kaleidoscope_world_liquor.bamboo_barrel": "Bamboo Keg",
   "fluid.kaleidoscope_world_liquor.milk": "Milk",

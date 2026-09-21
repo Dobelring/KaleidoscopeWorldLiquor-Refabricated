@@ -40,8 +40,10 @@ import org.jetbrains.annotations.NotNull;
  * 而那条路径登记的"下凳落点"是玩家入座时的站位 → 下凳会被送回原处，而不是凳子旁边。
  */
 public class ChairBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;    // 座面顶=15/16（bar/stool/base.json 顶面 y=15）。1.20.1 原值 0.65 会让腿部插进凳体，
-    // 调到座面顶脚底贴面（1.21.11/26.x 同步修改；官方 1.1.9 的 0.9 不适用本工程）。
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    /** 座面顶=15/16（bar/stool/base.json 顶面 y=15）。1.20.1 原值 0.65 会让腿部插进凳体，
+     *  调到座面顶脚底贴面（1.21.11/26.x 同步修改；官方 1.1.9 的 0.9 不适用本工程）。 */
     private static final float SIT_HEIGHT = 0.9375F;
     private static final VoxelShape SHAPE = Shapes.or(
             Block.box(2.0, 0.0, 2.0, 14.0, 1.0, 14.0),

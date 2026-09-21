@@ -12,7 +12,6 @@
     "EntityMixin",
     "CaptainGiftMixin",
     "BoatMixin",
-    "CreativeModeTabsMixin",
     "TapBlockMixin",
     "accessor.BarrelBlockEntityAccessor",
     "accessor.CreativeModeTabAccessor"

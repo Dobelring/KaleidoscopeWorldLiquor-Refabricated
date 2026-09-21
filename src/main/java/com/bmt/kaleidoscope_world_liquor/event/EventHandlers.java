@@ -66,9 +66,7 @@ public final class EventHandlers {
                 var bonemeal = player.getEffect(ModEffects.BONEMEAL_SPREADER);
                 if (bonemeal != null && bonemeal.getDuration() % 20 == 0) {
                     int amplifier = bonemeal.getAmplifier();
-                    if (bonemeal.getDuration() % 20 == 0) {
-                        spreadBonemealOnGround(player, amplifier);
-                    }
+                    spreadBonemealOnGround(player, amplifier);
                     if (bonemeal.getDuration() % 40 == 0) {
                         spreadBonemealOnPlants(player, amplifier);
                     }
