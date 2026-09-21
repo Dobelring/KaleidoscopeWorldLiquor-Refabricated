@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": "minecraft:iron_chain",
+    "L": "#c:ingots/iron",
+    "W": "minecraft:pink_carpet"
+  },
+  "pattern": [
+    "W",
+    "C",
+    "L"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:bar_stool_pink"
+  }
+}

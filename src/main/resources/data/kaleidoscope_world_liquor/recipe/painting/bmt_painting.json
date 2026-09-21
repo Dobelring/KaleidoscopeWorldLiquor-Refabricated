@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:item_frame",
+    "minecraft:bread"
+  ],
+  "result": {
+    "id": "kaleidoscope_tavern:bmt_painting"
+  }
+}

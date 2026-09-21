@@ -1,0 +1,12 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/mixology/jerk",
+  "transform": {
+    "origin": "center",
+    "rotation": [
+      0,
+      -0.83146961,
+      0,
+      -0.55557023
+    ]
+  }
+}

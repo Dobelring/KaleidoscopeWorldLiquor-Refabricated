@@ -1,0 +1,11 @@
+{
+  "type": "kaleidoscope_tavern:shaker",
+  "ingredients": [
+    "kaleidoscope_world_liquor:tonic_water",
+    "#kaleidoscope_tavern:cocktail_ingredient_white",
+    "#kaleidoscope_tavern:cocktail_ingredient_white"
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:gin_tonic"
+  }
+}

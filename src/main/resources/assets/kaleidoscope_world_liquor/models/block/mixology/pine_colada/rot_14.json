@@ -1,0 +1,12 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/mixology/pine_colada",
+  "transform": {
+    "origin": "center",
+    "rotation": [
+      0,
+      -0.38268343,
+      0,
+      -0.92387953
+    ]
+  }
+}

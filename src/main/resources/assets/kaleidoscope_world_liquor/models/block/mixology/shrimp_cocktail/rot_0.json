@@ -1,0 +1,6 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/mixology/shrimp_cocktail",
+  "transform": {
+    "origin": "center"
+  }
+}

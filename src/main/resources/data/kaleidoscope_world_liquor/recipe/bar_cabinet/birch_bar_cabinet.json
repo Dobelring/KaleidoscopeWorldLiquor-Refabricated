@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "X X",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:birch_slab"
+  },
+  "result": {
+    "id": "kaleidoscope_world_liquor:birch_bar_cabinet",
+    "count": 1
+  }
+}
