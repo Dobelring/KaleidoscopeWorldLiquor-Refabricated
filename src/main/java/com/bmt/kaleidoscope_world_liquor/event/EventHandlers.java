@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -61,6 +62,7 @@ public final class EventHandlers {
                 if (frost != null) {
                     applyFrostWalker(player, frost.getAmplifier());
                 }
+                updateCreativeFlight(player);
                 var bonemeal = player.getEffect(ModEffects.BONEMEAL_SPREADER);
                 if (bonemeal != null && bonemeal.getDuration() % 20 == 0) {
                     int amplifier = bonemeal.getAmplifier();
@@ -256,6 +258,25 @@ public final class EventHandlers {
     }
 
     /** 冰霜行者：1.21.11 的 frost_walker 是数据驱动 location_changed 效果（slots: []），手动放置 frosted ice 圆盘（原版 ReplaceDisk 语义） */
+    /**
+     * 嗨棒（creative_flight）：加 buff 只补 mayfly、不清已有飞行状态；掉 buff 只在非创造/旁观下清除。
+     * 官方 1.1.9 原样（「修复飞行buff会覆盖其他模组飞行能力的bug」）——不要自行加"记录来源"之类的改动。
+     */
+    private static void updateCreativeFlight(Player player) {
+        Abilities abilities = player.getAbilities();
+        if (player.hasEffect(ModEffects.CREATIVE_FLIGHT)) {
+            if (!abilities.mayfly) {
+                abilities.mayfly = true;
+                player.onUpdateAbilities();
+            }
+        } else if (!player.isCreative() && !player.isSpectator() && (abilities.mayfly || abilities.flying)) {
+            abilities.flying = false;
+            abilities.mayfly = false;
+            player.onUpdateAbilities();
+            player.fallDistance = 0.0F;
+        }
+    }
+
     private static void applyFrostWalker(Player player, int amplifier) {
         if (!(player.level() instanceof ServerLevel serverLevel) || !player.onGround()) {
             return;

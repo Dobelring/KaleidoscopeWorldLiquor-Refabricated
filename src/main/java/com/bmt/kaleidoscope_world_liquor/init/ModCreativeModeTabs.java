@@ -8,119 +8,133 @@ import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTabOutput;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 /**
- * 两个创造栏：酒水栏 + 家具栏。条目顺序照 1.20.1 原版。
- * 冰柜/酒柜/酒窖柜物品在第 5 步注册后加入家具栏与酒水栏。
- * 8 幅作者画加入 tavern 装饰栏（1.20.1 原版：putAfter MASTER_MARISA_PAINTING）；
- * Fabric 侧用 append/position 尾插保持原版顺序：bfxm→bmt→chen→dream→cha→rabbit→ch→qxxy。
+ * 单个创造栏（酒水 + 装饰），左侧由客户端 {@code client/creativetab/CreativeTabFilter} 提供分类过滤按钮
+ * ——1.1.9 起官方把原来的「酒水栏 + 家具栏」两个 tab 合并为一个 tab + 过滤按钮。
+ *
+ * <p>两份快照（{@link #LIQUOR_ITEMS} / {@link #FURNITURE_ITEMS}）在 displayItems 回调里重建，
+ * 过滤按钮据此整体替换创造界面的物品列表（与官方 1.1.9 同做法）。
+ *
+ * <p>8 幅作者画仍挂在 tavern 装饰栏（1.20.1 原版 putAfter MASTER_MARISA_PAINTING 同位）。
  */
 public final class ModCreativeModeTabs {
     private ModCreativeModeTabs() {
     }
 
-    private static final ResourceKey<CreativeModeTab> KALEIDOSCOPE_WORLD_LIQUOR_TAB = ResourceKey.create(
+    public static final ResourceKey<CreativeModeTab> KALEIDOSCOPE_WORLD_LIQUOR_TAB = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MOD_ID, "kaleidoscope_world_liquor_tab"));
-    private static final ResourceKey<CreativeModeTab> KALEIDOSCOPE_WORLD_LIQUOR_FURNITURE_TAB = ResourceKey.create(
-            Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MOD_ID, "kaleidoscope_world_liquor_furniture_tab"));
 
-    private static void drinks(CreativeModeTab.Output output) {
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.BOMBAY_SAPPHIRE_GIN));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.JACK_DANIEL));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.SMIRNOFF_RED_VODKA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.ABSOLUT_VODKA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.PINA_COLADA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.MAOTAI));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.BACARDI_CARTA_BLANCA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.SPIRYT_VODKA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.SKYY_VODKA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.JOHNNIE_WALKER));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.LAFITE_1982));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.STRONGBOW));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.DASSAI));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.BAMBOO_LEAF_GREEN_LIQUOR));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.KWAS_CHLEBOWY));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.COOL_TEA));
-        output.accept(BottleBlockItem.getMaxLevelDrink(ModItems.SOUR_PLUM));
-        output.accept(ModItems.COLA);
-        output.accept(ModItems.TONIC_WATER);
-        output.accept(ModItems.JERK);
-        output.accept(ModItems.SHRIMP_COOKTAIL);
-        output.accept(ModItems.AROUND_THE_WORLD);
-        output.accept(ModItems.LONG_ISLAND_ICED_TEA);
-        output.accept(ModItems.PINE_COLADA);
-        output.accept(ModItems.GIN_TONIC);
-        output.accept(ModItems.FREEZER);
-        output.accept(ModItems.CUSTOM_RECORD);
-        // 玩偶（1.21.11 无 doll 模组，代注册进酒水栏）
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_0")));
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_1")));
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_2")));
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_3")));
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_4")));
-        output.accept(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(PortHelper.createItemId("doll_5")));
-        // twilight 缺席时，联动食物由本模组代注册并进酒水栏（第 12 步接 KTItems）
-        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("kaleidoscope_twilight")) {
-            output.accept(KTItems.LIANGSHAN_ICE_CONE);
-            output.accept(KTItems.KITA_STUFFED_CRISP);
-            output.accept(KTItems.POCHI_PUDDING);
-            output.accept(KTItems.MAGIC_CRISPY_CORNER);
-        }
-        // smc 冰红茶照 1.20.1/1.21.1：创造栏给最高品质（否则无 tooltip 品质/buff、喝了无效果）
-        output.accept(com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
+    /** 过滤按钮用的分类快照：displayItems 回调里先 clear 再填充 */
+    public static final NonNullList<ItemStack> LIQUOR_ITEMS = NonNullList.create();
+    public static final NonNullList<ItemStack> FURNITURE_ITEMS = NonNullList.create();
+
+    private static void accept(CreativeModeTab.Output output, NonNullList<ItemStack> categoryItems, ItemStack stack) {
+        output.accept(stack);
+        categoryItems.add(stack.copy());
     }
 
-    private static void furniture(CreativeModeTab.Output output) {
-        output.accept(ModItems.BAR_STOOL_WHITE);
-        output.accept(ModItems.BAR_STOOL_LIGHT_GRAY);
-        output.accept(ModItems.BAR_STOOL_GRAY);
-        output.accept(ModItems.BAR_STOOL_BLACK);
-        output.accept(ModItems.BAR_STOOL_BROWN);
-        output.accept(ModItems.BAR_STOOL_RED);
-        output.accept(ModItems.BAR_STOOL_ORANGE);
-        output.accept(ModItems.BAR_STOOL_YELLOW);
-        output.accept(ModItems.BAR_STOOL_LIME);
-        output.accept(ModItems.BAR_STOOL_GREEN);
-        output.accept(ModItems.BAR_STOOL_CYAN);
-        output.accept(ModItems.BAR_STOOL_LIGHT_BLUE);
-        output.accept(ModItems.BAR_STOOL_BLUE);
-        output.accept(ModItems.BAR_STOOL_PURPLE);
-        output.accept(ModItems.BAR_STOOL_MAGENTA);
-        output.accept(ModItems.BAR_STOOL_PINK);
-        output.accept(ModItems.OAK_BAR_CABINET);
-        output.accept(ModItems.OAK_CELLAR_CABINET);
-        output.accept(ModItems.BIRCH_BAR_CABINET);
-        output.accept(ModItems.BIRCH_CELLAR_CABINET);
-        output.accept(ModItems.SPRUCE_BAR_CABINET);
-        output.accept(ModItems.SPRUCE_CELLAR_CABINET);
-        output.accept(ModItems.DARK_OAK_BAR_CABINET);
-        output.accept(ModItems.DARK_OAK_CELLAR_CABINET);
-        output.accept(ModItems.CHERRY_BAR_CABINET);
-        output.accept(ModItems.CHERRY_CELLAR_CABINET);
-        // 酒柜/酒窖柜物品第 5 步加入
+    private static void accept(CreativeModeTab.Output output, NonNullList<ItemStack> categoryItems, ItemLike item) {
+        output.accept(item);
+        categoryItems.add(new ItemStack(item));
+    }
+
+    private static void addLiquorItems(CreativeModeTab.Output output) {
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.BOMBAY_SAPPHIRE_GIN));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.JACK_DANIEL));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.SMIRNOFF_RED_VODKA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.ABSOLUT_VODKA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.PINA_COLADA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.MAOTAI));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.BACARDI_CARTA_BLANCA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.SPIRYT_VODKA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.SKYY_VODKA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.JOHNNIE_WALKER));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.LAFITE_1982));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.STRONGBOW));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.DASSAI));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.BAMBOO_LEAF_GREEN_LIQUOR));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.KWAS_CHLEBOWY));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.COOL_TEA));
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModItems.SOUR_PLUM));
+        accept(output, LIQUOR_ITEMS, ModItems.COLA);
+        accept(output, LIQUOR_ITEMS, ModItems.TONIC_WATER);
+        accept(output, LIQUOR_ITEMS, ModItems.JERK);
+        accept(output, LIQUOR_ITEMS, ModItems.SHRIMP_COOKTAIL);
+        accept(output, LIQUOR_ITEMS, ModItems.AROUND_THE_WORLD);
+        accept(output, LIQUOR_ITEMS, ModItems.HIGHBALL);
+        accept(output, LIQUOR_ITEMS, ModItems.LONG_ISLAND_ICED_TEA);
+        accept(output, LIQUOR_ITEMS, ModItems.PINE_COLADA);
+        accept(output, LIQUOR_ITEMS, ModItems.GIN_TONIC);
+        accept(output, LIQUOR_ITEMS, ModItems.FREEZER);
+        accept(output, LIQUOR_ITEMS, ModItems.CUSTOM_RECORD);
+        // twilight 缺席时，联动食物由本模组代注册并进酒水栏
+        if (!FabricLoader.getInstance().isModLoaded("kaleidoscope_twilight")) {
+            accept(output, LIQUOR_ITEMS, KTItems.LIANGSHAN_ICE_CONE);
+            accept(output, LIQUOR_ITEMS, KTItems.KITA_STUFFED_CRISP);
+            accept(output, LIQUOR_ITEMS, KTItems.POCHI_PUDDING);
+            accept(output, LIQUOR_ITEMS, KTItems.MAGIC_CRISPY_CORNER);
+        }
+        // smc 冰红茶照 1.20.1/1.21.1：创造栏给最高品质（否则无 tooltip 品质/buff、喝了无效果）
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
+    }
+
+    private static void addFurnitureItems(CreativeModeTab.Output output) {
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_WHITE);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_LIGHT_GRAY);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_GRAY);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_BLACK);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_BROWN);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_RED);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_ORANGE);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_YELLOW);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_LIME);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_GREEN);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_CYAN);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_LIGHT_BLUE);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_BLUE);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_PURPLE);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_MAGENTA);
+        accept(output, FURNITURE_ITEMS, ModItems.BAR_STOOL_PINK);
+        accept(output, FURNITURE_ITEMS, ModItems.OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.OAK_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.BIRCH_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.BIRCH_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.SPRUCE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.SPRUCE_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.CHERRY_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.CHERRY_CELLAR_CABINET);
+        // 玩偶（1.21.11+ 无 doll 模组，本模组代注册）：用户拍板归"装饰"分类
+        for (int i = 0; i < 6; i++) {
+            accept(output, FURNITURE_ITEMS, BuiltInRegistries.ITEM.getValue(PortHelper.id("doll_" + i)));
+        }
     }
 
     public static void register() {
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, KALEIDOSCOPE_WORLD_LIQUOR_TAB, FabricCreativeModeTab.builder()
                 .title(Component.translatable("itemGroup.kaleidoscope_world_liquor_tab"))
                 .icon(() -> new ItemStack(ModItems.BOMBAY_SAPPHIRE_GIN))
-                .displayItems((parameters, output) -> drinks(output))
-                .build());
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, KALEIDOSCOPE_WORLD_LIQUOR_FURNITURE_TAB, FabricCreativeModeTab.builder()
-                .title(Component.translatable("itemGroup.kaleidoscope_world_liquor_furniture_tab"))
-                .icon(() -> new ItemStack(ModItems.BAR_STOOL_WHITE))
-                .displayItems((parameters, output) -> furniture(output))
+                .displayItems((parameters, output) -> {
+                    LIQUOR_ITEMS.clear();
+                    FURNITURE_ITEMS.clear();
+                    addLiquorItems(output);
+                    addFurnitureItems(output);
+                })
                 .build());
         // 8 幅作者画挂在 tavern 的 MASTER_MARISA_PAINTING 之后（1.20.1 原版 putAfter 同位）。
-        // 26.1.2 CreativeModeTabEvents.modifyOutputEvent + FabricCreativeModeTabOutput.insertAfter。
         ResourceKey<CreativeModeTab> tavernDecoTab = ResourceKey.create(
                 Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath("kaleidoscope_tavern", "tavern_deco"));
         CreativeModeTabEvents.modifyOutputEvent(tavernDecoTab).register(entries ->

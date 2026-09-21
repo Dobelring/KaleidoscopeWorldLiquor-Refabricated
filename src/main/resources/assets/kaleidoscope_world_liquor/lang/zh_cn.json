@@ -42,6 +42,8 @@
   "block.kaleidoscope_world_liquor.shrimp_cocktail": "鲜虾鸡尾酒",
   "item.kaleidoscope_world_liquor.shrimp_cocktail": "鲜虾鸡尾酒",
   "block.kaleidoscope_world_liquor.around_the_world": "环游世界",
+  "block.kaleidoscope_world_liquor.highball": "嗨棒",
+  "item.kaleidoscope_world_liquor.highball": "嗨棒",
   "item.kaleidoscope_world_liquor.around_the_world": "环游世界",
   "block.kaleidoscope_world_liquor.long_island_iced_tea": "长岛冰茶",
   "item.kaleidoscope_world_liquor.long_island_iced_tea": "长岛冰茶",
@@ -153,6 +155,7 @@
   "effect.kaleidoscope_world_liquor.respawn": "睁眼便身处熟悉居所",
   "effect.kaleidoscope_world_liquor.double_damage": "重斩",
   "effect.kaleidoscope_world_liquor.double_damage.description": "概率造成双倍伤害",
+  "effect.kaleidoscope_world_liquor.creative_flight": "那个，我也想喝喝看",
   "effect.kaleidoscope_world_liquor.continuous_heal": "瞬间治疗",
   "kaleidoscope_world_liquor.ponder.freezer.header": "冰柜",
   "kaleidoscope_world_liquor.ponder.freezer.text_1": "潜行右键冰柜，打开冰柜盖子",
@@ -241,5 +244,7 @@
   "tag.kaleidoscope_tavern.cocktail_ingredient_red": "红色调酒原料",
   "tag.kaleidoscope_tavern.cocktail_ingredient_white": "白色调酒原料",
   "tag.kaleidoscope_tavern.cocktail_ingredient_yellow": "黄色调酒原料",
+  "gui.kaleidoscope_world_liquor.filter.liquor": "酒水",
+  "gui.kaleidoscope_world_liquor.filter.furniture": "装饰",
   "emi.category.kaleidoscope_world_liquor.freezer": "冰柜"
 }

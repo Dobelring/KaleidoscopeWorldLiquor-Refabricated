@@ -1,6 +1,7 @@
 package com.bmt.kaleidoscope_world_liquor.init;
 
 import com.bmt.kaleidoscope_world_liquor.item.BottledDrinkItem;
+import com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem;
 import com.bmt.kaleidoscope_world_liquor.util.PortHelper;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.CocktailBlockItem;
@@ -81,8 +82,8 @@ public final class ModItems {
     public static final Item DASSAI = registerItemViaBlock(ModBlocks.DASSAI, DrinkBlockItem::new);
     public static final Item KWAS_CHLEBOWY = registerItemViaBlock(ModBlocks.KWAS_CHLEBOWY, DrinkBlockItem::new);
     public static final Item BAMBOO_LEAF_GREEN_LIQUOR = registerItemViaBlock(ModBlocks.BAMBOO_LEAF_GREEN_LIQUOR, DrinkBlockItem::new);
-    public static final Item COOL_TEA = registerItemViaBlock(ModBlocks.COOL_TEA, DrinkBlockItem::new);
-    public static final Item SOUR_PLUM = registerItemViaBlock(ModBlocks.SOUR_PLUM, DrinkBlockItem::new);
+    public static final Item COOL_TEA = registerItemViaBlock(ModBlocks.COOL_TEA, (block, properties) -> new CustomDrinkItem.CoolTea(block));
+    public static final Item SOUR_PLUM = registerItemViaBlock(ModBlocks.SOUR_PLUM, (block, properties) -> new CustomDrinkItem.SourPlum(block));
 
     // ========== cola / tonic_water（BottledDrinkItem 饮用 + UseRemainder 还瓶） ==========
     public static final Item COLA = registerItem("cola",
@@ -101,9 +102,10 @@ public final class ModItems {
                             .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.REGENERATION, 300), 1.0F))
                             .build()));
 
-    // ========== 6 鸡尾酒 ==========
+    // ========== 7 鸡尾酒 ==========
     public static final Item JERK = registerItemViaBlock(ModBlocks.JERK, CocktailBlockItem::new);
     public static final Item AROUND_THE_WORLD = registerItemViaBlock(ModBlocks.AROUND_THE_WORLD, CocktailBlockItem::new);
+    public static final Item HIGHBALL = registerItemViaBlock(ModBlocks.HIGHBALL, CocktailBlockItem::new);
     public static final Item LONG_ISLAND_ICED_TEA = registerItemViaBlock(ModBlocks.LONG_ISLAND_ICED_TEA, CocktailBlockItem::new);
     public static final Item SHRIMP_COOKTAIL = registerItemViaBlock(ModBlocks.SHRIMP_COOKTAIL, CocktailBlockItem::new);
     public static final Item PINE_COLADA = registerItemViaBlock(ModBlocks.PINE_COLADA, CocktailBlockItem::new);

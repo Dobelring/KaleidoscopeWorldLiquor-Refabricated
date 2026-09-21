@@ -42,6 +42,8 @@
   "block.kaleidoscope_world_liquor.shrimp_cocktail": "Shrimp Cocktail",
   "item.kaleidoscope_world_liquor.shrimp_cocktail": "Shrimp Cocktail",
   "block.kaleidoscope_world_liquor.around_the_world": "Around the World",
+  "block.kaleidoscope_world_liquor.highball": "Highball",
+  "item.kaleidoscope_world_liquor.highball": "Highball",
   "item.kaleidoscope_world_liquor.around_the_world": "Around the World",
   "block.kaleidoscope_world_liquor.long_island_iced_tea": "Long Island Ice Tea",
   "item.kaleidoscope_world_liquor.long_island_iced_tea": "Long Island Ice Tea",
@@ -116,6 +118,7 @@
   "item.kaleidoscope_world_liquor.tonic_water.tooltip.back": "White",
   "block.kaleidoscope_world_liquor.gin_tonic": "Gin Tonic",
   "item.kaleidoscope_world_liquor.gin_tonic": "Gin Tonic",
+  "effect.kaleidoscope_world_liquor.creative_flight": "Creative Flight",
   "effect.kaleidoscope_world_liquor.continuous_heal": "Instant Regeneration",
   "tooltip.kaleidoscope_doll.doll.contributor_0": "Creator: Old Dream",
   "tooltip.kaleidoscope_doll.doll.contributor_1": "Creator: White Bun",
@@ -242,5 +245,7 @@
   "tag.kaleidoscope_tavern.cocktail_ingredient_red": "Red Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_white": "White Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_yellow": "Yellow Cocktail Ingredient",
+  "gui.kaleidoscope_world_liquor.filter.liquor": "Liquor",
+  "gui.kaleidoscope_world_liquor.filter.furniture": "Furniture",
   "emi.category.kaleidoscope_world_liquor.freezer": "Freezer"
 }

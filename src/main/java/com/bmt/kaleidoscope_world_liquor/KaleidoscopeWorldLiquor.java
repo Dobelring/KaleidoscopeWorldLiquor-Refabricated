@@ -4,7 +4,6 @@ import com.bmt.kaleidoscope_world_liquor.config.ModConfigs;
 import com.bmt.kaleidoscope_world_liquor.event.BrewCommands;
 import com.bmt.kaleidoscope_world_liquor.event.DollInteractionEvents;
 import com.bmt.kaleidoscope_world_liquor.event.EventHandlers;
-import com.bmt.kaleidoscope_world_liquor.event.FreezerTapBehavior;
 import com.bmt.kaleidoscope_world_liquor.event.MiscEvents;
 import com.bmt.kaleidoscope_world_liquor.event.MusicDiscEvents;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
@@ -13,7 +12,6 @@ import com.bmt.kaleidoscope_world_liquor.init.DollIntegration;
 import com.bmt.kaleidoscope_world_liquor.init.ModCreativeModeTabs;
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
 import com.bmt.kaleidoscope_world_liquor.init.ModEnchantments;
-import com.bmt.kaleidoscope_world_liquor.init.ModEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModFluids;
 import com.bmt.kaleidoscope_world_liquor.init.ModItems;
 import com.bmt.kaleidoscope_world_liquor.init.ModPaintings;
@@ -39,7 +37,6 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         ModBlocks.register();
         ModBlocks.registerDrinkBeSupportedBlocks();
         ModPaintings.register();
-        ModEntities.register();
         SMCItems.register();
         KTItems.register();
         ModItems.register();
@@ -59,7 +56,6 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         MusicDiscEvents.register();
         MiscEvents.registerBrewAccelerator();
         BrewCommands.register();
-        FreezerTapBehavior.register();
         LOGGER.info("[Kaleidoscope World Liquor] initialized");
     }
 

@@ -1,6 +1,7 @@
 package com.bmt.kaleidoscope_world_liquor.init.smc;
 
 import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
+import com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.DrinkBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem;
 import net.minecraft.core.Registry;
@@ -33,7 +34,7 @@ public final class SMCItems {
 
     public static final Item SMC_ICE_TEA_ITEM = Registry.register(BuiltInRegistries.ITEM,
             ICE_TEA_ITEM_ID,
-            withBlock(new DrinkBlockItem(SMC_ICE_TEA_BLOCK, new Item.Properties().useBlockDescriptionPrefix().stacksTo(16).setId(ICE_TEA_ITEM_ID))));
+            withBlock(new CustomDrinkItem.IceTea(SMC_ICE_TEA_BLOCK)));
 
     private static Item withBlock(DrinkBlockItem item) {
         item.registerBlocks(Item.BY_BLOCK, item);
