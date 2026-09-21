@@ -29,12 +29,12 @@ import java.util.Map;
 /**
  * 唱片贴墙放置（潜行右键任意墙面 → wall_record）与唱片 tooltip 追加。
  * 1.21.11 无 RecordItem：用 JUKEBOX_PLAYABLE 组件判定唱片。
- * 原版 16 首唱片对应 0-15 贴图，其余（含 custom_record）随机 16-21。
+ * 原版 19 首唱片对应 0-18 贴图，其余（含 custom_record）随机 19-24。
  */
 public final class MusicDiscEvents {
     private static final Map<Identifier, Integer> VANILLA_RECORD_MAP = new HashMap<>();
     private static final int RANDOM_MODEL_COUNT = 6;
-    private static final int RANDOM_MODEL_START_INDEX = 16;
+    private static final int RANDOM_MODEL_START_INDEX = 19;
     private static final RandomSource RANDOM = RandomSource.create();
 
     private MusicDiscEvents() {
@@ -57,6 +57,10 @@ public final class MusicDiscEvents {
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_pigstep"), 13);
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_5"), 14);
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_relic"), 15);
+        // 1.21 新增的 3 首（官方 1.1.9 的映射顺序：creator=16 / precipice=17 / creator_music_box=18）
+        VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_creator"), 16);
+        VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_precipice"), 17);
+        VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_creator_music_box"), 18);
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (!player.isCrouching() || hand != InteractionHand.MAIN_HAND) {

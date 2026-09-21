@@ -26,13 +26,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * 墙上唱片：22 个随机模型变体（model_index 由第 9 步 MusicDiscEvents 放置时写入）。
+ * 墙上唱片：25 个模型变体（model_index 由第 9 步 MusicDiscEvents 放置时写入）。
+ * 0..15 = 原版老 16 首，16..18 = 1.21 新增 3 首，19..24 = 模组唱片随机通用图案。
  * 空手右键取回唱片；掉落表由 LootParams 里的 BE 附加（第 9 步 mixin 掉落表或直接
  * 由 here 的 getDrops 附加——1.20.1 原版即覆写 getDrops）。
  */
 public class WallRecordBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 21);
+    public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 24);
 
     private static final VoxelShape NORTH_WALL_SHAPE = Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0);
     private static final VoxelShape SOUTH_WALL_SHAPE = Block.box(1.0, 1.0, 15.0, 15.0, 15.0, 16.0);

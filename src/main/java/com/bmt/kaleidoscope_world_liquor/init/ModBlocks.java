@@ -65,7 +65,7 @@ public final class ModBlocks {
                 .build(), BlockBehaviour.Properties.of());
     }
 
-    // ========== 18 名酒（DrinkBlock 复用前置 tavern 类，liquor ns 注册） ==========
+    // ========== 15 名酒（DrinkBlock 复用前置 tavern 类，liquor ns 注册） ==========
     public static final Block BOMBAY_SAPPHIRE_GIN = drinkReg("bombay_sapphire_gin", 16.0, 0.0);
     public static final Block JACK_DANIEL = drinkReg("jack_daniel", 13.0, 1.0);
     public static final Block SMIRNOFF_RED_VODKA = drinkReg("smirnoff_red_vodka", 16.0, 0.0);
@@ -129,7 +129,7 @@ public final class ModBlocks {
     public static final Block BAR_STOOL_MAGENTA = stoolReg("bar_stool_magenta");
     public static final Block BAR_STOOL_PINK = stoolReg("bar_stool_pink");
 
-    // ========== 6 鸡尾酒（CocktailBlock 复用前置 tavern 类） ==========
+    // ========== 7 鸡尾酒（CocktailBlock 复用前置 tavern 类） ==========
     private static Block cocktailReg(String name) {
         return commonReg(name, CocktailBlock::new, BlockBehaviour.Properties.of());
     }
@@ -227,7 +227,7 @@ public final class ModBlocks {
      * 复用 tavern DrinkBlock 的方块必须登记进 tavern 的 DRINK_BE 类型：
      * 26.1.2 Fabric API 在 BlockEntityType 上提供 addValidBlock(default 方法)，
      * 直接把 liquor 方块加入支持集（tavern 26.1.2 构造时写死 24 方块，无 addSupportedBlock）。
-     * 共 18 方块：16 名酒 + cool_tea/sour_plum 两罐 + smc:ice_tea。
+     * 共 18 方块：15 名酒 + cool_tea/sour_plum 两罐 + smc:ice_tea。
      */
     public static void registerDrinkBeSupportedBlocks() {
         var drinkBe = com.github.ysbbbbbb.kaleidoscopetavern.init.ModBlocks.DRINK_BE;
