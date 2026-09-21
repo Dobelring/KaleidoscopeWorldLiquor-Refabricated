@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
     "C": "minecraft:iron_chain",
     "L": "#c:ingots/iron",
@@ -13,6 +12,5 @@
   ],
   "result": {
     "id": "kaleidoscope_world_liquor:bar_stool_light_blue"
-  },
-  "show_notification": true
+  }
 }

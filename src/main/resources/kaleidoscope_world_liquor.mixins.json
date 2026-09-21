@@ -8,12 +8,14 @@
   },
   "mixins": [
     "DoubleDamageMixin",
-    "UseItemEventsMixin",
     "LivingEntityMixin",
     "EntityMixin",
     "CaptainGiftMixin",
     "BoatMixin",
-    "accessor.BarrelBlockEntityAccessor"
+    "CreativeModeTabsMixin",
+    "TapBlockMixin",
+    "accessor.BarrelBlockEntityAccessor",
+    "accessor.CreativeModeTabAccessor"
   ],
   "client": [
     "CameraMixin",
@@ -21,7 +23,8 @@
     "ClientPlayerMixin",
     "GuiGraphicsMixin",
     "EntityRendererMixin",
-    "ReverseGravityStrafeMixin"
+    "ReverseGravityStrafeMixin",
+    "CreativeModeInventoryScreenMixin"
   ],
   "server": [],
   "injectors": {

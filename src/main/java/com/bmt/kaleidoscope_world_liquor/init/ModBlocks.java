@@ -103,10 +103,11 @@ public final class ModBlocks {
     public static final Block COOL_TEA = canDrinkReg("cool_tea", 14.0);
     public static final Block SOUR_PLUM = canDrinkReg("sour_plum", 14.0);
 
-    // ========== 16 吧台椅 ==========
+    // ========== 16 吧台椅（1.1.9 起属性统一：黑 + 金属音效 + 1.0F 硬度） ==========
     private static Block stoolReg(String name) {
         return commonReg(name, ChairBlock::new, BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_BLACK)
+                .sound(SoundType.METAL)
                 .strength(1.0F)
                 .noOcclusion());
     }
@@ -135,6 +136,7 @@ public final class ModBlocks {
 
     public static final Block JERK = cocktailReg("jerk");
     public static final Block AROUND_THE_WORLD = cocktailReg("around_the_world");
+    public static final Block HIGHBALL = cocktailReg("highball");
     public static final Block LONG_ISLAND_ICED_TEA = cocktailReg("long_island_iced_tea");
     public static final Block SHRIMP_COOKTAIL = cocktailReg("shrimp_cocktail");
     public static final Block PINE_COLADA = cocktailReg("pine_colada");
@@ -150,7 +152,7 @@ public final class ModBlocks {
     // ========== 墙上唱片（无 BlockItem；唱片由 MusicDiscEvents 放置，第 9 步接） ==========
     public static final Block WALL_RECORD = commonReg("wall_record", WallRecordBlock::new, BlockBehaviour.Properties.of()
             .noCollision()
-            .instabreak()
+            .strength(0.1F)
             .sound(SoundType.STONE)
             .pushReaction(PushReaction.DESTROY));
 

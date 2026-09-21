@@ -190,7 +190,7 @@ public class BarCellarCabinetBlock extends AbstractStorageBlock {
     protected @NotNull InteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         if (level.isClientSide()) {
             // 仅拦本模组自定义音效饮品；酒柜方块等照常 PASS 保放置预测与音效
-            return com.bmt.kaleidoscope_world_liquor.event.DrinkingSounds.hasCustomDrinkSound(stack)
+            return com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.hasCustomSound(stack)
                     ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
         return this.handleUse(state, level, pos, player, hand, hitResult);

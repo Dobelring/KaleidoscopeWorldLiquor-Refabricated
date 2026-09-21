@@ -98,7 +98,7 @@ public class BarCabinetBlock extends BaseEntityBlock {
         if (level.isClientSide()) {
             // 仅拦本模组自定义喝声音效的饮品，防止其 use 流程启动；
             // 其余物品（含放置酒柜方块）照常 PASS 走原版预测与放置音效
-            return com.bmt.kaleidoscope_world_liquor.event.DrinkingSounds.hasCustomDrinkSound(stack)
+            return com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.hasCustomSound(stack)
                     ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
 
