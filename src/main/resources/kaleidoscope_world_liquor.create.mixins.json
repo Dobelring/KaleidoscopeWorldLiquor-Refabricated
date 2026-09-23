@@ -1,0 +1,19 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.bmt.kaleidoscope_world_liquor.mixin.create",
+  "compatibilityLevel": "JAVA_25",
+  "plugin": "com.bmt.kaleidoscope_world_liquor.mixin.ContraptionMixinConfigPlugin",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
+  "mixins": [
+    "AbstractContraptionSeatMixin",
+    "ContraptionAssemblyMixin",
+    "ContraptionDisassemblyMixin",
+    "accessor.ContraptionAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

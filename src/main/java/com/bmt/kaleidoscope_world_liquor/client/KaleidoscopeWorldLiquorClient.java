@@ -21,6 +21,11 @@ public final class KaleidoscopeWorldLiquorClient implements ClientModInitializer
         ClientRenderers.register();
         com.bmt.kaleidoscope_world_liquor.client.event.HostileDetectionHandler.register();
         com.bmt.kaleidoscope_world_liquor.client.render.TreasureSenseRenderer.register();
+        // Create 联动：冰柜 Ponder 场景 + 装置数据同步包的接收（未装 create 时整块跳过）
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("create")) {
+            com.bmt.kaleidoscope_world_liquor.compat.ponder.init.PonderCompat.init();
+            com.bmt.kaleidoscope_world_liquor.compat.create.network.ContraptionNetwork.Clientside.register();
+        }
     }
 
     private void registerFluidRender() {

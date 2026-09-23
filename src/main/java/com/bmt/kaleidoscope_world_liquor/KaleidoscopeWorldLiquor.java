@@ -54,6 +54,12 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         EventHandlers.register();
         DollInteractionEvents.register();
         MusicDiscEvents.register();
+
+        // Create 联动：装置上的酒柜/酒窖柜/吧台凳交互 + 载荷注册（未装 create 时整块跳过）
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("create")) {
+            com.bmt.kaleidoscope_world_liquor.compat.create.CreateCompat.register();
+            com.bmt.kaleidoscope_world_liquor.compat.create.network.ContraptionNetwork.register();
+        }
         MiscEvents.registerBrewAccelerator();
         BrewCommands.register();
         LOGGER.info("[Kaleidoscope World Liquor] initialized");
