@@ -46,6 +46,10 @@ dependencies {
 	// Kaleidoscope Tavern (前置酒馆) — 文件依赖
 	implementation files("libs/kaleidoscope_tavern-1.2.0.9-fabric+mc26.3.jar")
 
+	// Create Fly（第三方 Create Fabric 移植）软联动：装置上的酒柜/吧台凳交互 + 冰柜 Ponder 场景。
+	// 入口点按 isModLoaded("create") 守卫，未装 Create 时相关类不会被加载。
+	compileOnly "maven.modrinth:create-fly:${project.create_version}"
+
 	// JEI（compileOnly）
 	compileOnly "mezz.jei:jei-${project.jei_version}"
 	// Jade

@@ -336,6 +336,23 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         return this.outputTexture;
     }
 
+    // 供 Ponder 讲解场景演示用（官方同名类的冰柜场景同样直接改方块实体状态）
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public void setMaxProgress(int maxProgress) {
+        this.maxProgress = maxProgress;
+    }
+
+    public void setOutputCount(int outputCount) {
+        this.outputCount = outputCount;
+    }
+
+    public void setOutputTexture(@Nullable Identifier outputTexture) {
+        this.outputTexture = outputTexture;
+    }
+
     @Override
     protected void saveAdditional(@NotNull ValueOutput valueOutput) {
         super.saveAdditional(valueOutput);
