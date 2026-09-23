@@ -104,6 +104,18 @@ public class ModCreativeModeTabs {
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.DARK_OAK_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CHERRY_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CHERRY_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.JUNGLE_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.JUNGLE_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.ACACIA_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.ACACIA_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.MANGROVE_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.MANGROVE_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BAMBOO_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BAMBOO_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CRIMSON_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CRIMSON_CELLAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.WARPED_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.WARPED_CELLAR_CABINET);
       // 玩偶属于装饰类（官方无此内容，分类由移植决定）
       KaleidoscopeDollIntegration.getDollItems().values().forEach(item -> accept(output, FURNITURE_ITEMS, (ItemLike)item));
    }

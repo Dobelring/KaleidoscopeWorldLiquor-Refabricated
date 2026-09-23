@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "X X",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:warped_slab"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "kaleidoscope_world_liquor:warped_bar_cabinet"
+  }
+}

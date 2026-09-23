@@ -49,7 +49,12 @@ public class BarCellarCabinetBlock extends AbstractStorageBlock {
    private static final VoxelShape FULL_SAFE_SHAPE = Block.box(0.001, 0.001, 0.001, 15.999, 15.999, 15.999);
 
    public BarCellarCabinetBlock() {
-      super(Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(SoundType.WOOD).noOcclusion().ignitedByLava());
+      this(SoundType.WOOD);
+   }
+
+   // 按木种指定音效：放置/打碎/踩踏/击打音效都取自 SoundType
+   public BarCellarCabinetBlock(SoundType sound) {
+      super(Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(sound).noOcclusion().ignitedByLava());
       this.registerDefaultState(
          (BlockState)((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH)).setValue(POWERED, false))
             .setValue(com.github.ysbbbbbb.kaleidoscopetavern.block.brew.BarCabinetBlock.POSITION, PositionType.SINGLE)

@@ -21,7 +21,13 @@ public class ModBlockEntities {
          ModBlocks.BIRCH_BAR_CABINET,
          ModBlocks.SPRUCE_BAR_CABINET,
          ModBlocks.DARK_OAK_BAR_CABINET,
-         ModBlocks.CHERRY_BAR_CABINET
+         ModBlocks.CHERRY_BAR_CABINET,
+         ModBlocks.JUNGLE_BAR_CABINET,
+         ModBlocks.ACACIA_BAR_CABINET,
+         ModBlocks.MANGROVE_BAR_CABINET,
+         ModBlocks.BAMBOO_BAR_CABINET,
+         ModBlocks.CRIMSON_BAR_CABINET,
+         ModBlocks.WARPED_BAR_CABINET
       )
       .build(null);
    public static final BlockEntityType<BarCellarCabinetBlockEntity> BAR_CELLAR_CABINET_BE = Builder.of(
@@ -30,7 +36,13 @@ public class ModBlockEntities {
          ModBlocks.BIRCH_CELLAR_CABINET,
          ModBlocks.SPRUCE_CELLAR_CABINET,
          ModBlocks.DARK_OAK_CELLAR_CABINET,
-         ModBlocks.CHERRY_CELLAR_CABINET
+         ModBlocks.CHERRY_CELLAR_CABINET,
+         ModBlocks.JUNGLE_CELLAR_CABINET,
+         ModBlocks.ACACIA_CELLAR_CABINET,
+         ModBlocks.MANGROVE_CELLAR_CABINET,
+         ModBlocks.BAMBOO_CELLAR_CABINET,
+         ModBlocks.CRIMSON_CELLAR_CABINET,
+         ModBlocks.WARPED_CELLAR_CABINET
       )
       .build(null);
 
