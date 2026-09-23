@@ -7,6 +7,8 @@ import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
 import com.github.ysbbbbbb.kaleidoscopetavern.api.blockentity.ITapBehavior;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.TapBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.init.ModParticles;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvents;
@@ -20,11 +22,24 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
+/**
+ * 龙头往冰柜注水/岩浆（对齐官方 1.1.9 的 {@code TapBlockMixin}）。
+ *
+ * <p>官方 1.1.9 把这里 4 个 {@code @Redirect} 全改成了 {@code @WrapOperation}（方法名仍是
+ * {@code kwl$redirectXxx}），本移植版此前仍停在 {@code @Redirect} 版，2026-09-23 对齐。
+ *
+ * <p><b>为什么必须是 {@code @WrapOperation}</b>：fabric-loader 0.19.3 自带 mixinextras
+ * <b>0.5.4</b>，其 {@code FactoryRedirectWrapperMixinTransformer} 会把 {@code @Redirect.at}
+ * 硬转成单个 {@code AnnotationNode}；而 loader 0.19.5 起带的 sponge-mixin 0.17.4 把
+ * {@code Redirect.at()} 的返回类型从 {@code At} 改成了 {@code At[]}，于是重新编译后 {@code at}
+ * 变成数组，0.5.4 上抛 {@code ClassCastException: ArrayList cannot be cast to AnnotationNode}，
+ * 加载 {@code TapBlock} 时直接崩游戏（0.5.5 已修）。改用 mixinextras 自己的注解后，这段代码
+ * 不再受 mixinextras 版本影响，在任何 loader 上都能跑。
+ */
 @Mixin({TapBlock.class})
 public abstract class TapBlockMixin {
-   @Redirect(
+   @WrapOperation(
       method = {"tryOpen"},
       remap = false,
       at = @At(
@@ -34,13 +49,14 @@ public abstract class TapBlockMixin {
       )
    )
    private boolean kwl$redirectIsMatchTryOpen(
-      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState
+      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState,
+      Operation<Boolean> original
    ) {
-      boolean original = behavior.isMatch(level, player, tapPos, tapState, sourceState, destinationState);
-      return original ? true : kwl$isFreezerMatch(level, tapPos, sourceState, destinationState);
+      return original.call(behavior, level, player, tapPos, tapState, sourceState, destinationState)
+         || kwl$isFreezerMatch(level, tapPos, sourceState, destinationState);
    }
 
-   @Redirect(
+   @WrapOperation(
       method = {"tryOpen"},
       remap = false,
       at = @At(
@@ -50,14 +66,15 @@ public abstract class TapBlockMixin {
       )
    )
    private ParticleOptions kwl$redirectOnStartExtract(
-      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState
+      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState,
+      Operation<ParticleOptions> original
    ) {
       return kwl$isFreezerMatch(level, tapPos, sourceState, destinationState)
          ? kwl$getParticle(sourceState)
-         : behavior.onStartExtract(level, player, tapPos, tapState, sourceState, destinationState);
+         : original.call(behavior, level, player, tapPos, tapState, sourceState, destinationState);
    }
 
-   @Redirect(
+   @WrapOperation(
       method = {"tick"},
       remap = false,
       at = @At(
@@ -67,13 +84,14 @@ public abstract class TapBlockMixin {
       )
    )
    private boolean kwl$redirectIsMatchTick(
-      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState
+      ITapBehavior behavior, Level level, @Nullable Player player, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState,
+      Operation<Boolean> original
    ) {
-      boolean original = behavior.isMatch(level, player, tapPos, tapState, sourceState, destinationState);
-      return original ? true : kwl$isFreezerMatch(level, tapPos, sourceState, destinationState);
+      return original.call(behavior, level, player, tapPos, tapState, sourceState, destinationState)
+         || kwl$isFreezerMatch(level, tapPos, sourceState, destinationState);
    }
 
-   @Redirect(
+   @WrapOperation(
       method = {"tick"},
       remap = false,
       at = @At(
@@ -83,12 +101,13 @@ public abstract class TapBlockMixin {
       )
    )
    private void kwl$redirectOnEndExtract(
-      ITapBehavior behavior, Level level, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState
+      ITapBehavior behavior, Level level, BlockPos tapPos, BlockState tapState, BlockState sourceState, BlockState destinationState,
+      Operation<Void> original
    ) {
       if (kwl$isFreezerMatch(level, tapPos, sourceState, destinationState)) {
          kwl$fillFreezer(level, tapPos, sourceState, destinationState);
       } else {
-         behavior.onEndExtract(level, tapPos, tapState, sourceState, destinationState);
+         original.call(behavior, level, tapPos, tapState, sourceState, destinationState);
       }
    }
 
