@@ -156,36 +156,54 @@ public final class ModBlocks {
             .sound(SoundType.STONE)
             .pushReaction(PushReaction.POPPED));
 
-    // ========== 11 酒柜/酒窖柜（noOcclusion 必须：贴面取光不能走整块遮挡，否则联排内侧发黑——1.20.1 同款） ==========
-    private static Block barCabinetReg(String name) {
+    // ========== 27 酒柜/酒窖柜（noOcclusion 必须：贴面取光不能走整块遮挡，否则联排内侧发黑——1.20.1 同款） ==========
+    // sound 按木种对齐原版木板/竹板（放置/打碎/踩踏/击打音效都来自 SoundType）：
+    // 实测 26.3 原版 jungle/acacia/mangrove/pale_oak/poplar 台阶 = WOOD，bamboo = BAMBOO_WOOD，crimson/warped = NETHER_WOOD。
+    private static Block barCabinetReg(String name, SoundType sound) {
         return commonReg(name, BarCabinetBlock::new, BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(2.0F, 3.0F)
-                .sound(SoundType.WOOD)
+                .sound(sound)
                 .noOcclusion()
                 .ignitedByLava());
     }
 
-    private static Block cellarCabinetReg(String name) {
+    private static Block cellarCabinetReg(String name, SoundType sound) {
         return commonReg(name, BarCellarCabinetBlock::new, BlockBehaviour.Properties.of()
                 .mapColor(MapColor.WOOD)
                 .strength(2.0F, 3.0F)
-                .sound(SoundType.WOOD)
+                .sound(sound)
                 .noOcclusion()
                 .ignitedByLava());
     }
 
-    public static final Block OAK_BAR_CABINET = barCabinetReg("oak_bar_cabinet");
-    public static final Block OAK_GLASS_BAR_CABINET = barCabinetReg("oak_glass_bar_cabinet");
-    public static final Block BIRCH_BAR_CABINET = barCabinetReg("birch_bar_cabinet");
-    public static final Block SPRUCE_BAR_CABINET = barCabinetReg("spruce_bar_cabinet");
-    public static final Block DARK_OAK_BAR_CABINET = barCabinetReg("dark_oak_bar_cabinet");
-    public static final Block CHERRY_BAR_CABINET = barCabinetReg("cherry_bar_cabinet");
-    public static final Block OAK_CELLAR_CABINET = cellarCabinetReg("oak_cellar_cabinet");
-    public static final Block BIRCH_CELLAR_CABINET = cellarCabinetReg("birch_cellar_cabinet");
-    public static final Block SPRUCE_CELLAR_CABINET = cellarCabinetReg("spruce_cellar_cabinet");
-    public static final Block DARK_OAK_CELLAR_CABINET = cellarCabinetReg("dark_oak_cellar_cabinet");
-    public static final Block CHERRY_CELLAR_CABINET = cellarCabinetReg("cherry_cellar_cabinet");
+    public static final Block OAK_BAR_CABINET = barCabinetReg("oak_bar_cabinet", SoundType.WOOD);
+    public static final Block OAK_GLASS_BAR_CABINET = barCabinetReg("oak_glass_bar_cabinet", SoundType.WOOD);
+    public static final Block BIRCH_BAR_CABINET = barCabinetReg("birch_bar_cabinet", SoundType.WOOD);
+    public static final Block SPRUCE_BAR_CABINET = barCabinetReg("spruce_bar_cabinet", SoundType.WOOD);
+    public static final Block DARK_OAK_BAR_CABINET = barCabinetReg("dark_oak_bar_cabinet", SoundType.WOOD);
+    public static final Block CHERRY_BAR_CABINET = barCabinetReg("cherry_bar_cabinet", SoundType.WOOD);
+    public static final Block OAK_CELLAR_CABINET = cellarCabinetReg("oak_cellar_cabinet", SoundType.WOOD);
+    public static final Block BIRCH_CELLAR_CABINET = cellarCabinetReg("birch_cellar_cabinet", SoundType.WOOD);
+    public static final Block SPRUCE_CELLAR_CABINET = cellarCabinetReg("spruce_cellar_cabinet", SoundType.WOOD);
+    public static final Block DARK_OAK_CELLAR_CABINET = cellarCabinetReg("dark_oak_cellar_cabinet", SoundType.WOOD);
+    public static final Block CHERRY_CELLAR_CABINET = cellarCabinetReg("cherry_cellar_cabinet", SoundType.WOOD);
+    public static final Block JUNGLE_BAR_CABINET = barCabinetReg("jungle_bar_cabinet", SoundType.WOOD);
+    public static final Block ACACIA_BAR_CABINET = barCabinetReg("acacia_bar_cabinet", SoundType.WOOD);
+    public static final Block MANGROVE_BAR_CABINET = barCabinetReg("mangrove_bar_cabinet", SoundType.WOOD);
+    public static final Block PALE_OAK_BAR_CABINET = barCabinetReg("pale_oak_bar_cabinet", SoundType.WOOD);
+    public static final Block JUNGLE_CELLAR_CABINET = cellarCabinetReg("jungle_cellar_cabinet", SoundType.WOOD);
+    public static final Block ACACIA_CELLAR_CABINET = cellarCabinetReg("acacia_cellar_cabinet", SoundType.WOOD);
+    public static final Block MANGROVE_CELLAR_CABINET = cellarCabinetReg("mangrove_cellar_cabinet", SoundType.WOOD);
+    public static final Block PALE_OAK_CELLAR_CABINET = cellarCabinetReg("pale_oak_cellar_cabinet", SoundType.WOOD);
+    public static final Block POPLAR_BAR_CABINET = barCabinetReg("poplar_bar_cabinet", SoundType.WOOD);
+    public static final Block BAMBOO_BAR_CABINET = barCabinetReg("bamboo_bar_cabinet", SoundType.BAMBOO_WOOD);
+    public static final Block CRIMSON_BAR_CABINET = barCabinetReg("crimson_bar_cabinet", SoundType.NETHER_WOOD);
+    public static final Block WARPED_BAR_CABINET = barCabinetReg("warped_bar_cabinet", SoundType.NETHER_WOOD);
+    public static final Block POPLAR_CELLAR_CABINET = cellarCabinetReg("poplar_cellar_cabinet", SoundType.WOOD);
+    public static final Block BAMBOO_CELLAR_CABINET = cellarCabinetReg("bamboo_cellar_cabinet", SoundType.BAMBOO_WOOD);
+    public static final Block CRIMSON_CELLAR_CABINET = cellarCabinetReg("crimson_cellar_cabinet", SoundType.NETHER_WOOD);
+    public static final Block WARPED_CELLAR_CABINET = cellarCabinetReg("warped_cellar_cabinet", SoundType.NETHER_WOOD);
 
     // ========== 牛奶流体方块（ModFluids.register() 须先于本类静态加载） ==========
     public static final Block MILK_LIQUID_BLOCK = commonReg("milk_liquid",

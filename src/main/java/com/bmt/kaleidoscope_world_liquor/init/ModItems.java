@@ -129,7 +129,7 @@ public final class ModItems {
     public static final Item BAR_STOOL_MAGENTA = registerItemViaBlock(ModBlocks.BAR_STOOL_MAGENTA);
     public static final Item BAR_STOOL_PINK = registerItemViaBlock(ModBlocks.BAR_STOOL_PINK);
 
-    // ========== 11 酒柜/酒窖柜 + 冰柜 ==========
+    // ========== 27 酒柜/酒窖柜 + 冰柜 ==========
     public static final Item OAK_BAR_CABINET = registerItemViaBlock(ModBlocks.OAK_BAR_CABINET);
     public static final Item OAK_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.OAK_GLASS_BAR_CABINET);
     public static final Item BIRCH_BAR_CABINET = registerItemViaBlock(ModBlocks.BIRCH_BAR_CABINET);
@@ -141,6 +141,22 @@ public final class ModItems {
     public static final Item SPRUCE_CELLAR_CABINET = registerItemViaBlock(ModBlocks.SPRUCE_CELLAR_CABINET);
     public static final Item DARK_OAK_CELLAR_CABINET = registerItemViaBlock(ModBlocks.DARK_OAK_CELLAR_CABINET);
     public static final Item CHERRY_CELLAR_CABINET = registerItemViaBlock(ModBlocks.CHERRY_CELLAR_CABINET);
+    public static final Item JUNGLE_BAR_CABINET = registerItemViaBlock(ModBlocks.JUNGLE_BAR_CABINET);
+    public static final Item ACACIA_BAR_CABINET = registerItemViaBlock(ModBlocks.ACACIA_BAR_CABINET);
+    public static final Item MANGROVE_BAR_CABINET = registerItemViaBlock(ModBlocks.MANGROVE_BAR_CABINET);
+    public static final Item PALE_OAK_BAR_CABINET = registerItemViaBlock(ModBlocks.PALE_OAK_BAR_CABINET);
+    public static final Item JUNGLE_CELLAR_CABINET = registerItemViaBlock(ModBlocks.JUNGLE_CELLAR_CABINET);
+    public static final Item ACACIA_CELLAR_CABINET = registerItemViaBlock(ModBlocks.ACACIA_CELLAR_CABINET);
+    public static final Item MANGROVE_CELLAR_CABINET = registerItemViaBlock(ModBlocks.MANGROVE_CELLAR_CABINET);
+    public static final Item PALE_OAK_CELLAR_CABINET = registerItemViaBlock(ModBlocks.PALE_OAK_CELLAR_CABINET);
+    public static final Item POPLAR_BAR_CABINET = registerItemViaBlock(ModBlocks.POPLAR_BAR_CABINET);
+    public static final Item BAMBOO_BAR_CABINET = registerItemViaBlock(ModBlocks.BAMBOO_BAR_CABINET);
+    public static final Item CRIMSON_BAR_CABINET = registerItemViaBlock(ModBlocks.CRIMSON_BAR_CABINET);
+    public static final Item WARPED_BAR_CABINET = registerItemViaBlock(ModBlocks.WARPED_BAR_CABINET);
+    public static final Item POPLAR_CELLAR_CABINET = registerItemViaBlock(ModBlocks.POPLAR_CELLAR_CABINET);
+    public static final Item BAMBOO_CELLAR_CABINET = registerItemViaBlock(ModBlocks.BAMBOO_CELLAR_CABINET);
+    public static final Item CRIMSON_CELLAR_CABINET = registerItemViaBlock(ModBlocks.CRIMSON_CELLAR_CABINET);
+    public static final Item WARPED_CELLAR_CABINET = registerItemViaBlock(ModBlocks.WARPED_CELLAR_CABINET);
     public static final Item FREEZER = registerItemViaBlock(ModBlocks.FREEZER);
 
     // ========== 唱片 ==========

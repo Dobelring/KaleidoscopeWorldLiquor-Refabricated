@@ -17,6 +17,22 @@
     "kaleidoscope_tavern:chen_painting",
     "kaleidoscope_tavern:rabbit_painting",
     "kaleidoscope_tavern:ch_painting",
-    "kaleidoscope_tavern:qxxy_painting"
+    "kaleidoscope_tavern:qxxy_painting",
+    "kaleidoscope_world_liquor:jungle_bar_cabinet",
+    "kaleidoscope_world_liquor:jungle_cellar_cabinet",
+    "kaleidoscope_world_liquor:acacia_bar_cabinet",
+    "kaleidoscope_world_liquor:acacia_cellar_cabinet",
+    "kaleidoscope_world_liquor:mangrove_bar_cabinet",
+    "kaleidoscope_world_liquor:mangrove_cellar_cabinet",
+    "kaleidoscope_world_liquor:pale_oak_bar_cabinet",
+    "kaleidoscope_world_liquor:pale_oak_cellar_cabinet",
+    "kaleidoscope_world_liquor:poplar_bar_cabinet",
+    "kaleidoscope_world_liquor:poplar_cellar_cabinet",
+    "kaleidoscope_world_liquor:bamboo_bar_cabinet",
+    "kaleidoscope_world_liquor:bamboo_cellar_cabinet",
+    "kaleidoscope_world_liquor:crimson_bar_cabinet",
+    "kaleidoscope_world_liquor:crimson_cellar_cabinet",
+    "kaleidoscope_world_liquor:warped_bar_cabinet",
+    "kaleidoscope_world_liquor:warped_cellar_cabinet"
   ]
 }

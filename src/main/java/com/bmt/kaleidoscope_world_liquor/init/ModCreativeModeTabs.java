@@ -117,6 +117,22 @@ public final class ModCreativeModeTabs {
         accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.CHERRY_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.CHERRY_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.JUNGLE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.JUNGLE_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.ACACIA_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.ACACIA_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.MANGROVE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.MANGROVE_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.PALE_OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.PALE_OAK_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.POPLAR_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.POPLAR_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.BAMBOO_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.BAMBOO_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.CRIMSON_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.CRIMSON_CELLAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.WARPED_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.WARPED_CELLAR_CABINET);
         // 玩偶（1.21.11+ 无 doll 模组，本模组代注册）：用户拍板归"装饰"分类
         for (int i = 0; i < 6; i++) {
             accept(output, FURNITURE_ITEMS, BuiltInRegistries.ITEM.getValue(PortHelper.id("doll_" + i)));
