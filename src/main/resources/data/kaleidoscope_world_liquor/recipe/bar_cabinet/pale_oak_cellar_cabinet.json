@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:pale_oak_slab"
+  },
+  "result": {
+    "id": "kaleidoscope_world_liquor:pale_oak_cellar_cabinet",
+    "count": 1
+  }
+}
