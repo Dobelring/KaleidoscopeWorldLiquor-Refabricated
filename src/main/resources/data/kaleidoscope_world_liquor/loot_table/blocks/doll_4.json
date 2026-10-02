@@ -17,5 +17,13 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "kaleidoscope_world_liquor:blocks/doll_4"
+  "random_sequence": "kaleidoscope_world_liquor:blocks/doll_4",
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "kaleidoscope_doll"
+      ]
+    }
+  ]
 }
