@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "kaleidoscope_world_liquor",
+  "version": "${version}",
+  "name": "Kaleidoscope World Liquor Refabricated",
+  "description": "森罗酒馆：世界名酒 - Real-world wines and spirits (Fabric port for 1.20.1). It adds a variety of well-known real-world wines and spirits, such as Bombay Sapphire Gin, Smirnoff Vodka, Spirytus Vodka, Moutai, Bacardi White Rum, and many other classic liquors.",
+  "authors": [
+    "Dobelring"
+  ],
+  "contributors": [
+    "BmtUltra",
+    "Chenjdy",
+    "Bfxm"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Dobelring/KaleidoscopeWorldLiquor-Refabricated",
+    "sources": "https://github.com/Dobelring/KaleidoscopeWorldLiquor-Refabricated"
+  },
+  "license": [
+    "MIT",
+    "CC-BY-NC-ND-4.0"
+  ],
+  "environment": "*",
+  "accessWidener": "kaleidoscope_world_liquor.accesswidener",
+  "entrypoints": {
+    "main": [
+      "com.bmt.kaleidoscope_world_liquor.KaleidoscopeWorldLiquor"
+    ],
+    "client": [
+      "com.bmt.kaleidoscope_world_liquor.client.KaleidoscopeWorldLiquorClient"
+    ],
+    "jei_mod_plugin": [
+      "com.bmt.kaleidoscope_world_liquor.compat.jei.Plugins"
+    ],
+    "jade": [
+      "com.bmt.kaleidoscope_world_liquor.compat.jade.ModPlugin"
+    ]
+  },
+  "mixins": [
+    "kaleidoscope_world_liquor.mixins.json",
+    "kaleidoscope_world_liquor.create.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": ">=0.92.0",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "kaleidoscope_tavern": "*",
+    "forgeconfigapiport": "*"
+  },
+  "recommends": {
+    "kaleidoscope_doll": "*",
+    "create": "*",
+    "smc": "*",
+    "kaleidoscope_cookery": "*"
+  },
+  "suggests": {
+    "jade": "*",
+    "jei": "*"
+  }
+}

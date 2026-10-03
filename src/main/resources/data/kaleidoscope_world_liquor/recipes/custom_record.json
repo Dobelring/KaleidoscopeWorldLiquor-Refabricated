@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"},
+    {"tag": "kaleidoscope_tavern:alcohol"}
+  ],
+  "result": {
+    "item": "kaleidoscope_world_liquor:custom_record",
+    "count": 1
+  }
+}

@@ -1,0 +1,157 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/kaleidoscope_world_liquor.accesswidener")
+}
+
+repositories {
+	flatDir {
+		dirs 'libs'
+	}
+	maven {
+		name = 'Fabric'
+		url = 'https://maven.fabricmc.net/'
+	}
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
+	maven {
+		name = "Jared's maven"
+		url = 'https://maven.blamejared.com/'
+	}
+	maven {
+		name = 'ModMaven'
+		url = 'https://modmaven.dev'
+	}
+	maven {
+		name = "Fuzs Mod Resources"
+		url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+	}
+	maven {
+		name = "Create"
+		url = "https://maven.createmod.net/"
+	}
+	maven {
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
+	}
+	maven {
+		name = "Ladysnake Libs"
+		url = 'https://maven.ladysnake.org/releases'
+	}
+	maven {
+		url = "https://mvn.devos.one/releases/" // Porting Lib
+	}
+	maven {
+		// Porting Lib 依赖的 Reach Entity Attributes
+		url "https://maven.jamieswhiteshirt.com/libs-release"
+		content {
+			includeGroup "com.jamieswhiteshirt"
+		}
+	}
+	mavenCentral()
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Forge Config API Port: provides net.minecraftforge.common.ForgeConfigSpec on Fabric 1.20.1
+	modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forgeconfigapiport_version}"
+
+	// Kaleidoscope Tavern (hard dependency: DrinkBlock/GlasswareBlock/AbstractStorageBlock/SitEntity 等)
+	// tavern 的 fabric.mod.json 硬依赖（其嵌套 jar 在 dev 运行时不会被 loom 展开）
+	modRuntimeOnly "com.jamieswhiteshirt:reach-entity-attributes:2.4.0"
+	// tavern 依赖模组的嵌套 jar 在 dev 不会被 loom 展开（国味同款结论），按需补运行时模块
+	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:base:${project.porting_lib_version}"
+	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:loot:${project.porting_lib_version}"
+	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:transfer:${project.porting_lib_version}"
+	modImplementation files("libs/kaleidoscope_tavern-${project.kaleidoscope_tavern_version}.jar")
+	// doll（软依赖：运行时 isModLoaded 门控；无 doll 路径已用 modCompileOnly 实测通过 2026-10-03）
+	modImplementation files("libs/kaleidoscopedoll-1.20.1-fabric-1.0.9.jar")
+	// Kaleidoscope Doll (soft integration: 玩偶 doll_0..5 代注册，运行时 isModLoaded 门控)
+
+	// Optional compat integrations (compileOnly - guarded at runtime by isModLoaded)
+	modCompileOnly("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	modCompileOnly("maven.modrinth:jade:${project.jade_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	// EMI 插件未移植（实例用 JEI；官方 1.1.11 也无 EMI 插件），无 compile 依赖
+	// Create (soft integration: Ponder 场景 + contraption 行为 + 龙头 TapBlockMixin)
+	// 注意：createmod.net 的 com.simibubi.create:create-fabric 坐标在 1.20.1 上 404，
+	// 走 Modrinth maven（版本号即 Modrinth 的 version_number）
+	modCompileOnly("maven.modrinth:create-fabric:${project.create_fabric_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	// Ponder 是 create-fabric 的嵌套 jar，编译期看不到，必须单独引；
+	// 该 artifact 同时提供 net.createmod.ponder.* 与 net.createmod.catnip.*
+	modCompileOnly("net.createmod.ponder:Ponder-Fabric-1.20.1:${project.ponder_version}") {
+		// 只要它的类做编译；传递依赖（Porting Lib 等）走 raw.githubusercontent.com 不可达
+		transitive = false
+	}
+	// create-fabric 的嵌套依赖：javac 解析 AbstractContraptionEntity 层级（IEntityAdditionalSpawnData）
+	// 与 ClientContraption.getRenderLevel() 返回类型（VisualizationLevel）时需要其类文件
+	modImplementation "io.github.fabricators_of_create.Porting-Lib:entity:${project.porting_lib_version}"
+	// flywheel 无可达公共 maven（create-fabric 内嵌版本），从 create-fabric jar 抽出作纯编译期依赖
+	modCompileOnly files("libs/compile/flywheel-fabric-1.20.1-1.0.5-264.jar")
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+	inputs.property "archivesName", project.base.archivesName
+
+	from("LICENSE-CODE") {
+		rename { "${it}_${inputs.properties.archivesName}" }
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+	repositories {
+	}
+}

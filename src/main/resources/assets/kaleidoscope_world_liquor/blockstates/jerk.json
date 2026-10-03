@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "rotation=0,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=0,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=1,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=1,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=2,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=2,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=3,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=3,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=4,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=4,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=5,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=5,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=6,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=6,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=7,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=7,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=8,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=8,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=9,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=9,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=10,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=10,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=11,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=11,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=12,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=12,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=13,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=13,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=14,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=14,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=15,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    },
+    "rotation=15,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/jerk"
+    }
+  }
+}

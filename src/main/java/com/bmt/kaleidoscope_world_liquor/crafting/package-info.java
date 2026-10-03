@@ -1,0 +1,5 @@
+@MethodsReturnNonnullByDefault
+@FieldsAreNonnullByDefault
+package com.bmt.kaleidoscope_world_liquor.crafting;
+import net.minecraft.FieldsAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

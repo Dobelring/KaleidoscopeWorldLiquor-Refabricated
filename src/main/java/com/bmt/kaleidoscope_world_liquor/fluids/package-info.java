@@ -1,0 +1,5 @@
+@MethodsReturnNonnullByDefault
+@FieldsAreNonnullByDefault
+package com.bmt.kaleidoscope_world_liquor.fluids;
+import net.minecraft.FieldsAreNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;

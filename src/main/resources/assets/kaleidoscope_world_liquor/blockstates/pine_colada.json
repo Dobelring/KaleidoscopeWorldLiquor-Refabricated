@@ -1,0 +1,100 @@
+{
+  "variants": {
+    "rotation=0,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=0,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=1,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=1,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=2,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=2,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=3,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=3,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=4,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=4,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=5,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=5,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=6,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=6,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=7,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=7,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=8,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=8,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=9,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=9,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=10,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=10,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=11,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=11,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=12,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=12,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=13,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=13,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=14,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=14,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=15,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    },
+    "rotation=15,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/mixology/pine_colada"
+    }
+  }
+}

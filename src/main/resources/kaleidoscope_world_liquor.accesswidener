@@ -1,0 +1,4 @@
+accessWidener	v2	named
+
+# 多段跳：hooks 直调原版 protected 方法（Forge 侧由运行时放开，Fabric 显式 AW）
+accessible method net/minecraft/world/entity/LivingEntity jumpFromGround ()V

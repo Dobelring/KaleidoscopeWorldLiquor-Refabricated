@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "kaleidoscope_world_liquor:doll_5"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "kaleidoscope_world_liquor:blocks/doll_5",
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:any_mod_loaded",
+      "values": [
+        "kaleidoscope_doll"
+      ]
+    },
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "fabric:any_mod_loaded",
+        "values": [
+          "kaleidoscope_nether"
+        ]
+      }
+    }
+  ]
+}

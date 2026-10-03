@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X": {"item": "minecraft:cherry_slab"}
+  },
+  "result": {
+    "item": "kaleidoscope_world_liquor:cherry_cellar_cabinet",
+    "count": 1
+  }
+}

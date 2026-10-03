@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "kaleidoscope_world_liquor:block/milk_still",
+    "particle": "kaleidoscope_world_liquor:block/milk_still"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "kaleidoscope_tavern:barrel",
+  "carrier": {
+    "item": "kaleidoscope_tavern:empty_bottle"
+  },
+  "fluid": "minecraft:water",
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "kaleidoscope_cookery:rice_panicle"
+    }
+  ],
+  "result": {
+    "item": "kaleidoscope_world_liquor:maotai"
+  },
+  "unit_time": 2400,
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "kaleidoscope_cookery"
+      ]
+    }
+  ]
+}

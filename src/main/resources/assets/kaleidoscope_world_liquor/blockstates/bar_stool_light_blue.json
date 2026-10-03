@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 0
+    },
+    "facing=north,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 0
+    },
+    "facing=east,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 90
+    },
+    "facing=east,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 90
+    },
+    "facing=south,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 180
+    },
+    "facing=south,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 180
+    },
+    "facing=west,waterlogged=false": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 270
+    },
+    "facing=west,waterlogged=true": {
+      "model": "kaleidoscope_world_liquor:block/bar/stool/bar_stool_light_blue",
+      "y": 270
+    }
+  }
+}
