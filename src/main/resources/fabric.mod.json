@@ -12,7 +12,7 @@
   "contact": {
     "homepage": "https://modrinth.com/mod/kaleidoscope-world-liquor"
   },
-  "license": "MIT + CC BY-NC-SA 4.0",
+  "license": "MIT + CC BY-NC-ND 4.0",
   "environment": "*",
   "entrypoints": {
     "main": [
