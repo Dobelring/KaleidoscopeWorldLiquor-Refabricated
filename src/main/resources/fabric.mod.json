@@ -9,7 +9,7 @@
 		"Chenjdy",
 		"Bfxm"
 	],
-	"license": "MIT + CC BY-NC-SA 4.0",
+	"license": "MIT + CC BY-NC-ND 4.0",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
