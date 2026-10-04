@@ -104,6 +104,20 @@ public final class ModCreativeModeTabs {
         output.accept(ModItems.DARK_OAK_CELLAR_CABINET);
         output.accept(ModItems.CHERRY_BAR_CABINET);
         output.accept(ModItems.CHERRY_CELLAR_CABINET);
+        output.accept(ModItems.JUNGLE_BAR_CABINET);
+        output.accept(ModItems.JUNGLE_CELLAR_CABINET);
+        output.accept(ModItems.ACACIA_BAR_CABINET);
+        output.accept(ModItems.ACACIA_CELLAR_CABINET);
+        output.accept(ModItems.MANGROVE_BAR_CABINET);
+        output.accept(ModItems.MANGROVE_CELLAR_CABINET);
+        output.accept(ModItems.PALE_OAK_BAR_CABINET);
+        output.accept(ModItems.PALE_OAK_CELLAR_CABINET);
+        output.accept(ModItems.BAMBOO_BAR_CABINET);
+        output.accept(ModItems.BAMBOO_CELLAR_CABINET);
+        output.accept(ModItems.CRIMSON_BAR_CABINET);
+        output.accept(ModItems.CRIMSON_CELLAR_CABINET);
+        output.accept(ModItems.WARPED_BAR_CABINET);
+        output.accept(ModItems.WARPED_CELLAR_CABINET);
         // 酒柜/酒窖柜物品第 5 步加入
     }
 
