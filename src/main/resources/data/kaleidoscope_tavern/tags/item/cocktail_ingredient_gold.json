@@ -1,8 +1,9 @@
 {
+  "replace": true,
   "values": [
+    "kaleidoscope_tavern:miners_star",
+    "kaleidoscope_tavern:honey_wine",
+    "kaleidoscope_tavern:madame_shexiang",
     "kaleidoscope_world_liquor:johnnie_walker"
-  ],
-  "remove": [
-    "kaleidoscope_tavern:sunset_glow"
   ]
 }

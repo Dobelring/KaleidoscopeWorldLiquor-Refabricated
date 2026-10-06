@@ -1,8 +1,9 @@
 {
+  "replace": true,
   "values": [
+    "kaleidoscope_tavern:ice_wine",
+    "kaleidoscope_tavern:polaris_sweet_white",
+    "kaleidoscope_tavern:sherry",
     "kaleidoscope_world_liquor:bombay_sapphire_gin"
-  ],
-  "remove": [
-    "kaleidoscope_tavern:mother_snow"
   ]
 }
