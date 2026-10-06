@@ -1,19 +1,16 @@
 package com.bmt.kaleidoscope_world_liquor.init.smc;
 
-import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * smc:elbow_strike 效果（手肘击）：击退加成 3.0*(amp+1)。
- * 属性修饰符 API 照 1.21.11（Identifier + ADD_VALUE）。
+ * smc:elbow_strike 效果（手肘击）。
+ * 官方 1.1.11：改声明式 addAttributeModifier（击退系数 3.0*(amp+1) → 固定 +1.0）
+ * 并恢复逐 tick（shouldApplyEffectTickThisTick=true）；
+ * 属性修饰符 API 照 26.x（Holder 属性 + Identifier + ADD_VALUE，构造期注册）。
  */
 public class SMCEffect extends MobEffect {
     public static final String SMC_MODID = "smc";
@@ -21,30 +18,13 @@ public class SMCEffect extends MobEffect {
 
     public SMCEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xFF9300);
-    }
-
-    // 原版 SMCEffect：ATTACK_KNOCKBACK（攻击击退）+3.0*(amp+1)，transient 修饰符
-    @Override
-    public void addAttributeModifiers(@NotNull AttributeMap attributes, int amplifier) {
-        super.addAttributeModifiers(attributes, amplifier);
-        double knockbackBonus = 3.0 * (amplifier + 1);
-        AttributeInstance attribute = attributes.getInstance(Attributes.ATTACK_KNOCKBACK);
-        if (attribute != null) {
-            attribute.addTransientModifier(new AttributeModifier(KNOCKBACK_ID, knockbackBonus, AttributeModifier.Operation.ADD_VALUE));
-        }
-    }
-
-    @Override
-    public void removeAttributeModifiers(@NotNull AttributeMap attributes) {
-        super.removeAttributeModifiers(attributes);
-        AttributeInstance attribute = attributes.getInstance(Attributes.ATTACK_KNOCKBACK);
-        if (attribute != null) {
-            attribute.removeModifier(KNOCKBACK_ID);
-        }
+        // 官方语义：击退加成固定 +1.0（原 3.0*(amp+1) 瞬态修饰符）
+        this.addAttributeModifier(Attributes.ATTACK_KNOCKBACK, KNOCKBACK_ID, 1.0, AttributeModifier.Operation.ADD_VALUE);
     }
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        return false;
+        // 官方 1.1.11：恢复 tick（原实现为 false）
+        return true;
     }
 }

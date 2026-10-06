@@ -26,6 +26,8 @@ public class FreezerBlockEntityRenderState extends BlockEntityRenderState {
     @org.jspecify.annotations.Nullable
     public Identifier outputTexture = null;
     public int outputCount = 0;
+    /** 官方 1.1.11：成品贴图升顶比例分母 */
+    public int maxOutputCount = 0;
 
     public FreezerBlockEntityRenderState() {
         for (int i = 0; i < 4; i++) {

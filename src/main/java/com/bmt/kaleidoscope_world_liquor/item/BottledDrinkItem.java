@@ -46,9 +46,10 @@ public class BottledDrinkItem extends Item implements IHasContainer {
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay tooltipDisplay,
                                 @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag flag) {
         if (this == ModItems.COLA) {
+            // 官方 1.1.11：可乐 tooltip 深红 → 棕色（8606770，配合 lang "棕色"）
             tooltip.accept(Component.empty()
                     .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.front").withStyle(ChatFormatting.GRAY))
-                    .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.back").withStyle(ChatFormatting.DARK_RED)));
+                    .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.back").withStyle(style -> style.withColor(8606770))));
         }
         if (this == ModItems.TONIC_WATER) {
             tooltip.accept(Component.empty()

@@ -35,10 +35,9 @@ public class WallRecordBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 24);
 
-    private static final VoxelShape NORTH_WALL_SHAPE = Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0);
-    private static final VoxelShape SOUTH_WALL_SHAPE = Block.box(1.0, 1.0, 15.0, 15.0, 15.0, 16.0);
-    private static final VoxelShape WEST_WALL_SHAPE = Block.box(0.0, 1.0, 1.0, 1.0, 15.0, 15.0);
-    private static final VoxelShape EAST_WALL_SHAPE = Block.box(15.0, 1.0, 1.0, 16.0, 15.0, 15.0);
+    // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)
+    private static final java.util.Map<Direction, VoxelShape> WALL_SHAPES =
+            com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0));
 
     public WallRecordBlock(Properties properties) {
         super(properties);
@@ -83,13 +82,8 @@ public class WallRecordBlock extends Block implements EntityBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> NORTH_WALL_SHAPE;
-            case SOUTH -> SOUTH_WALL_SHAPE;
-            case WEST -> WEST_WALL_SHAPE;
-            case EAST -> EAST_WALL_SHAPE;
-            default -> super.getShape(state, level, pos, context);
-        };
+        // 官方 1.1.11：四向形状收敛（FACING 为水平属性，四键必在）
+        return WALL_SHAPES.get(state.getValue(FACING));
     }
 
     @Override

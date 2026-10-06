@@ -41,6 +41,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     private static final String PROGRESS = "Progress";
     private static final String MAX_PROGRESS = "MaxProgress";
     private static final String OUTPUT_COUNT = "OutputCount";
+    private static final String MAX_OUTPUT_COUNT = "MaxOutputCount";
     private static final String REDSTONE_POWERED = "RedstonePowered";
     private static final String OUTPUT_TEXTURE = "OutputTexture";
     private static final String RECIPE_ID = "RecipeId";
@@ -51,6 +52,8 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     private int progress = 0;
     private int maxProgress = 0;
     private int outputCount = 0;
+    /** 官方 1.1.11：成品贴图按 count/maxOutputCount 从底部升到顶所需的最大产量 */
+    private int maxOutputCount = 0;
     @Nullable
     private Identifier outputTexture = null;
     private boolean redstonePowered = false;
@@ -205,6 +208,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     private void finishCrafting(BlockState state, Level level, BlockPos pos) {
         if (this.recipe != null) {
             this.outputCount = this.recipe.value().result().count();
+            this.maxOutputCount = this.outputCount;
             this.outputTexture = this.recipe.value().resultTexture();
         }
         level.setBlock(pos, state.setValue(FreezerBlock.WORKING, false), 3);
@@ -331,6 +335,11 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         return this.outputCount;
     }
 
+    /** 官方 1.1.11：本次生产的最大产量（成品贴图升顶比例的分母） */
+    public int getMaxOutputCount() {
+        return this.maxOutputCount;
+    }
+
     @Nullable
     public Identifier getOutputTexture() {
         return this.outputTexture;
@@ -361,6 +370,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         valueOutput.putInt(PROGRESS, this.progress);
         valueOutput.putInt(MAX_PROGRESS, this.maxProgress);
         valueOutput.putInt(OUTPUT_COUNT, this.outputCount);
+        valueOutput.putInt(MAX_OUTPUT_COUNT, this.maxOutputCount);
         valueOutput.putBoolean(REDSTONE_POWERED, this.redstonePowered);
         if (this.outputTexture != null) {
             valueOutput.putString(OUTPUT_TEXTURE, this.outputTexture.toString());
@@ -380,6 +390,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         this.progress = valueInput.getIntOr(PROGRESS, 0);
         this.maxProgress = valueInput.getIntOr(MAX_PROGRESS, 0);
         this.outputCount = valueInput.getIntOr(OUTPUT_COUNT, 0);
+        this.maxOutputCount = valueInput.getIntOr(MAX_OUTPUT_COUNT, 0);
         this.redstonePowered = valueInput.getBooleanOr(REDSTONE_POWERED, false);
         if (valueInput.contains(OUTPUT_TEXTURE)) {
             this.outputTexture = Identifier.parse(valueInput.getString(OUTPUT_TEXTURE).orElse(""));

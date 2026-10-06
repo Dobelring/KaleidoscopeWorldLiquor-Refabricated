@@ -28,20 +28,26 @@ public final class MultiJumpHandler {
             this.jumpCount = maxJumps;
         }
 
-        if (this.canJump(player)
-                && !player.onGround()
-                && !this.jumpedLastTick
-                && this.jumpCount > 0
-                && player.getDeltaMovement().y < 0.0
-                && player.input.keyPresses.jump()
-                && !player.getAbilities().flying) {
-            this.jumpCount--;
-            player.jumpFromGround();
-            player.resetFallDistance();
-            this.jumpedLastTick = true;
-        } else {
-            this.jumpedLastTick = player.input.keyPresses.jump();
+        if (this.canJump(player)) {
+            // 官方 1.1.11：反重力下「下落」判定翻转——y 速度 > 0 才算下落
+            boolean reverseGravity = player.hasEffect(ModEffects.REVERSE_GRAVITY);
+            double velocityY = player.getDeltaMovement().y;
+            boolean isFalling = reverseGravity ? velocityY > 0.0 : velocityY < 0.0;
+            if (!player.onGround()
+                    && !this.jumpedLastTick
+                    && this.jumpCount > 0
+                    && isFalling
+                    && player.input.keyPresses.jump()
+                    && !player.getAbilities().flying) {
+                this.jumpCount--;
+                player.jumpFromGround();
+                player.resetFallDistance();
+                this.jumpedLastTick = true;
+                return;
+            }
         }
+
+        this.jumpedLastTick = player.input.keyPresses.jump();
     }
 
     private boolean wearingUsableElytra(LocalPlayer player) {

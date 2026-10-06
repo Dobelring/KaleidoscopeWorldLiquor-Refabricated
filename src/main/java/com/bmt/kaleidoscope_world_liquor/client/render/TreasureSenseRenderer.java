@@ -21,12 +21,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.vehicle.minecart.MinecartChest;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BarrelBlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.TrappedChestBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
@@ -36,15 +31,18 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.Set;
 
 /**
  * 宝藏感知（treasure_sense）。
- * 每 1s 扫描 2 chunk（24 格）内的箱子/陷阱箱/木桶，主通道末尾画穿墙线框；
- * 24 格内的运输矿车加入 GOLD 发光队伍（1.20.1 原版 kaleidoscope_gold_glow）。
- * 颜色：陷阱箱红、箱子/木桶金（1.20.1 原值 16729156/16766720）。
+ * 官方 1.1.11 重构：目标列表改由服务端扫描后经 TreasureSensePayload 下发
+ * （原客户端 5×5 区块自行扫描箱子/木桶 + 近身矿车距离判定全部移除），
+ * 客户端只负责按包内坐标画线框（固定金色 16766720）、按包内实体 id 点亮容器矿车
+ * （AbstractMinecartContainer，inflate 64）。
  *
  * 穿墙实现（1.21.11 已验证方案移植，照 Fabric 官方文档 "Rendering in the World" 穿墙示例）：
  * - 原版 Gizmos.setAlwaysOnTop = 清主目标深度后重画，Iris 重定向帧缓冲后失效（光影下不穿墙）；
@@ -61,12 +59,12 @@ import java.util.OptionalDouble;
 @Environment(EnvType.CLIENT)
 public final class TreasureSenseRenderer {
     private static final List<BlockPos> containers = new ArrayList<>();
-    private static long lastScanTime = 0L;
-    private static final int SCAN_INTERVAL_MS = 1000;
-    private static final double RANGE_SQ = 576.0;
-    private static final double MINECART_INFLATE = 29.0;
-    private static final int COLOR_TRAPPED = 0xFFFF3C34;
-    private static final int COLOR_CHEST = 0xFFFFCF00;
+    /** 服务端下发的有战利品表容器矿车实体 id（效果消失/下线时清空） */
+    private static volatile Set<Integer> lootMinecartIds = Set.of();
+    /** 官方 1.1.11：线框统一金色（原分支按箱型分红/金两色，官方重构后为固定色） */
+    private static final int GLOW_COLOR = 16766720;
+    /** 矿车发光扫描半径（官方 1.1.11 客户端 inflate 64） */
+    private static final double MINECART_INFLATE = 64.0;
     private static final String GOLD_GLOW_TEAM = "kaleidoscope_gold_glow";
     private static final float BOX_LINE_WIDTH = 2.0F;
     /** 单容器 12 边 × 2 顶点 × 顶点大小约 48B，按容器数动态分配（下限 4KB） */
@@ -101,28 +99,31 @@ public final class TreasureSenseRenderer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(mc -> {
             if (mc.player == null) {
                 containers.clear();
+                lootMinecartIds = Set.of();
                 return;
             }
             if (!mc.player.hasEffect(ModEffects.TREASURE_SENSE)) {
                 // 效果结束后必须继续跑矿车清理：无效果分支会解除残留的金色发光
                 // 与队伍（1.20.1 原版 onRenderTick 同样无条件调用），否则矿车
-                // 轮廓会永远残留。
+                // 轮廓会永远残留。目标列表同步由服务端停发 + 本地清空共同保证。
                 containers.clear();
+                lootMinecartIds = Set.of();
                 tickMinecartGlow(mc);
                 return;
-            }
-            long now = System.currentTimeMillis();
-            if (now - lastScanTime > SCAN_INTERVAL_MS) {
-                lastScanTime = now;
-                scanForContainers(mc);
             }
             tickMinecartGlow(mc);
         });
     }
 
+    /** 服务端 TreasureSensePayload 到达后由 ClientPacketHandler 调用。 */
+    public static void updateLootTargets(List<BlockPos> positions, List<Integer> minecartIds) {
+        containers.clear();
+        containers.addAll(positions);
+        lootMinecartIds = Set.copyOf(minecartIds);
+    }
+
     /** 提取：把容器 AABB 的 12 条边写入 BufferBuilder（世界坐标-相机，与 poseStack 相机相对一致） */
     private static void extractBoxes(net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext context) {
-        Minecraft mc = Minecraft.getInstance();
         Vec3 cam = context.levelState().cameraRenderState.pos;
         PoseStack poseStack = context.poseStack();
         if (buffer == null) {
@@ -131,11 +132,9 @@ public final class TreasureSenseRenderer {
         }
         Matrix4fc positionMatrix = poseStack.last().pose();
         for (BlockPos pos : containers) {
-            int color = mc.level.getBlockEntity(pos) instanceof TrappedChestBlockEntity
-                    ? COLOR_TRAPPED : COLOR_CHEST;
-            float r = (color >> 16 & 0xFF) / 255.0F;
-            float g = (color >> 8 & 0xFF) / 255.0F;
-            float b = (color & 0xFF) / 255.0F;
+            float r = (GLOW_COLOR >> 16 & 0xFF) / 255.0F;
+            float g = (GLOW_COLOR >> 8 & 0xFF) / 255.0F;
+            float b = (GLOW_COLOR & 0xFF) / 255.0F;
             renderBoxEdges(positionMatrix, pos.getX() - cam.x, pos.getY() - cam.y, pos.getZ() - cam.z, r, g, b);
         }
     }
@@ -220,41 +219,26 @@ public final class TreasureSenseRenderer {
         }
     }
 
-    /** GameRenderer.close 时释放 GPU 资源（照官方文档，由 mixin 调用） */
+    /** GameRenderer.close 时释放 GPU 资源并清空目标列表（照官方文档，由 mixin 调用） */
     public static void close() {
+        containers.clear();
+        lootMinecartIds = Set.of();
         ALLOCATOR.close();
     }
 
-    private static void scanForContainers(Minecraft mc) {
-        containers.clear();
-        BlockPos playerPos = mc.player.blockPosition();
-        ChunkPos playerChunkPos = mc.player.chunkPosition();
-        int chunkRadius = 2;
-        for (int cx = playerChunkPos.x() - chunkRadius; cx <= playerChunkPos.x() + chunkRadius; cx++) {
-            for (int cz = playerChunkPos.z() - chunkRadius; cz <= playerChunkPos.z() + chunkRadius; cz++) {
-                LevelChunk chunk = mc.level.getChunk(cx, cz);
-                if (chunk != null && !chunk.isEmpty()) {
-                    for (var be : chunk.getBlockEntities().values()) {
-                        if (!be.isRemoved() && !(be.getBlockPos().distSqr(playerPos) > RANGE_SQ)
-                                && (be instanceof ChestBlockEntity || be instanceof BarrelBlockEntity)) {
-                            containers.add(be.getBlockPos());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /**
-     * 运输矿车金色发光：1.20.1 原版在 RenderTick END 管理
+     * 容器矿车金色发光：1.20.1 原版在 RenderTick END 管理
      * kaleidoscope_gold_glow 队伍（GOLD 色、无碰撞、隐藏名牌）。
+     * 官方 1.1.11：发光判定改为「服务端下发的战利品矿车 id 集合」
+     * （原客户端距离判定移除；AbstractMinecartContainer 覆盖全部容器矿车）。
      */
     private static void tickMinecartGlow(Minecraft mc) {
         if (mc.isPaused()) {
             return;
         }
         boolean hasTreasureSense = mc.player.hasEffect(ModEffects.TREASURE_SENSE);
-        List<MinecartChest> minecarts = mc.level.getEntitiesOfClass(MinecartChest.class,
+        Set<Integer> targetIds = hasTreasureSense ? lootMinecartIds : Collections.emptySet();
+        List<AbstractMinecartContainer> minecarts = mc.level.getEntitiesOfClass(AbstractMinecartContainer.class,
                 mc.player.getBoundingBox().inflate(MINECART_INFLATE), minecart -> !minecart.isRemoved());
         PlayerTeam goldTeam = mc.level.getScoreboard().getPlayerTeam(GOLD_GLOW_TEAM);
         if (goldTeam == null) {
@@ -264,9 +248,9 @@ public final class TreasureSenseRenderer {
             goldTeam.setNameTagVisibility(Team.Visibility.NEVER);
         }
 
-        for (MinecartChest minecart : minecarts) {
+        for (AbstractMinecartContainer minecart : minecarts) {
             IGlowingEntity glowingMinecart = (IGlowingEntity) minecart;
-            boolean shouldGlow = hasTreasureSense && mc.player.distanceToSqr(minecart) <= RANGE_SQ;
+            boolean shouldGlow = targetIds.contains(minecart.getId());
             if (glowingMinecart.isModGlowing() != shouldGlow) {
                 if (shouldGlow) {
                     mc.level.getScoreboard().addPlayerToTeam(minecart.getStringUUID(), goldTeam);
@@ -278,17 +262,8 @@ public final class TreasureSenseRenderer {
             }
         }
 
-        if (!hasTreasureSense) {
-            for (MinecartChest minecart : minecarts) {
-                IGlowingEntity glowingMinecart = (IGlowingEntity) minecart;
-                if (glowingMinecart.isModGlowing()) {
-                    glowingMinecart.setGlowing(false);
-                    mc.level.getScoreboard().removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
-                }
-            }
-            if (goldTeam.getPlayers().isEmpty()) {
-                mc.level.getScoreboard().removePlayerTeam(goldTeam);
-            }
+        if (!hasTreasureSense && goldTeam.getPlayers().isEmpty()) {
+            mc.level.getScoreboard().removePlayerTeam(goldTeam);
         }
     }
 }

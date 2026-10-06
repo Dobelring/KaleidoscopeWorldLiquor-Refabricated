@@ -212,6 +212,30 @@ public class BarCabinetBlock extends BaseEntityBlock {
         return new BarCabinetBlockEntity(pos, state);
     }
 
+    // 官方 1.1.11：酒柜比较器输出——单瓶态且左槽有物=3，否则=非空槽个数（0/1/2）
+    @Override
+    protected int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Direction direction) {
+        if (level.getBlockEntity(pos) instanceof BarCabinetBlockEntity be) {
+            if (be.isSingle() && !be.getLeftItem().isEmpty()) {
+                return 3;
+            }
+            int count = 0;
+            if (!be.getLeftItem().isEmpty()) {
+                count++;
+            }
+            if (!be.getRightItem().isEmpty()) {
+                count++;
+            }
+            return count;
+        }
+        return 0;
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(@NotNull BlockState state) {
+        return true;
+    }
+
     @Override
     protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;

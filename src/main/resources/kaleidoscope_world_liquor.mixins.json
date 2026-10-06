@@ -14,7 +14,10 @@
     "BoatMixin",
     "TapBlockMixin",
     "accessor.BarrelBlockEntityAccessor",
-    "accessor.CreativeModeTabAccessor"
+    "accessor.CreativeModeTabAccessor",
+    "accessor.BrushableBlockEntityAccessor",
+    "ShakerItemMixin",
+    "BottleBlockItemMixin"
   ],
   "client": [
     "CameraMixin",
@@ -23,7 +26,9 @@
     "GuiGraphicsMixin",
     "EntityRendererMixin",
     "ReverseGravityStrafeMixin",
-    "CreativeModeInventoryScreenMixin"
+    "CreativeModeInventoryScreenMixin",
+    "ShakerOverlayMixin",
+    "ShakerRecipeCategoryMixin"
   ],
   "server": [],
   "injectors": {

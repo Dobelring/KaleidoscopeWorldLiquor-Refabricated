@@ -88,7 +88,7 @@ public final class InstantEffects {
         }
     }
 
-    /** 回到重生点 */
+    /** 回到重生点（官方 1.1.11 语义：findRespawnPositionAndUseSpawnBlock + 床/锚朝向 + keepInventory 游戏规则 + 两段音效 + 饥饿惩罚；删手写安全点搜索与 no_dimension 提示） */
     public static class RespawnEffect extends MobEffect {
         public RespawnEffect() {
             super(MobEffectCategory.NEUTRAL, 0x87CEEB);
@@ -102,19 +102,34 @@ public final class InstantEffects {
         @Override
         public boolean applyEffectTick(@NotNull ServerLevel level, @NotNull LivingEntity entity, int amplifier) {
             if (entity instanceof ServerPlayer serverPlayer) {
-                net.minecraft.world.level.portal.TeleportTransition transition =
-                        serverPlayer.findRespawnPositionAndUseSpawnBlock(false, net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING);
-                ServerLevel targetLevel = transition.newLevel();
-                Vec3 pos = transition.position();
+                // 第一段音效：在玩家当前位置（官方顺序——先出声再解析重生点）
                 level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),
                         SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
-                serverPlayer.teleport(new net.minecraft.world.level.portal.TeleportTransition(
-                        targetLevel, pos, Vec3.ZERO, serverPlayer.getYRot(), serverPlayer.getXRot(),
-                        net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING));
-                serverPlayer.fallDistance = 0.0F;
-                targetLevel.playSound(null, pos.x, pos.y, pos.z,
-                        SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
-                serverPlayer.addEffect(new MobEffectInstance(MobEffects.HUNGER, 300, 0));
+                // 官方 1.1.11：是否保留背包改取 keepInventory 游戏规则（原实现写死 false）
+                boolean keepInventory = level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.KEEP_INVENTORY);
+                net.minecraft.world.level.portal.TeleportTransition transition =
+                        serverPlayer.findRespawnPositionAndUseSpawnBlock(keepInventory,
+                                net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING);
+                if (transition != null) {
+                    ServerLevel targetLevel = transition.newLevel();
+                    Vec3 targetPos = transition.position();
+                    float yRot = transition.yRot();
+                    float xRot = transition.xRot();
+                    if (level.dimension() == targetLevel.dimension()) {
+                        // 同维：直接传送并套用床/锚朝向（官方 teleportTo + setYRot/setXRot）
+                        serverPlayer.teleportTo(targetPos.x, targetPos.y, targetPos.z);
+                        serverPlayer.setYRot(yRot);
+                        serverPlayer.setXRot(xRot);
+                    } else {
+                        // 跨维：26.x 的 changeDimension 等价物即 teleport(transition)
+                        serverPlayer.teleport(transition);
+                    }
+                    serverPlayer.fallDistance = 0.0F;
+                    // 第二段音效：在目标位置
+                    serverPlayer.level().playSound(null, targetPos.x, targetPos.y, targetPos.z,
+                            SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.HUNGER, 300, 0));
+                }
             }
             return true;
         }

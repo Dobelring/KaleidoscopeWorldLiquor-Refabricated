@@ -149,13 +149,14 @@ public final class ModCreativeModeTabs {
                 })
                 .build());
         // 8 幅作者画挂在 tavern 的 MASTER_MARISA_PAINTING 之后（1.20.1 原版 putAfter 同位）。
+        // 官方 1.1.11：顺序改为 QXXY, DREAM, CH, RABBIT, CHA, CHEN, BMT, BFXM
         ResourceKey<CreativeModeTab> tavernDecoTab = ResourceKey.create(
                 Registries.CREATIVE_MODE_TAB, Identifier.fromNamespaceAndPath("kaleidoscope_tavern", "tavern_deco"));
         CreativeModeTabEvents.modifyOutputEvent(tavernDecoTab).register(entries ->
                 ((FabricCreativeModeTabOutput) entries).insertAfter(
                         com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems.MASTER_MARISA_PAINTING,
-                        ModPaintings.BFXM_PAINTING, ModPaintings.BMT_PAINTING, ModPaintings.CHEN_PAINTING,
-                        ModPaintings.DREAM_PAINTING, ModPaintings.CHA_PAINTING, ModPaintings.RABBIT_PAINTING,
-                        ModPaintings.CH_PAINTING, ModPaintings.QXXY_PAINTING));
+                        ModPaintings.QXXY_PAINTING, ModPaintings.DREAM_PAINTING, ModPaintings.CH_PAINTING,
+                        ModPaintings.RABBIT_PAINTING, ModPaintings.CHA_PAINTING, ModPaintings.CHEN_PAINTING,
+                        ModPaintings.BMT_PAINTING, ModPaintings.BFXM_PAINTING));
     }
 }
