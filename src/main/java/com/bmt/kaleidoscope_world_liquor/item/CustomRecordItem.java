@@ -11,7 +11,7 @@ public class CustomRecordItem extends RecordItem {
     private static final Random RANDOM = new Random();
 
     public CustomRecordItem() {
-        super(15, ModSounds.CUSTOM_MUSIC_1, new Properties().stacksTo(1).rarity(Rarity.RARE), 2920);
+        super(6, ModSounds.CUSTOM_MUSIC_1, new Properties().stacksTo(1).rarity(Rarity.RARE), 2920);
     }
 
     public SoundEvent getSound() {

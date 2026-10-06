@@ -68,11 +68,7 @@ public class ModEffects {
             return true;
         }
     };
-    public static final MobEffect BONEMEAL_SPREADER_EFFECT = new MobEffect(MobEffectCategory.BENEFICIAL, 9498256) {
-        public boolean isDurationEffectTick(int duration, int amplifier) {
-            return duration % 20 == 0;
-        }
-    };
+    // 官方 1.1.12 移除春野之息（bonemeal_spreader）
     public static final MobEffect TREASURE_SENSE_EFFECT = new MobEffect(MobEffectCategory.BENEFICIAL, 16766720) {
         public boolean isDurationEffectTick(int duration, int amplifier) {
             return true;
@@ -118,7 +114,6 @@ public class ModEffects {
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "hostile_detection"), HOSTILE_DETECTION_EFFECT);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "beheading"), BEHEADING_EFFECT);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "frost_walker"), FROST_WALKER_EFFECT);
-        Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "bonemeal_spreader"), BONEMEAL_SPREADER_EFFECT);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "treasure_sense"), TREASURE_SENSE_EFFECT);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "ground_crit"), GROUND_CRIT_EFFECT);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "explosion"), EXPLOSION);

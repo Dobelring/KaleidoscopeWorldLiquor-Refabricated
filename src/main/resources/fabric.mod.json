@@ -33,7 +33,8 @@
       "com.bmt.kaleidoscope_world_liquor.compat.jei.Plugins"
     ],
     "jade": [
-      "com.bmt.kaleidoscope_world_liquor.compat.jade.ModPlugin"
+      "com.bmt.kaleidoscope_world_liquor.compat.jade.ModPlugin",
+      "com.bmt.kaleidoscope_world_liquor.compat.jade.FreezerJadePlugin"
     ]
   },
   "mixins": [
@@ -57,5 +58,11 @@
   "suggests": {
     "jade": "*",
     "jei": "*"
+  },
+  "icon": "assets/kaleidoscope_world_liquor/icon.png",
+  "custom": {
+    "catalogue": {
+      "banner": "assets/kaleidoscope_world_liquor/background.png"
+    }
   }
 }

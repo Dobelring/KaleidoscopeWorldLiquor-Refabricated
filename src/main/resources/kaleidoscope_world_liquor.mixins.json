@@ -18,7 +18,11 @@
     "LivingEntityMixin",
     "EntityMixin",
     "accessor.BarrelBlockEntityAccessor",
-    "TapBlockMixin"
+    "TapBlockMixin",
+    "accessor.BrushableBlockEntityAccessor",
+    "accessor.RandomizableContainerBlockEntityAccessor",
+    "ShakerItemMixin",
+    "BottleBlockItemMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin",
@@ -28,7 +32,9 @@
     "client.GameRendererMixin",
     "accessor.CreativeModeInventoryScreenAccessor",
     "accessor.AbstractContainerScreenAccessor",
-    "accessor.ScreenAddWidgetAccessor"
+    "accessor.ScreenAddWidgetAccessor",
+    "client.ShakerOverlayMixin",
+    "client.ShakerRecipeCategoryMixin"
   ],
   "server": [],
   "injectors": {

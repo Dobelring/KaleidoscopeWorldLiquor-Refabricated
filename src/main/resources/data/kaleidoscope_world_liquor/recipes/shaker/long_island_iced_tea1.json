@@ -2,7 +2,7 @@
   "type": "kaleidoscope_tavern:shaker",
   "ingredients": [
     {
-      "tag": "kaleidoscope_tavern:cocktail_ingredient_dark_red"
+      "item": "kaleidoscope_world_liquor:cola"
     },
     {
       "tag": "kaleidoscope_tavern:cocktail_ingredient_red"
@@ -12,6 +12,6 @@
     }
   ],
   "result": {
-    "item": "kaleidoscope_tavern:bloody_mary"
+    "item": "kaleidoscope_world_liquor:long_island_iced_tea"
   }
 }

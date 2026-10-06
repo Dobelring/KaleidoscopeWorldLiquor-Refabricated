@@ -29,22 +29,28 @@ public class ClientPlayerEntityMixinHooks {
                     this.multiJump$jumpCount = maxJumps;
                 }
 
-                if (this.canJump(player)
-                    && !player.onGround()
-                    && !this.multiJump$jumpedLastTick
-                    && this.multiJump$jumpCount > 0
-                    && player.getDeltaMovement().y < 0.0
-                    && player.input.jumping
-                    && !player.getAbilities().flying) {
-                    this.multiJump$jumpCount--;
-                    // 原版 LivingEntity#jumpFromGround 是 protected；Fabric 侧靠 accesswidener
-                    // “accessible method net/minecraft/world/entity/LivingEntity jumpFromGround ()V” 放开（见批次报告登记清单）
-                    player.jumpFromGround();
-                    player.fallDistance = 0.0F;
-                    this.multiJump$jumpedLastTick = true;
-                } else {
-                    this.multiJump$jumpedLastTick = player.input.jumping;
+                if (this.canJump(player)) {
+                    // 官方 1.1.12：反重力下“坠落”方向相反（速度 y>0 视为坠落），多段跳判定随之翻转
+                    boolean reverseGravity = player.hasEffect(ModEffects.REVERSE_GRAVITY);
+                    double velocityY = player.getDeltaMovement().y;
+                    boolean isFalling = reverseGravity ? velocityY > 0.0 : velocityY < 0.0;
+                    if (!player.onGround()
+                        && !this.multiJump$jumpedLastTick
+                        && this.multiJump$jumpCount > 0
+                        && isFalling
+                        && player.input.jumping
+                        && !player.getAbilities().flying) {
+                        this.multiJump$jumpCount--;
+                        // 原版 LivingEntity#jumpFromGround 是 protected；Fabric 侧靠 accesswidener
+                        // “accessible method net/minecraft/world/entity/LivingEntity jumpFromGround ()V” 放开（见批次报告登记清单）
+                        player.jumpFromGround();
+                        player.fallDistance = 0.0F;
+                        this.multiJump$jumpedLastTick = true;
+                        return;
+                    }
                 }
+
+                this.multiJump$jumpedLastTick = player.input.jumping;
             }
         }
     }

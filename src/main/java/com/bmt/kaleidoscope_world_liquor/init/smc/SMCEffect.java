@@ -3,12 +3,9 @@ package com.bmt.kaleidoscope_world_liquor.init.smc;
 import java.util.UUID;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * {@code smc:elbow_strike}（肘击）效果的实现类。
@@ -17,27 +14,20 @@ import org.jetbrains.annotations.NotNull;
  * {@code ModEffects} 的 {@code SMC_MOB_EFFECTS}（ns=smc）在
  * {@code !ModList.isLoaded("smc")} 时以 {@code SMCEffect::new} 代注册
  * （smc 已装时由 smc 模组自己提供），Fabric 版同样由 ModEffects 处理。
+ * <p>
+ * 官方 1.1.12：击退从手写瞬态修饰（3.0×(amplifier+1)）改为声明式修饰 1.0
+ * （1.20.1 原版按 (amplifier+1) 缩放应用），并恢复效果 tick（isDurationEffectTick=true）。
  */
 public class SMCEffect extends MobEffect {
-    private static final UUID ELBOW_STRIKE_KNOCKBACK_UUID = UUID.fromString("7f2a3d4b-9c8e-1b6f-5d7a-3e9c2b8a1d4f");
+    // 1.20.1 MobEffect#addAttributeModifier 的 id 参数是 String（官方 forge 版同款字面量）
+    private static final String ELBOW_STRIKE_KNOCKBACK_UUID = "7107DE5E-1472-9872-6231-639485149237";
 
     public SMCEffect() {
         super(MobEffectCategory.BENEFICIAL, 16762624);
-    }
-
-    public void addAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
-        super.addAttributeModifiers(entity, attributes, amplifier);
-        double knockbackBonus = 3.0 * (amplifier + 1);
-        attributes.getInstance(Attributes.ATTACK_KNOCKBACK)
-            .addTransientModifier(new AttributeModifier(ELBOW_STRIKE_KNOCKBACK_UUID, "Elbow Strike Knockback Bonus", knockbackBonus, Operation.ADDITION));
-    }
-
-    public void removeAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
-        super.removeAttributeModifiers(entity, attributes, amplifier);
-        attributes.getInstance(Attributes.ATTACK_KNOCKBACK).removeModifier(ELBOW_STRIKE_KNOCKBACK_UUID);
+        this.addAttributeModifier(Attributes.ATTACK_KNOCKBACK, ELBOW_STRIKE_KNOCKBACK_UUID, 1.0, Operation.ADDITION);
     }
 
     public boolean isDurationEffectTick(int duration, int amplifier) {
-        return false;
+        return true;
     }
 }

@@ -48,14 +48,14 @@ public class CreativeTabEvents {
             boolean anchorFound = entries.getDisplayStacks().stream().anyMatch(stack -> stack.is(anchorItem));
             if (anchorFound) {
                 //调用顺序与官方一致（BFXM 起、QXXY 止），插入结果同为反序紧贴锚点
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.BFXM_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.BMT_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CHEN_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.DREAM_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CHA_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.RABBIT_PAINTING_ITEM);
-                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CH_PAINTING_ITEM);
                 addPaintingAfterAnchor(entries, anchorItem, ModPaintings.QXXY_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.DREAM_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CH_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.RABBIT_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CHA_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.CHEN_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.BMT_PAINTING_ITEM);
+                addPaintingAfterAnchor(entries, anchorItem, ModPaintings.BFXM_PAINTING_ITEM);
             }
         }
     }

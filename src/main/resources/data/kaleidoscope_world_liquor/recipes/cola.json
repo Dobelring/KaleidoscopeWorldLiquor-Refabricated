@@ -3,7 +3,12 @@
   "category": "food",
   "ingredients": [
     {
-      "item": "minecraft:potion", "nbt":"{Potion:water}"
+      "fabric:type": "fabric:nbt",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "nbt": "{Potion:\"minecraft:water\"}",
+      "strict": false
     },
     {
       "item": "minecraft:sugar"

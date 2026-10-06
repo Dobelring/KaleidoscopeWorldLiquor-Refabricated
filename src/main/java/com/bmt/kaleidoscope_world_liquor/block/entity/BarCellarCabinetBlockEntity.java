@@ -3,6 +3,7 @@ package com.bmt.kaleidoscope_world_liquor.block.entity;
 import com.bmt.kaleidoscope_world_liquor.block.BarCellarCabinetBlock;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.github.ysbbbbbb.kaleidoscopetavern.blockentity.deco.StorageBlockEntity;
+import com.github.ysbbbbbb.kaleidoscopetavern.item.BottleBlockItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.util.forge.IItemHandler;
 import com.github.ysbbbbbb.kaleidoscopetavern.util.forge.ItemStackHandler;
 import java.util.ArrayList;
@@ -35,6 +36,26 @@ public class BarCellarCabinetBlockEntity extends StorageBlockEntity {
         super(ModBlockEntities.BAR_CELLAR_CABINET_BE, pos, state, 9);
     }
 
+    /** 官方 1.1.12-fix：酒窖柜可放置判定（原生瓶查黑名单 tag，其余查 placeable tag）。 */
+    private boolean canPlace(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        } else {
+            boolean isNativeBottle = stack.getItem() instanceof BottleBlockItem;
+            return isNativeBottle
+                ? !stack.is(BarCellarCabinetBlock.BAR_CELLAR_CABINET_NATIVE_BLACKLIST)
+                : stack.is(BarCellarCabinetBlock.BAR_CELLAR_CABINET_PLACEABLE);
+        }
+    }
+
+    /** 官方 onContentChanged：刷新 + 邻块比较器更新（比较器交互新增项）。 */
+    private void onContentChanged() {
+        this.refresh();
+        if (this.level != null) {
+            this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
+        }
+    }
+
     private IItemHandler createFilteredHandler() {
         final ItemStackHandler original = this.getItems();
         return new IItemHandler() {
@@ -47,52 +68,77 @@ public class BarCellarCabinetBlockEntity extends StorageBlockEntity {
                 return original.getStackInSlot(slot);
             }
 
+            // 官方 1.1.12-fix：仅空槽可插入且按 canPlace 过滤；每槽限 1；允许漏斗抽出
             @NotNull
             public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-                if (!stack.is(BarCellarCabinetBlock.BAR_CELLAR_CABINET_PLACEABLE)) {
+                if (stack.isEmpty() || !BarCellarCabinetBlockEntity.this.canPlace(stack)) {
                     return stack;
-                } else {
-                    ItemStack remainder = original.insertItem(slot, stack, simulate);
-                    if (!simulate && remainder.getCount() != stack.getCount()) {
-                        BarCellarCabinetBlockEntity.this.refresh();
-                    }
-
-                    return remainder;
                 }
+
+                ItemStack existing = original.getStackInSlot(slot);
+                if (!existing.isEmpty()) {
+                    return stack;
+                }
+
+                if (!simulate) {
+                    original.setStackInSlot(slot, stack.copyWithCount(1));
+                    BarCellarCabinetBlockEntity.this.onContentChanged();
+                }
+
+                return stack.copyWithCount(stack.getCount() - 1);
             }
 
             @NotNull
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return ItemStack.EMPTY;
+                if (amount <= 0) {
+                    return ItemStack.EMPTY;
+                }
+
+                ItemStack existing = original.getStackInSlot(slot);
+                if (existing.isEmpty()) {
+                    return ItemStack.EMPTY;
+                }
+
+                int extract = Math.min(amount, existing.getCount());
+                ItemStack result = existing.copyWithCount(extract);
+                if (!simulate) {
+                    if (extract >= existing.getCount()) {
+                        original.setStackInSlot(slot, ItemStack.EMPTY);
+                    } else {
+                        original.setStackInSlot(slot, existing.copyWithCount(existing.getCount() - extract));
+                    }
+
+                    BarCellarCabinetBlockEntity.this.onContentChanged();
+                }
+
+                return result;
             }
 
             public int getSlotLimit(int slot) {
-                return original.getSlotLimit(slot);
+                return 1;
             }
 
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                return stack.is(BarCellarCabinetBlock.BAR_CELLAR_CABINET_PLACEABLE) && original.isItemValid(slot, stack);
+                return BarCellarCabinetBlockEntity.this.canPlace(stack);
             }
 
-            // tavern 的 IItemHandler 比 Forge 版多一个 setStackInSlot（NeoForge 接口形状），
-            // 匿名类需要实现；传输 API 槽位的提交/回滚经此写回，与原 insertItem 成功后的写入一致
+            // tavern 的 IItemHandler 比 Forge 版多一个 setStackInSlot（NeoForge 接口形状）；
+            // 传输 API 槽位提交/回滚经此写回
             public void setStackInSlot(int slot, @NotNull ItemStack stack) {
                 original.setStackInSlot(slot, stack);
             }
         };
     }
 
-    // Fabric：原 Forge 对各面返回同一个过滤后的 IItemHandler（只允许 tag 内物品插入、禁止抽出）
+    // Fabric：原 Forge 对各面返回同一个自动化 IItemHandler；side==null 不暴露（原 getCapability 守卫）
     public Storage<ItemVariant> getItemStorage(@Nullable Direction side) {
-        return new FilteredStorage(this.createFilteredHandler(), this::refresh);
+        if (side == null) {
+            return null;
+        }
+
+        return new FilteredStorage(this.createFilteredHandler(), this::onContentChanged);
     }
 
-    /**
-     * Fabric：把过滤后的 IItemHandler 适配成传输 API 的 Storage。
-     * 每个槽位是一个 {@link SingleStackStorage}（自带事务快照与回滚），
-     * 插入按 isItemValid（tag 过滤）放行，抽出一律拒绝（原 extractItem 恒返回 EMPTY），
-     * 事务提交成功后 refresh()（等价原 insertItem 成功后的 refresh()）。
-     */
     private static class FilteredStorage implements Storage<ItemVariant> {
         private final List<FilteredSlotStorage> slots = new ArrayList<>();
 

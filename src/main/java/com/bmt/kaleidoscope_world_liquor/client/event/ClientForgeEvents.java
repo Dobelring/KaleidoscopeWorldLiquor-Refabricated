@@ -44,6 +44,8 @@ public class ClientForgeEvents {
         }
 
         registered = true;
+        // 官方 1.1.12：宝藏感知改为服务端下发——注册客户端接收器
+        com.bmt.kaleidoscope_world_liquor.network.NetworkHandler.registerClient();
         TreasureSenseRender.register();
         WorldRenderEvents.BEFORE_ENTITIES.register(ClientForgeEvents::onRenderLevelStage);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onPlayerLoggedOut());

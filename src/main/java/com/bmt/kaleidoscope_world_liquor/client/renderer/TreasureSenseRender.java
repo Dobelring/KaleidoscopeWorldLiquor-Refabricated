@@ -10,7 +10,10 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexBuffer.Usage;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -20,13 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.vehicle.MinecartChest;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BarrelBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.TrappedChestBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
@@ -37,32 +34,26 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 /**
- * 宝物感知：穿透线框（关深度测试的 DEBUG_LINES 顶点缓冲）+ 矿车发光队伍。
+ * 宝藏感知：穿透线框（关深度测试的 DEBUG_LINES 顶点缓冲）+ 容器/矿车发光队伍。
  *
- * <p>原 Forge：{@code @EventBusSubscriber(Bus.FORGE, Dist.CLIENT)} 下三个 @SubscribeEvent——
- * {@code RenderLevelStageEvent(AFTER_SOLID_BLOCKS)} 画线框、{@code RenderTickEvent(Phase.END)}
- * 更新发光队伍、以及 {@link #freeBuffer()}。Fabric 映射：
+ * <p>官方 1.1.12 重构：目标列表改由服务端扫描后经 TreasureSensePacket 下发
+ * （原客户端 5×5 区块自行扫描箱子/木桶 + 近身矿车距离判定全部移除），
+ * 客户端只负责按包内坐标重建线框、按包内实体 id 点亮矿车。
+ *
+ * <p>Fabric 事件映射（沿用移植版既有方案）：
  * <ul>
- *   <li>画线框 → {@code WorldRenderEvents.BEFORE_ENTITIES}（见 {@link #register()}）；
- *       原 Forge 下 ClientForgeEvents 的 AFTER_CUTOUT_BLOCKS 钩子也会调用 renderTreasures，
- *       两个阶段各画一次，这里两个钩子都挂到同一回调点，保留每帧两次绘制的原语义。</li>
- *   <li>RenderTickEvent(Phase.END) → {@code ClientTickEvents.END_CLIENT_TICK}（行为等价，
- *       频率由每渲染帧改为每客户端 tick 20Hz；发光队伍/计分板更新不需要逐帧）。</li>
+ *   <li>画线框 → {@code WorldRenderEvents.BEFORE_ENTITIES}；</li>
+ *   <li>发光队伍更新 → {@code ClientTickEvents.END_CLIENT_TICK}（原 Forge 逐帧 END tick）。 </li>
  * </ul>
  */
 @Environment(EnvType.CLIENT)
 public class TreasureSenseRender {
     private static VertexBuffer vertexBuffer;
-    private static boolean requestedRefresh = false;
-    private static long lastScanTime = 0L;
-    private static final int SCAN_INTERVAL = 20;
-    private static final int SCAN_RADIUS = 24;
+    private static boolean dirty = true;
+    private static final List<BlockPos> LOOT_BLOCK_POSITIONS = new CopyOnWriteArrayList<>();
+    private static volatile Set<Integer> lootMinecartIds = Set.of();
+    private static final int GLOW_COLOR = 16766720;
     private static final String GOLD_GLOW_TEAM = "kaleidoscope_gold_glow";
-    private static final List<TreasureSenseRender.ContainerType> CONTAINERS = List.of(
-        new TreasureSenseRender.ContainerType(TrappedChestBlockEntity.class, 16729156),
-        new TreasureSenseRender.ContainerType(ChestBlockEntity.class, 16766720),
-        new TreasureSenseRender.ContainerType(BarrelBlockEntity.class, 16766720)
-    );
 
     public TreasureSenseRender() {
     }
@@ -83,6 +74,14 @@ public class TreasureSenseRender {
         ClientTickEvents.END_CLIENT_TICK.register(client -> onRenderTick());
     }
 
+    /** 服务端 TreasureSensePacket 到达后由 ClientPacketHandler 调用（官方 handleTreasureSense/updateLootTargets 等价）。 */
+    public static void updateLootTargets(List<BlockPos> positions, List<Integer> minecartIds) {
+        LOOT_BLOCK_POSITIONS.clear();
+        LOOT_BLOCK_POSITIONS.addAll(positions);
+        lootMinecartIds = Set.copyOf(minecartIds);
+        dirty = true;
+    }
+
     // 原签名 onRenderLevelStage(RenderLevelStageEvent)，判定 stage == AFTER_SOLID_BLOCKS；
     // Fabric 的 WorldRenderEvents 无分段，直接绘制（renderTreasures 内部自带效果判定）。
     public static void onRenderLevelStage(WorldRenderContext event) {
@@ -93,14 +92,8 @@ public class TreasureSenseRender {
         if (RenderSystem.isOnRenderThread()) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && mc.player.hasEffect(ModEffects.TREASURE_SENSE_EFFECT)) {
-                long currentTime = System.currentTimeMillis();
-                if (currentTime - lastScanTime > 1000L) {
-                    requestedRefresh = true;
-                    lastScanTime = currentTime;
-                }
-
-                if (vertexBuffer == null || requestedRefresh) {
-                    requestedRefresh = false;
+                if (vertexBuffer == null || dirty) {
+                    dirty = false;
                     rebuildVertexBuffer();
                 }
 
@@ -139,9 +132,7 @@ public class TreasureSenseRender {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.level != null && !mc.isPaused()) {
             boolean hasTreasureSense = mc.player.hasEffect(ModEffects.TREASURE_SENSE_EFFECT);
-            double rangeSq = 576.0;
-            List<MinecartChest> minecarts = mc.level
-                .getEntitiesOfClass(MinecartChest.class, mc.player.getBoundingBox().inflate(29.0), minecartx -> !minecartx.isRemoved());
+            Set<Integer> targetIds = hasTreasureSense ? lootMinecartIds : Collections.emptySet();
             Scoreboard scoreboard = mc.level.getScoreboard();
             PlayerTeam goldTeam = scoreboard.getPlayerTeam("kaleidoscope_gold_glow");
             if (goldTeam == null) {
@@ -151,12 +142,12 @@ public class TreasureSenseRender {
                 goldTeam.setNameTagVisibility(Visibility.NEVER);
             }
 
-            for (MinecartChest minecart : minecarts) {
+            for (AbstractMinecartContainer minecart : mc.level
+                .getEntitiesOfClass(AbstractMinecartContainer.class, mc.player.getBoundingBox().inflate(64.0), minecartx -> !minecartx.isRemoved())) {
                 IGlowingEntity glowingMinecart = (IGlowingEntity)minecart;
-                double distanceSq = mc.player.distanceToSqr(minecart);
-                boolean shouldGlow = hasTreasureSense && distanceSq <= rangeSq;
-                boolean isCurrentlyModGlowing = glowingMinecart.isModGlowing();
-                if (isCurrentlyModGlowing != shouldGlow) {
+                boolean shouldGlow = targetIds.contains(minecart.getId());
+                boolean isCurrentlyGlowing = glowingMinecart.isModGlowing();
+                if (isCurrentlyGlowing != shouldGlow) {
                     if (shouldGlow) {
                         scoreboard.addPlayerToTeam(minecart.getStringUUID(), goldTeam);
                         glowingMinecart.setGlowing(true);
@@ -167,18 +158,8 @@ public class TreasureSenseRender {
                 }
             }
 
-            if (!hasTreasureSense) {
-                for (MinecartChest minecartx : minecarts) {
-                    IGlowingEntity glowingMinecart = (IGlowingEntity)minecartx;
-                    if (glowingMinecart.isModGlowing()) {
-                        glowingMinecart.setGlowing(false);
-                        scoreboard.removePlayerFromTeam(minecartx.getStringUUID(), goldTeam);
-                    }
-                }
-
-                if (goldTeam.getPlayers().isEmpty()) {
-                    scoreboard.removePlayerTeam(goldTeam);
-                }
+            if (!hasTreasureSense && goldTeam.getPlayers().isEmpty()) {
+                scoreboard.removePlayerTeam(goldTeam);
             }
         }
     }
@@ -190,38 +171,18 @@ public class TreasureSenseRender {
                 vertexBuffer = null;
             }
 
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null && mc.level != null) {
-                vertexBuffer = new VertexBuffer(Usage.STATIC);
-                Tesselator tessellator = Tesselator.getInstance();
-                BufferBuilder buffer = tessellator.getBuilder();
-                buffer.begin(Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-                BlockPos playerPos = mc.player.blockPosition();
-                ChunkPos playerChunkPos = mc.player.chunkPosition();
-                int chunkRadius = 2;
+            vertexBuffer = new VertexBuffer(Usage.DYNAMIC);
+            Tesselator tessellator = Tesselator.getInstance();
+            BufferBuilder buffer = tessellator.getBuilder();
+            buffer.begin(Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
-                for (int cx = playerChunkPos.x - chunkRadius; cx <= playerChunkPos.x + chunkRadius; cx++) {
-                    for (int cz = playerChunkPos.z - chunkRadius; cz <= playerChunkPos.z + chunkRadius; cz++) {
-                        LevelChunk chunk = mc.level.getChunk(cx, cz);
-                        if (chunk != null && !chunk.isEmpty()) {
-                            for (BlockEntity be : chunk.getBlockEntities().values()) {
-                                if (!be.isRemoved() && !(be.getBlockPos().distSqr(playerPos) > 576.0)) {
-                                    for (TreasureSenseRender.ContainerType type : CONTAINERS) {
-                                        if (type.clazz.isInstance(be)) {
-                                            drawBox(buffer, be.getBlockPos(), type.color, 1.0F);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                vertexBuffer.bind();
-                vertexBuffer.upload(buffer.end());
-                VertexBuffer.unbind();
+            for (BlockPos pos : LOOT_BLOCK_POSITIONS) {
+                drawBox(buffer, pos, GLOW_COLOR, 1.0F);
             }
+
+            vertexBuffer.bind();
+            vertexBuffer.upload(buffer.end());
+            VertexBuffer.unbind();
         }
     }
 
@@ -251,7 +212,7 @@ public class TreasureSenseRender {
         buffer.vertex(x + size, y, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y, z + size).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y + size, z + size).color(r, g, b, opacity).endVertex();
-        buffer.vertex(x + size, y, z).color(r, g, b, opacity).endVertex();
+        buffer.vertex(x + size, y + size, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y + size, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x, y, z + size).color(r, g, b, opacity).endVertex();
         buffer.vertex(x, y + size, z + size).color(r, g, b, opacity).endVertex();
@@ -266,14 +227,16 @@ public class TreasureSenseRender {
                 vertexBuffer = null;
             }
 
+            LOOT_BLOCK_POSITIONS.clear();
+            lootMinecartIds = Set.of();
             Minecraft mc = Minecraft.getInstance();
             if (mc.level != null) {
                 Scoreboard scoreboard = mc.level.getScoreboard();
                 PlayerTeam goldTeam = scoreboard.getPlayerTeam("kaleidoscope_gold_glow");
 
-                for (MinecartChest minecart : mc.level
+                for (AbstractMinecartContainer minecart : mc.level
                     .getEntitiesOfClass(
-                        MinecartChest.class,
+                        AbstractMinecartContainer.class,
                         mc.player != null ? mc.player.getBoundingBox().inflate(1000.0) : new AABB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
                         minecartx -> !minecartx.isRemoved()
                     )) {
@@ -291,8 +254,5 @@ public class TreasureSenseRender {
                 }
             }
         }
-    }
-
-    private record ContainerType(Class<? extends BlockEntity> clazz, int color) {
     }
 }
