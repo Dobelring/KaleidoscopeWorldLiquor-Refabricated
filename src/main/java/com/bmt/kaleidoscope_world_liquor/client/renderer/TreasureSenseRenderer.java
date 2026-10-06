@@ -170,7 +170,7 @@ public class TreasureSenseRenderer {
       vertex(pose, buffer, x + size, y, z, r, g, b, opacity);
       vertex(pose, buffer, x + size, y, z + size, r, g, b, opacity);
       vertex(pose, buffer, x + size, y + size, z + size, r, g, b, opacity);
-      vertex(pose, buffer, x + size, y + size, z, r, g, b, opacity);
+      vertex(pose, buffer, x + size, y, z, r, g, b, opacity);
       vertex(pose, buffer, x + size, y + size, z, r, g, b, opacity);
       vertex(pose, buffer, x, y, z + size, r, g, b, opacity);
       vertex(pose, buffer, x, y + size, z + size, r, g, b, opacity);

@@ -66,8 +66,7 @@ public class EventHandlers {
    private static final TagKey<EntityType<?>> BOSSES_TAG = TagKey.create(
       BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "bosses")
    );
-   private static final TagKey<Block> CROPS_TAG = BlockTags.CROPS;
-   private static final int TREASURE_SENSE_RADIUS = 24;
+   private static final TagKey<Block> CROPS_TAG = BlockTags.CROPS;private static final int TREASURE_SENSE_RADIUS = 24;
    private static final TagKey<Block> ORES_TAG = TagKey.create(
       BuiltInRegistries.BLOCK.key(), ResourceLocation.fromNamespaceAndPath("c", "ores")
    );
