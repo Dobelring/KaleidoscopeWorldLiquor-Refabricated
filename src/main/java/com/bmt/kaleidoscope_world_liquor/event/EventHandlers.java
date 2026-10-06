@@ -95,8 +95,7 @@ public class EventHandlers {
     private static final String BEHEADED_MARKER = "kaleidoscope_world_liquor_beheaded";
     private static final String CREATIVE_FLIGHT_MARKER = "kaleidoscope_world_liquor_creative_flight";
     private static final TagKey<Block> CROPS_TAG = BlockTags.CROPS;
-    private static final TagKey<Block> ORES_TAG = TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "ores"));
-    private static final int TREASURE_SENSE_RADIUS = 24;
+    private static final TagKey<Block> ORES_TAG = TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "ores"));private static final int TREASURE_SENSE_RADIUS = 24;
 
     /**
      * 斩首标记。原 Forge 用 {@code Entity#getPersistentData()}（随实体 NBT 落盘），

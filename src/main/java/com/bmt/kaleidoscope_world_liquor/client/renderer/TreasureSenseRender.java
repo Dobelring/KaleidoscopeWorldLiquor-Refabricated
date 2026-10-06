@@ -212,7 +212,7 @@ public class TreasureSenseRender {
         buffer.vertex(x + size, y, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y, z + size).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y + size, z + size).color(r, g, b, opacity).endVertex();
-        buffer.vertex(x + size, y + size, z).color(r, g, b, opacity).endVertex();
+        buffer.vertex(x + size, y, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x + size, y + size, z).color(r, g, b, opacity).endVertex();
         buffer.vertex(x, y, z + size).color(r, g, b, opacity).endVertex();
         buffer.vertex(x, y + size, z + size).color(r, g, b, opacity).endVertex();
