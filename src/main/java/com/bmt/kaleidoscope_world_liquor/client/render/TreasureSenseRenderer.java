@@ -39,6 +39,8 @@ public final class TreasureSenseRenderer {
     private static volatile Set<Integer> lootMinecartIds = Set.of();
 
     private static final int GLOW_COLOR = 16766720;
+    /** Gizmos 颜色按 ARGB 解析：官方 16766720=0x00FFD700 高位 alpha 为 0 → 全透明不可见，必须补不透明位。 */
+    private static final int GLOW_COLOR_ARGB = 0xFF000000 | GLOW_COLOR;
     private static final double MINECART_INFLATE = 64.0;
     private static final String GOLD_GLOW_TEAM = "kaleidoscope_gold_glow";
     private static final float BOX_LINE_WIDTH = 2.0F;
@@ -57,7 +59,7 @@ public final class TreasureSenseRenderer {
                 return;
             }
             for (BlockPos pos : targets) {
-                Gizmos.cuboid(pos, GizmoStyle.stroke(GLOW_COLOR, BOX_LINE_WIDTH)).setAlwaysOnTop();
+                Gizmos.cuboid(pos, GizmoStyle.stroke(GLOW_COLOR_ARGB, BOX_LINE_WIDTH)).setAlwaysOnTop();
             }
         });
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(mc -> {
