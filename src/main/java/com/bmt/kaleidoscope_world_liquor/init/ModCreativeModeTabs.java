@@ -154,8 +154,9 @@ public final class ModCreativeModeTabs {
         CreativeModeTabEvents.modifyOutputEvent(tavernDecoTab).register(entries ->
                 ((FabricCreativeModeTabOutput) entries).insertAfter(
                         com.github.ysbbbbbb.kaleidoscopetavern.init.ModItems.MASTER_MARISA_PAINTING,
-                        ModPaintings.BFXM_PAINTING, ModPaintings.BMT_PAINTING, ModPaintings.CHEN_PAINTING,
-                        ModPaintings.DREAM_PAINTING, ModPaintings.CHA_PAINTING, ModPaintings.RABBIT_PAINTING,
-                        ModPaintings.CH_PAINTING, ModPaintings.QXXY_PAINTING));
+                        // 官方 1.1.11 挂画顺序：QXXY, DREAM, CH, RABBIT, CHA, CHEN, BMT, BFXM
+                        ModPaintings.QXXY_PAINTING, ModPaintings.DREAM_PAINTING, ModPaintings.CH_PAINTING,
+                        ModPaintings.RABBIT_PAINTING, ModPaintings.CHA_PAINTING, ModPaintings.CHEN_PAINTING,
+                        ModPaintings.BMT_PAINTING, ModPaintings.BFXM_PAINTING));
     }
 }

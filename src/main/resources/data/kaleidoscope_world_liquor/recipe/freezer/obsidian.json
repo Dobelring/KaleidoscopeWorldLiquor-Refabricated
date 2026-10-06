@@ -4,9 +4,9 @@
   "fluid_amount": 1000,
   "ingredients": [],
   "result": {
-    "id": "minecraft:magma_block",
-    "count": 3
+    "id": "minecraft:obsidian",
+    "count": 1
   },
   "craft_time": 1800,
-  "texture": "minecraft:block/magma"
+  "texture": "minecraft:block/obsidian"
 }

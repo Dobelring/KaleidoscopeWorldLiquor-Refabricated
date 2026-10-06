@@ -3,7 +3,7 @@
   "ingredients": [
     "#kaleidoscope_tavern:cocktail_ingredient_dark_blue",
     "#kaleidoscope_tavern:cocktail_ingredient_aqua",
-    "#kaleidoscope_tavern:cocktail_ingredient_red"
+    "#kaleidoscope_tavern:cocktail_ingredient_light_purple"
   ],
   "result": {
     "id": "kaleidoscope_tavern:sculk_special"

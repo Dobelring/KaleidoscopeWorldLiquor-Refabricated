@@ -1,7 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    "minecraft:potion",
+    {
+      "fabric:type": "fabric:components",
+      "base": "minecraft:potion",
+      "components": {"minecraft:potion_contents": {"potion": "minecraft:water"}}
+    },
     "minecraft:sugar",
     "minecraft:vine"
   ],

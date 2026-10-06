@@ -1,7 +1,7 @@
 {
   "type": "kaleidoscope_tavern:shaker",
   "ingredients": [
-    "#kaleidoscope_tavern:cocktail_ingredient_blue",
+    "#kaleidoscope_tavern:cocktail_ingredient_light_blue",
     "#kaleidoscope_tavern:cocktail_ingredient_yellow",
     "#kaleidoscope_tavern:cocktail_ingredient_red"
   ],

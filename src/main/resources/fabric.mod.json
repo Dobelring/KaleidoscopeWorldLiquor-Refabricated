@@ -43,5 +43,11 @@
   },
   "recommends": {
     "create": "*"
+  },
+  "icon": "assets/kaleidoscope_world_liquor/icon.png",
+  "custom": {
+    "catalogue": {
+      "banner": "assets/kaleidoscope_world_liquor/background.png"
+    }
   }
 }

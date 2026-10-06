@@ -2,7 +2,6 @@ package com.bmt.kaleidoscope_world_liquor.client.creativetab;
 
 import com.bmt.kaleidoscope_world_liquor.init.ModCreativeModeTabs;
 import com.bmt.kaleidoscope_world_liquor.init.ModItems;
-import com.bmt.kaleidoscope_world_liquor.util.PortHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.creativetab.v1.FabricCreativeModeInventoryScreen;
@@ -35,8 +34,11 @@ import java.util.function.Supplier;
  */
 @Environment(EnvType.CLIENT)
 public final class CreativeTabFilter {
-    private static final Identifier SELECTED_FILTER_TAB = PortHelper.id("filter_tab_selected");
-    private static final Identifier UNSELECTED_FILTER_TAB = PortHelper.id("filter_tab_unselected");
+    // 官方 1.1.11：弃用自绘 filter_tab_* 贴图（贴图已删），改用原版创造栏页签精灵（32×26）
+    private static final Identifier TAB_TOP_SELECTED =
+            Identifier.withDefaultNamespace("container/creative_inventory/tab_top_selected_2");
+    private static final Identifier TAB_TOP_UNSELECTED =
+            Identifier.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
     private static final int BUTTON_WIDTH = 32;
     private static final int BUTTON_HEIGHT = 26;
     private static final List<FilterButton> BUTTONS = new ArrayList<>();
@@ -132,10 +134,19 @@ public final class CreativeTabFilter {
 
         @Override
         protected void extractContents(GuiGraphicsExtractor extractor, int mouseX, int mouseY, float partialTick) {
+            boolean active = selectedCategory == this.category;
+            if (!active) {
+                // 页签挂在面板左缘（x = guiLeft-28）：非激活页签裁到面板边界内
+                // （原版 getGuiLeft 为 protected，用按钮自身坐标反推等价边界）
+                extractor.enableScissor(0, 0, this.getX() + 28, extractor.guiHeight());
+            }
             extractor.blitSprite(RenderPipelines.GUI_TEXTURED,
-                    selectedCategory == this.category ? SELECTED_FILTER_TAB : UNSELECTED_FILTER_TAB,
+                    active ? TAB_TOP_SELECTED : TAB_TOP_UNSELECTED,
                     this.getX(), this.getY(), BUTTON_WIDTH, BUTTON_HEIGHT);
             extractor.item(this.category.icon.get(), this.getX() + 8, this.getY() + 5);
+            if (!active) {
+                extractor.disableScissor();
+            }
         }
     }
 }

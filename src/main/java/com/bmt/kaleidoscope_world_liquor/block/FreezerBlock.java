@@ -52,10 +52,10 @@ public class FreezerBlock extends BaseEntityBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
 
-    private static final VoxelShape SHAPE_NORTH = Block.box(0.0, 0.0, 1.0, 16.0, 12.0, 14.0);
-    private static final VoxelShape SHAPE_SOUTH = Block.box(0.0, 0.0, 2.0, 16.0, 12.0, 15.0);
-    private static final VoxelShape SHAPE_EAST = Block.box(2.0, 0.0, 0.0, 15.0, 12.0, 16.0);
-    private static final VoxelShape SHAPE_WEST = Block.box(1.0, 0.0, 0.0, 14.0, 12.0, 16.0);
+    // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)（几何与原四向逐值一致）
+    private static final java.util.Map<Direction, VoxelShape> SHAPES =
+            com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(
+                    Block.box(0.0, 0.0, 1.0, 16.0, 12.0, 14.0));
 
     public FreezerBlock(Properties properties) {
         super(properties);
@@ -129,13 +129,7 @@ public class FreezerBlock extends BaseEntityBlock {
 
     @Override
     protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return switch (state.getValue(FACING)) {
-            case NORTH -> SHAPE_NORTH;
-            case SOUTH -> SHAPE_SOUTH;
-            case EAST -> SHAPE_EAST;
-            case WEST -> SHAPE_WEST;
-            default -> SHAPE_NORTH;
-        };
+        return SHAPES.getOrDefault(state.getValue(FACING), SHAPES.get(Direction.NORTH));
     }
 
     @Override

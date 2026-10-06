@@ -3,11 +3,17 @@ package com.bmt.kaleidoscope_world_liquor.event;
 import com.bmt.kaleidoscope_world_liquor.blockentity.BarCellarCabinetBlockEntity;
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
 import com.bmt.kaleidoscope_world_liquor.init.ModTags;
+import com.bmt.kaleidoscope_world_liquor.mixin.accessor.BrushableBlockEntityAccessor;
+import com.bmt.kaleidoscope_world_liquor.network.NetworkHandler;
+import com.bmt.kaleidoscope_world_liquor.network.TreasureSensePayload;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,27 +25,40 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BrushableBlockEntity;
+import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * 淘金热（treasure_guide）/ 斩首（beheading）/ 春野之息（bonemeal_spreader）/
+ * 淘金热（treasure_guide）/ 斩首（beheading）/ 宝藏感知服务端下发（treasure_sense）/
  * 冰霜行者（frost_walker）/ 多段跳摔落豁免（multi_jump，mixin 部分）的服务端逻辑。
+ * <p>
+ * 官方 1.1.11：春野之息（bonemeal_spreader）整体移除，宝藏感知改为服务端每 20 tick
+ * 扫描后经 TreasureSensePayload 下发。
  */
 public final class EventHandlers {
     private static final RandomSource RANDOM = RandomSource.create();
+    /** 宝藏感知扫描半径（24 格 / 5×5 区块） */
+    private static final int TREASURE_SENSE_RADIUS = 24;
 
     private EventHandlers() {
     }
@@ -51,7 +70,7 @@ public final class EventHandlers {
         ServerLivingEntityEvents.AFTER_DEATH.register(EventHandlers::onLivingDeath);
         // ===== 淘金热：挖方块双倍掉落 =====
         PlayerBlockBreakEvents.AFTER.register(EventHandlers::onBlockBreak);
-        // ===== 骨粉扩散（春野之息）与冰霜行者：玩家 tick =====
+        // ===== 冰霜行者与宝藏感知：玩家 tick =====
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
             // 每个玩家在 PlayerTick 的等效：在服务端 tick 末尾遍历在线玩家
             for (Player player : server.getPlayerList().getPlayers()) {
@@ -63,16 +82,65 @@ public final class EventHandlers {
                     applyFrostWalker(player, frost.getAmplifier());
                 }
                 updateCreativeFlight(player);
-                var bonemeal = player.getEffect(ModEffects.BONEMEAL_SPREADER);
-                if (bonemeal != null && bonemeal.getDuration() % 20 == 0) {
-                    int amplifier = bonemeal.getAmplifier();
-                    spreadBonemealOnGround(player, amplifier);
-                    if (bonemeal.getDuration() % 40 == 0) {
-                        spreadBonemealOnPlants(player, amplifier);
-                    }
+                // 官方 1.1.11：春野之息移除，改为宝藏感知每 20tick 服务端扫描下发
+                if (player.hasEffect(ModEffects.TREASURE_SENSE) && player.tickCount % 20 == 0) {
+                    syncTreasureSenseTargets(player);
                 }
             }
         });
+    }
+
+    /**
+     * 官方 1.1.11：服务端扫描 5×5 区块 24 格内有战利品表的容器 / 饰纹陶罐（Brushable）/
+     * 陶罐（DecoratedPot）+ 近身 24 格有战利品表的容器矿车，打包下发。
+     */
+    private static void syncTreasureSenseTargets(Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer) || !(player.level() instanceof ServerLevel level)) {
+            return;
+        }
+        ArrayList<BlockPos> targets = new ArrayList<>();
+        BlockPos playerPos = player.blockPosition();
+        // 26.x：ChunkPos 已改为 record——用 ChunkPos.containing(BlockPos) 工厂 + x()/z() 访问器
+        ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
+        int chunkRadius = 2;
+        double radiusSq = 576.0;
+
+        for (int cx = playerChunkPos.x() - chunkRadius; cx <= playerChunkPos.x() + chunkRadius; cx++) {
+            for (int cz = playerChunkPos.z() - chunkRadius; cz <= playerChunkPos.z() + chunkRadius; cz++) {
+                LevelChunk chunk = level.getChunk(cx, cz);
+                if (chunk == null || chunk.isEmpty()) {
+                    continue;
+                }
+                for (BlockEntity be : chunk.getBlockEntities().values()) {
+                    if (be.isRemoved()) {
+                        continue;
+                    }
+                    BlockPos pos = be.getBlockPos();
+                    if (pos.distSqr(playerPos) > radiusSq) {
+                        continue;
+                    }
+                    // 26.x：getLootTable() 返回 ResourceKey<LootTable>（非 ResourceLocation）
+                    if (be instanceof RandomizableContainerBlockEntity container && container.getLootTable() != null) {
+                        targets.add(pos.immutable());
+                    } else if (be instanceof BrushableBlockEntity
+                            && ((BrushableBlockEntityAccessor) be).kwl$getLootTable() != null) {
+                        targets.add(pos.immutable());
+                    } else if (be instanceof DecoratedPotBlockEntity pot && pot.getLootTable() != null) {
+                        targets.add(pos.immutable());
+                    }
+                }
+            }
+        }
+
+        List<Integer> lootMinecartIds = new ArrayList<>();
+        for (AbstractMinecartContainer minecart : level.getEntitiesOfClass(
+                AbstractMinecartContainer.class,
+                player.getBoundingBox().inflate(TREASURE_SENSE_RADIUS),
+                minecartx -> !minecartx.isRemoved() && minecartx.getContainerLootTable() != null)) {
+            lootMinecartIds.add(minecart.getId());
+        }
+
+        NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
     }
 
     /** 龙舌兰（tequila）：单次伤害不超过最大生命的百分比（40%-5%/级，下限 5%） */
@@ -153,7 +221,7 @@ public final class EventHandlers {
         // 淘金热：复制掉落物
         if (source.getEntity() instanceof LivingEntity attacker && attacker.hasEffect(ModEffects.TREASURE_GUIDE)) {
             int amplifier = attacker.getEffect(ModEffects.TREASURE_GUIDE).getAmplifier();
-            double totalChance = 0.15 + amplifier * 0.05;
+            double totalChance = Math.min(0.15 + amplifier * 0.05, 1.0);
             if (RANDOM.nextDouble() < totalChance) {
                 java.util.List<ItemEntity> drops = entity.level().getEntitiesOfClass(
                         ItemEntity.class, entity.getBoundingBox().inflate(2.0), itemEntity -> itemEntity.isAlive());
@@ -205,20 +273,44 @@ public final class EventHandlers {
             return new ItemStack(Items.ZOMBIE_HEAD);
         } else if (entity.getClass() == Skeleton.class) {
             return new ItemStack(Items.SKELETON_SKULL);
-        } else if (entity instanceof Creeper) {
+        } else if (entity.getClass() == Creeper.class) {
             return new ItemStack(Items.CREEPER_HEAD);
-        } else if (entity instanceof WitherSkeleton) {
+        } else if (entity.getClass() == WitherSkeleton.class) {
             return new ItemStack(Items.WITHER_SKELETON_SKULL);
+        } else if (entity.getClass() == net.minecraft.world.entity.monster.piglin.Piglin.class) {
+            return new ItemStack(Items.PIGLIN_HEAD);
         } else if (entity instanceof Player player) {
             ItemStack playerHead = new ItemStack(Items.PLAYER_HEAD);
             // 1.21.11 玩家头用 profile 组件
             playerHead.set(DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createResolved(player.getGameProfile()));
             return playerHead;
+        } else {
+            // 官方 1.1.11：通用命名匹配（<ns>:<path>_head/_skull、skull_/head_<path> 前缀、dead_、_item）
+            Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            if (entityId != null) {
+                String ns = entityId.getNamespace();
+                String path = entityId.getPath();
+                String[][] patterns = new String[][]{
+                        {path + "_head", path + "_skull"},
+                        {"skull_" + path, "head_" + path},
+                        {"dead_" + path},
+                        {path + "_item"}
+                };
+                for (String[] group : patterns) {
+                    for (String suffix : group) {
+                        // 26.x：DefaultedRegistry 用 getValue，缺失回落 AIR
+                        Item item = BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(ns, suffix));
+                        if (item != null && item != Items.AIR) {
+                            return new ItemStack(item);
+                        }
+                    }
+                }
+            }
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
     }
 
-    /** 淘金热：挖掘作物 15%/矿石 20% 概率补一份掉落 */
+    /** 淘金热：挖掘作物/矿物统一 15%+5%/级（上限 100%），补一份掉落 */
     private static void onBlockBreak(net.minecraft.world.level.Level world, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (world.isClientSide() || player == null) {
             return;
@@ -228,16 +320,12 @@ public final class EventHandlers {
             return;
         }
         int amplifier = effect.getAmplifier();
-        double baseChance = 0.0;
-        if (state.is(BlockTags.CROPS) || state.getBlock() instanceof CropBlock) {
-            baseChance = 0.15;
-        } else if (state.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK, net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ores")))) {
-            baseChance = 0.2;
-        }
-        if (baseChance <= 0.0) {
+        boolean isCrop = state.is(BlockTags.CROPS) || state.getBlock() instanceof CropBlock;
+        boolean isOre = state.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK, net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "ores")));
+        if (!isCrop && !isOre) {
             return;
         }
-        double totalChance = baseChance + amplifier * 0.05;
+        double totalChance = Math.min(0.15 + amplifier * 0.05, 1.0);
         if (RANDOM.nextDouble() < totalChance && world instanceof ServerLevel serverLevel) {
             LootParams.Builder params = new LootParams.Builder(serverLevel)
                     .withParameter(LootContextParams.ORIGIN, net.minecraft.world.phys.Vec3.atCenterOf(pos))
@@ -288,54 +376,5 @@ public final class EventHandlers {
                 serverLevel.setBlockAndUpdate(pos.immutable(), net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState());
             }
         }
-    }
-
-    /** 春野之息：地面骨粉 */
-    private static void spreadBonemealOnGround(Player player, int amplifier) {
-        if (!(player.level() instanceof ServerLevel level)) {
-            return;
-        }
-        BlockPos playerPos = player.blockPosition();
-        int range = 1 + amplifier;
-        BlockPos targetPos = playerPos.offset(RANDOM.nextInt(range * 2 + 1) - range, 0, RANDOM.nextInt(range * 2 + 1) - range);
-        applyBonemealIfGround(level, targetPos, player);
-        applyBonemealIfGround(level, targetPos.below(), player);
-    }
-
-    /** 春野之息：植物骨粉 */
-    private static void spreadBonemealOnPlants(Player player, int amplifier) {
-        if (!(player.level() instanceof ServerLevel level)) {
-            return;
-        }
-        BlockPos playerPos = player.blockPosition();
-        int range = 1 + amplifier;
-        BlockPos targetPos = playerPos.offset(RANDOM.nextInt(range * 2 + 1) - range, 0, RANDOM.nextInt(range * 2 + 1) - range);
-        applyBonemealIfPlant(level, targetPos, player);
-        applyBonemealIfPlant(level, targetPos.below(), player);
-    }
-
-    private static void applyBonemealIfGround(ServerLevel level, BlockPos pos, Player player) {
-        BlockState state = level.getBlockState(pos);
-        if (state.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock bonemealableBlock && !isPlantBlock(state)) {
-            bonemealableBlock.performBonemeal(level, level.getRandom(), pos, state);
-        }
-    }
-
-    private static void applyBonemealIfPlant(ServerLevel level, BlockPos pos, Player player) {
-        BlockState state = level.getBlockState(pos);
-        if (state.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock bonemealableBlock && isPlantBlock(state)) {
-            bonemealableBlock.performBonemeal(level, level.getRandom(), pos, state);
-        }
-    }
-
-    private static boolean isPlantBlock(BlockState state) {
-        if (!state.is(BlockTags.CROPS) && !state.is(BlockTags.SAPLINGS) && !state.is(BlockTags.FLOWERS)) {
-            String className = state.getBlock().getClass().getName();
-            return className.endsWith("VineBlock") || className.endsWith("CaveVinesBlock")
-                    || className.endsWith("BambooBlock") || className.endsWith("SugarCaneBlock")
-                    || className.endsWith("CactusBlock") || className.endsWith("NetherWartBlock")
-                    || className.endsWith("CocoaBlock") || className.endsWith("SweetBerryBushBlock");
-        }
-        return true;
     }
 }

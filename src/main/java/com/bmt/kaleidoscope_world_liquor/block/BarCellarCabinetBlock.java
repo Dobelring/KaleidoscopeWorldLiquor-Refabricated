@@ -113,6 +113,27 @@ public class BarCellarCabinetBlock extends AbstractStorageBlock {
         return new com.bmt.kaleidoscope_world_liquor.blockentity.BarCellarCabinetBlockEntity(pos, state);
     }
 
+    // 官方 1.1.11：酒窖柜比较器输出——非空槽计数（封顶 15）
+    @Override
+    protected boolean hasAnalogOutputSignal(@NotNull BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull net.minecraft.core.BlockPos pos, @NotNull Direction direction) {
+        if (level.getBlockEntity(pos) instanceof com.bmt.kaleidoscope_world_liquor.blockentity.BarCellarCabinetBlockEntity be) {
+            int count = 0;
+            var items = be.getItems();
+            for (int i = 0; i < items.getSlots(); i++) {
+                if (!items.getStackInSlot(i).isEmpty()) {
+                    count++;
+                }
+            }
+            return Math.min(15, count);
+        }
+        return 0;
+    }
+
     @Override
     protected com.mojang.serialization.MapCodec<? extends net.minecraft.world.level.block.HorizontalDirectionalBlock> codec() {
         return simpleCodec(BarCellarCabinetBlock::new);
