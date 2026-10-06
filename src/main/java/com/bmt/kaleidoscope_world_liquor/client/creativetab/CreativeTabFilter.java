@@ -30,8 +30,9 @@ import net.minecraft.world.level.ItemLike;
  */
 @Environment(EnvType.CLIENT)
 public final class CreativeTabFilter {
-   private static final ResourceLocation SELECTED_FILTER_TAB = ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "filter_tab_selected");
-   private static final ResourceLocation UNSELECTED_FILTER_TAB = ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "filter_tab_unselected");
+   // 官方 1.1.11：弃用自绘 filter_tab_* 贴图，改用原版创造栏页签精灵（贴图已删）
+   private static final ResourceLocation TAB_TOP_SELECTED = ResourceLocation.withDefaultNamespace("container/creative_inventory/tab_top_selected_2");
+   private static final ResourceLocation TAB_TOP_UNSELECTED = ResourceLocation.withDefaultNamespace("container/creative_inventory/tab_top_unselected_2");
    private static final List<FilterButton> BUTTONS = new ArrayList<>();
    private static CreativeModeTab lastTab;
    private static Category selectedCategory = Category.LIQUOR;
@@ -129,14 +130,21 @@ public final class CreativeTabFilter {
 
       @Override
       protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-         graphics.blitSprite(
-            selectedCategory == this.category ? SELECTED_FILTER_TAB : UNSELECTED_FILTER_TAB,
-            this.getX(),
-            this.getY(),
-            32,
-            26
-         );
+         boolean active = selectedCategory == this.category;
+         boolean scissorEnabled = false;
+         if (!active) {
+            // 页签挂在面板左缘（x = guiLeft-28）：把非激活页签裁到面板边界内（原版 getGuiLeft 为 protected，
+            // 用按钮自身坐标反推等价边界）
+            int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+            graphics.enableScissor(0, 0, this.getX() + 28, screenH);
+            scissorEnabled = true;
+         }
+
+         graphics.blitSprite(active ? TAB_TOP_SELECTED : TAB_TOP_UNSELECTED, this.getX(), this.getY(), 32, 26);
          graphics.renderItem(this.category.icon.get(), this.getX() + 8, this.getY() + 5);
+         if (scissorEnabled) {
+            graphics.disableScissor();
+         }
       }
    }
 }

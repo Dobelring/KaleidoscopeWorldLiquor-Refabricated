@@ -1,7 +1,6 @@
 package com.bmt.kaleidoscope_world_liquor.hooks;
 
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
-import com.bmt.kaleidoscope_world_liquor.mixins.accessor.LivingEntityAccessor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,20 +26,25 @@ public class ClientPlayerEntityMixinHooks {
                this.multiJump$jumpCount = maxJumps;
             }
 
-            if (this.canJump(player)
-               && !player.onGround()
-               && !this.multiJump$jumpedLastTick
-               && this.multiJump$jumpCount > 0
-               && player.getDeltaMovement().y < 0.0
-               && ((LivingEntityAccessor)player).isJumping()
-               && !player.getAbilities().flying) {
-               this.multiJump$jumpCount--;
-               player.jumpFromGround();
-               player.fallDistance = 0.0F;
-               this.multiJump$jumpedLastTick = true;
-            } else {
-               this.multiJump$jumpedLastTick = ((LivingEntityAccessor)player).isJumping();
+            if (this.canJump(player)) {
+               boolean reverseGravity = player.hasEffect(ModEffects.REVERSE_GRAVITY);
+               double velocityY = player.getDeltaMovement().y;
+               boolean isFalling = reverseGravity ? velocityY > 0.0 : velocityY < 0.0;
+               if (!player.onGround()
+                  && !this.multiJump$jumpedLastTick
+                  && this.multiJump$jumpCount > 0
+                  && isFalling
+                  && player.input.jumping
+                  && !player.getAbilities().flying) {
+                  this.multiJump$jumpCount--;
+                  player.jumpFromGround();
+                  player.fallDistance = 0.0F;
+                  this.multiJump$jumpedLastTick = true;
+                  return;
+               }
             }
+
+            this.multiJump$jumpedLastTick = player.input.jumping;
          }
       }
    }

@@ -9,7 +9,6 @@
   "mixins": [
     "MultiJumpFallDamageMixin",
     "BoatMixin",
-    "accessor.LivingEntityAccessor",
     "accessor.BarrelBlockEntityAccessor",
     "accessor.ItemCombinerMenuAccessor",
     "accessor.CreativeModeTabAccessor",
@@ -22,13 +21,18 @@
     "CreativeModeTabsMixin",
     "PlayerMixin",
     "BlockEntityTypeMixin",
-    "BottleBlockItemShakerMixin"
+    "BottleBlockItemShakerMixin",
+    "accessor.BrushableBlockEntityAccessor",
+    "ShakerItemMixin",
+    "BottleBlockItemMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin",
     "CameraMixin",
     "EntityRendererMixin",
-    "CreativeModeInventoryScreenMixin"
+    "CreativeModeInventoryScreenMixin",
+    "ShakerOverlayMixin",
+    "ShakerRecipeCategoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

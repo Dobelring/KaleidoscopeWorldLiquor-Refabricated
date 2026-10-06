@@ -40,7 +40,7 @@ public class BottledDrinkItem extends Item implements IHasContainer {
          tooltip.add(
             Component.empty()
                .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.front").withStyle(ChatFormatting.GRAY))
-               .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.back").withStyle(ChatFormatting.DARK_RED))
+               .append(Component.translatable("item.kaleidoscope_world_liquor.cola.tooltip.back").withStyle(style -> style.withColor(8606770)))
          );
       }
 

@@ -54,7 +54,7 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
             this.drawFluid(be, poseStack, buffer, packedLight, facing);
          }
 
-         this.drawFloatingItems(be, poseStack, buffer, packedLight);
+         this.drawFloatingItems(be, poseStack, buffer, packedLight, facing);
 
          if (be.hasOutput() && be.getOutputTexture() != null) {
             this.drawResultTexture(be, poseStack, buffer, packedLight, facing);
@@ -118,48 +118,55 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
       }
    }
 
-   private void drawFloatingItems(FreezerBlockEntity be, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-      float baseY;
-      if (be.tank.getFluid().isEmpty()) {
-         baseY = 0.2F;
-      } else {
-         // 物品须浮在液面之上：柜满时液面 0.625 高于固定基准 0.55，物品会被半透明液面盖住看不见（液体桶正是柜满后才进槽，故"看不见"）
-         float fluidSurface = 0.25F + 0.375F * ((float)be.tank.getFluidAmount() / (float)be.tank.getCapacity());
-         baseY = Math.max(0.55F, fluidSurface + 0.02F);
-      }
-
-      // 整体绕方块中心水平旋转 90°（用户偏好布局，对原版象限布局整体旋转）
-      poseStack.pushPose();
-      poseStack.translate(0.5F, 0.0F, 0.5F);
-      poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-      poseStack.translate(-0.5F, 0.0F, -0.5F);
-
-      float[][] quadrants = new float[][]{{0.25F, 0.5F, 0.25F, 0.5F}, {0.5F, 0.75F, 0.25F, 0.5F}, {0.25F, 0.5F, 0.5F, 0.75F}, {0.5F, 0.75F, 0.5F, 0.75F}};
+   // 官方 1.1.11「重构冰柜渲染」：漂浮物改 2×2 网格随朝向排布、方块物品 0.4 缩放。
+   // 保留本分支规格守卫：有液时物品抬到液面 +0.02 之上。
+   private void drawFloatingItems(FreezerBlockEntity be, PoseStack poseStack, MultiBufferSource buffer, int packedLight, Direction facing) {
+      boolean hasFluid = !be.tank.getFluid().isEmpty();
+      float liquidTop = hasFluid ? 0.25F + 0.375F * ((float)be.tank.getFluidAmount() / (float)be.tank.getCapacity()) : 0.0F;
 
       for (int slot = 0; slot < 4; slot++) {
          ItemStack stack = be.inputInventory.getStackInSlot(slot);
          if (!stack.isEmpty()) {
-            Random random = new Random(be.getBlockPos().hashCode() + slot * 999);
+            boolean isBlockItem = stack.getItem() instanceof net.minecraft.world.item.BlockItem;
+            float itemY;
+            if (hasFluid) {
+               itemY = isBlockItem ? 0.55F : 0.65F;
+               itemY = Math.max(itemY, liquidTop + 0.02F);
+            } else {
+               itemY = 0.28F;
+            }
+
+            Random random = new Random(be.getBlockPos().hashCode() + slot * 999L);
             poseStack.pushPose();
-            float[] area = quadrants[slot];
-            float minX = area[0];
-            float maxX = area[1];
-            float minZ = area[2];
-            float maxZ = area[3];
-            float x = minX + random.nextFloat() * (maxX - minX);
-            float z = minZ + random.nextFloat() * (maxZ - minZ);
-            float y = baseY + random.nextFloat() * 0.01F + slot * 0.03F;
-            poseStack.translate(x, y, z);
+            poseStack.translate(0.5F, 0.0F, 0.5F);
+            float yaw = switch (facing) {
+               case NORTH -> 180.0F;
+               default -> 0.0F;
+               case EAST -> 90.0F;
+               case WEST -> 270.0F;
+            };
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+            poseStack.translate(-0.5F, 0.0F, -0.5F);
+            float regionMinX = 0.15625F;
+            float regionMinZ = 0.1875F;
+            float cellW = 0.34375F;
+            float cellD = 0.28125F;
+            int col = slot % 2;
+            int row = slot / 2;
+            float cellMinX = regionMinX + col * cellW;
+            float cellMinZ = regionMinZ + row * cellD;
+            float pad = 0.075F;
+            float x = cellMinX + pad + random.nextFloat() * (cellW - 2.0F * pad);
+            float z = cellMinZ + pad + random.nextFloat() * (cellD - 2.0F * pad);
+            poseStack.translate(x, itemY, z);
             poseStack.mulPose(Axis.YP.rotationDegrees(random.nextFloat() * 360.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-            float scale = 0.3F + random.nextFloat() * 0.05F;
+            float scale = isBlockItem ? 0.4F : 0.25F;
             poseStack.scale(scale, scale, scale);
             this.itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, be.getLevel(), 0);
             poseStack.popPose();
          }
       }
-
-      poseStack.popPose();
    }
 
    private void drawResultTexture(FreezerBlockEntity be, PoseStack poseStack, MultiBufferSource source, int light, Direction facing) {
@@ -175,11 +182,13 @@ public class FreezerRenderer implements BlockEntityRenderer<FreezerBlockEntity> 
          float width = bounds.width();
          float depth = bounds.depth();
 
-         float baseY = 0.75F;
-         // 数量 ≥3 后浮空高度固定，否则产出越多产物贴图越往下沉
-         float renderCount = Math.min(count, 3);
-         float sinkOffset = (5.0F - renderCount) * 0.08F;
-         float y = baseY - sinkOffset;
+         // 官方 1.1.11：成品贴图按 count/maxOutputCount 比例从底部升到顶
+         float topY = 0.625F;
+         float bottomY = 0.3125F;
+         float dropRange = topY - bottomY;
+         int maxCount = be.getMaxOutputCount();
+         float ratio = maxCount > 0 ? Math.min(1.0F, (float)count / maxCount) : 1.0F;
+         float y = bottomY + dropRange * ratio;
          float u0 = sprite.getU0();
          float u1 = sprite.getU1();
          float v0 = sprite.getV0();

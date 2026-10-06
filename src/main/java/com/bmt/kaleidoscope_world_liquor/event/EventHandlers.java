@@ -4,6 +4,9 @@ import com.bmt.kaleidoscope_world_liquor.api.IGlowingEntity;
 import com.bmt.kaleidoscope_world_liquor.api.event.PlayerTickEvents;
 import com.bmt.kaleidoscope_world_liquor.effect.DoubleDamageEffect;
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
+import com.bmt.kaleidoscope_world_liquor.mixins.accessor.BrushableBlockEntityAccessor;
+import com.bmt.kaleidoscope_world_liquor.network.NetworkHandler;
+import com.bmt.kaleidoscope_world_liquor.network.TreasureSensePayload;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +24,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
@@ -38,21 +42,24 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BoneMealItem;
+import net.minecraft.world.entity.vehicle.AbstractMinecartContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BrushableBlockEntity;
+import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 
 public class EventHandlers {
    private static final Random RANDOM = new Random();
-   private static final double GRAVITY = 0.08;
-   private static final double JUMP_POWER = -0.32;
    private static final double HOSTILE_DETECTION_RANGE = 32.0;
    private static final boolean SHOW_INVISIBLE_MOBS = true;
    private static final boolean SHOW_NEUTRAL_MOBS = false;
@@ -60,8 +67,7 @@ public class EventHandlers {
       BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "bosses")
    );
    private static final TagKey<Block> CROPS_TAG = BlockTags.CROPS;
-   private static final TagKey<Block> SAPLINGS_TAG = BlockTags.SAPLINGS;
-   private static final TagKey<Block> FLOWERS_TAG = BlockTags.FLOWERS;
+   private static final int TREASURE_SENSE_RADIUS = 24;
    private static final TagKey<Block> ORES_TAG = TagKey.create(
       BuiltInRegistries.BLOCK.key(), ResourceLocation.fromNamespaceAndPath("c", "ores")
    );
@@ -193,9 +199,7 @@ public class EventHandlers {
       // 宝藏指引：复制掉落物
       if (source.getEntity() instanceof LivingEntity attacker && attacker.hasEffect(ModEffects.TREASURE_GUIDE_EFFECT)) {
          int amplifier = attacker.getEffect(ModEffects.TREASURE_GUIDE_EFFECT).getAmplifier();
-         double baseChance = 0.15;
-         double extraChance = amplifier * 0.05;
-         double totalChance = baseChance + extraChance;
+         double totalChance = Math.min(0.15 + amplifier * 0.05, 1.0);
          if (RANDOM.nextDouble() < totalChance) {
             List<ItemEntity> drops = entity.level().getEntitiesOfClass(ItemEntity.class, entity.getBoundingBox().inflate(2.0), itemEntity -> itemEntity.isAlive());
             for (ItemEntity itemEntity : new ArrayList<>(drops)) {
@@ -231,11 +235,11 @@ public class EventHandlers {
          return new ItemStack(Items.ZOMBIE_HEAD);
       } else if (entity.getClass() == Skeleton.class) {
          return new ItemStack(Items.SKELETON_SKULL);
-      } else if (entity instanceof Creeper) {
+      } else if (entity.getClass() == Creeper.class) {
          return new ItemStack(Items.CREEPER_HEAD);
-      } else if (entity instanceof WitherSkeleton) {
+      } else if (entity.getClass() == WitherSkeleton.class) {
          return new ItemStack(Items.WITHER_SKELETON_SKULL);
-      } else if (entity instanceof Piglin) {
+      } else if (entity.getClass() == Piglin.class) {
          return new ItemStack(Items.PIGLIN_HEAD);
       } else if (entity instanceof Player player) {
          ItemStack playerHead = new ItemStack(Items.PLAYER_HEAD);
@@ -244,6 +248,24 @@ public class EventHandlers {
          playerHead.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
          return playerHead;
       } else {
+         // 官方 1.1.11：通用命名匹配（<ns>:<path>_head/_skull、skull_/head_ 前缀、dead_、_item）
+         ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+         if (entityId != null) {
+            String ns = entityId.getNamespace();
+            String path = entityId.getPath();
+            String[][] patterns = new String[][]{{path + "_head", path + "_skull"}, {"skull_" + path, "head_" + path}, {"dead_" + path}, {path + "_item"}};
+
+            for (String[] group : patterns) {
+               for (String suffix : group) {
+                  ResourceLocation headId = ResourceLocation.fromNamespaceAndPath(ns, suffix);
+                  Item item = BuiltInRegistries.ITEM.get(headId);
+                  if (item != null && item != Items.AIR) {
+                     return new ItemStack(item);
+                  }
+               }
+            }
+         }
+
          return ItemStack.EMPTY;
       }
    }
@@ -255,19 +277,13 @@ public class EventHandlers {
 
       if (player.hasEffect(ModEffects.TREASURE_GUIDE_EFFECT)) {
          int amplifier = player.getEffect(ModEffects.TREASURE_GUIDE_EFFECT).getAmplifier();
-         double baseChance = 0.0;
-         if (state.is(CROPS_TAG) || state.getBlock() instanceof CropBlock) {
-            baseChance = 0.15;
-         } else if (state.is(ORES_TAG)) {
-            baseChance = 0.2;
-         }
-
-         if (baseChance <= 0.0) {
+         boolean isCrop = state.is(CROPS_TAG) || state.getBlock() instanceof CropBlock;
+         boolean isOre = state.is(ORES_TAG);
+         if (!isCrop && !isOre) {
             return;
          }
 
-         double extraChance = amplifier * 0.05;
-         double totalChance = baseChance + extraChance;
+         double totalChance = Math.min(0.15 + amplifier * 0.05, 1.0);
          if (RANDOM.nextDouble() < totalChance) {
             ServerLevel level = (ServerLevel)world;
 
@@ -292,19 +308,55 @@ public class EventHandlers {
          freezeWater(player, (ServerLevel)player.level(), player.blockPosition(), amplifier + 1);
       }
 
-      if (player.hasEffect(ModEffects.BONEMEAL_SPREADER_EFFECT)) {
-         int amplifier = player.getEffect(ModEffects.BONEMEAL_SPREADER_EFFECT).getAmplifier();
-         int duration = player.getEffect(ModEffects.BONEMEAL_SPREADER_EFFECT).getDuration();
-         if (duration % 20 == 0) {
-            spreadBonemealOnGround(player, amplifier);
-         }
-
-         if (duration % 40 == 0) {
-            spreadBonemealOnPlants(player, amplifier);
-         }
+      // 官方 1.1.11：春野之息移除，改为宝藏感知每 20tick 服务端扫描下发
+      if (player.hasEffect(ModEffects.TREASURE_SENSE_EFFECT) && player.tickCount % 20 == 0) {
+         syncTreasureSenseTargets(player);
       }
 
       updateCreativeFlight(player);
+   }
+
+   /** 官方 1.1.11：服务端扫描 5×5 区块 24 格内有战利品表的容器/饰纹陶罐/陶罐 + 近身容器矿车，打包下发。 */
+   private static void syncTreasureSenseTargets(Player player) {
+      if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel level) {
+         ArrayList<BlockPos> targets = new ArrayList<>();
+         BlockPos playerPos = player.blockPosition();
+         ChunkPos playerChunkPos = new ChunkPos(playerPos);
+         byte chunkRadius = 2;
+         double radiusSq = 576.0;
+
+         for (int cx = playerChunkPos.x - chunkRadius; cx <= playerChunkPos.x + chunkRadius; cx++) {
+            for (int cz = playerChunkPos.z - chunkRadius; cz <= playerChunkPos.z + chunkRadius; cz++) {
+               LevelChunk chunk = level.getChunk(cx, cz);
+               if (chunk != null && !chunk.isEmpty()) {
+                  for (BlockEntity be : chunk.getBlockEntities().values()) {
+                     if (!be.isRemoved()) {
+                        BlockPos pos = be.getBlockPos();
+                        if (!(pos.distSqr(playerPos) > radiusSq)) {
+                           if (be instanceof RandomizableContainerBlockEntity container && container.getLootTable() != null) {
+                              targets.add(pos.immutable());
+                           } else if (be instanceof BrushableBlockEntity && ((BrushableBlockEntityAccessor)be).kwl$getLootTable() != null) {
+                              targets.add(pos.immutable());
+                           } else if (be instanceof DecoratedPotBlockEntity pot && pot.getLootTable() != null) {
+                              targets.add(pos.immutable());
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+
+         List<Integer> lootMinecartIds = new ArrayList<>();
+
+         for (AbstractMinecartContainer minecart : level.getEntitiesOfClass(
+            AbstractMinecartContainer.class, player.getBoundingBox().inflate(TREASURE_SENSE_RADIUS), minecartx -> !minecartx.isRemoved() && minecartx.getLootTable() != null
+         )) {
+            lootMinecartIds.add(minecart.getId());
+         }
+
+         NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+      }
    }
 
    /**
@@ -345,59 +397,6 @@ public class EventHandlers {
                }
             }
          }
-      }
-   }
-
-   private static void spreadBonemealOnGround(Player player, int amplifier) {
-      ServerLevel level = (ServerLevel)player.level();
-      BlockPos playerPos = player.blockPosition();
-      int range = 1 + amplifier;
-      int offsetX = RANDOM.nextInt(range * 2 + 1) - range;
-      int offsetZ = RANDOM.nextInt(range * 2 + 1) - range;
-      BlockPos targetPos = playerPos.offset(offsetX, 0, offsetZ);
-      applyBonemealIfGround(level, targetPos, player);
-      applyBonemealIfGround(level, targetPos.below(), player);
-   }
-
-   private static void spreadBonemealOnPlants(Player player, int amplifier) {
-      ServerLevel level = (ServerLevel)player.level();
-      BlockPos playerPos = player.blockPosition();
-      int range = 1 + amplifier;
-      int offsetX = RANDOM.nextInt(range * 2 + 1) - range;
-      int offsetZ = RANDOM.nextInt(range * 2 + 1) - range;
-      BlockPos targetPos = playerPos.offset(offsetX, 0, offsetZ);
-      applyBonemealIfPlant(level, targetPos, player);
-      applyBonemealIfPlant(level, targetPos.below(), player);
-   }
-
-   private static void applyBonemealIfGround(ServerLevel level, BlockPos pos, Player player) {
-      BlockState state = level.getBlockState(pos);
-      if (state.getBlock() instanceof BonemealableBlock bonemealableBlock && !isPlantBlock(state)) {
-         bonemealableBlock.performBonemeal(level, level.random, pos, state);
-      }
-   }
-
-   private static void applyBonemealIfPlant(ServerLevel level, BlockPos pos, Player player) {
-      BlockState state = level.getBlockState(pos);
-      if (state.getBlock() instanceof BonemealableBlock bonemealableBlock && isPlantBlock(state)) {
-         bonemealableBlock.performBonemeal(level, level.random, pos, state);
-      }
-   }
-
-   private static boolean isPlantBlock(BlockState state) {
-      if (!state.is(CROPS_TAG) && !state.is(SAPLINGS_TAG) && !state.is(FLOWERS_TAG)) {
-         Block block = state.getBlock();
-         return block instanceof CropBlock
-            || block.getClass().getName().equals("net.minecraft.world.level.block.VineBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.CaveVinesBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.BambooBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.SugarCaneBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.CactusBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.NetherWartBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.CocoaBlock")
-            || block.getClass().getName().equals("net.minecraft.world.level.block.SweetBerryBushBlock");
-      } else {
-         return true;
       }
    }
 

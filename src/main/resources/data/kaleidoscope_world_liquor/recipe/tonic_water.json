@@ -3,7 +3,15 @@
   "category": "food",
   "ingredients": [
     {
-      "item": "minecraft:potion"
+      "fabric:type": "fabric:components",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:water"
+        }
+      }
     },
     {
       "item": "minecraft:sugar"
@@ -13,7 +21,7 @@
     }
   ],
   "result": {
-    "count": 1,
-    "id": "kaleidoscope_world_liquor:tonic_water"
+    "id": "kaleidoscope_world_liquor:tonic_water",
+    "count": 1
   }
 }

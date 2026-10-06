@@ -138,6 +138,7 @@ public class FreezerBlockEntity extends BlockEntity {
    private int progress = 0;
    private int maxProgress = 0;
    private int outputCount = 0;
+   private int maxOutputCount = 0;
    private ResourceLocation outputTexture = null;
    private boolean redstonePowered = false;
    private ResourceLocation pendingRecipeId = null;
@@ -261,6 +262,7 @@ public class FreezerBlockEntity extends BlockEntity {
       if (this.currentRecipeHolder != null) {
          FreezerRecipe recipe = this.currentRecipeHolder.value();
          this.outputCount = recipe.getResultItem(level.registryAccess()).getCount();
+         this.maxOutputCount = this.outputCount;
          this.outputTexture = recipe.getResultTexture();
       }
 
@@ -450,6 +452,7 @@ public class FreezerBlockEntity extends BlockEntity {
       tag.putInt("Progress", this.progress);
       tag.putInt("MaxProgress", this.maxProgress);
       tag.putInt("OutputCount", this.outputCount);
+      tag.putInt("MaxOutputCount", this.maxOutputCount);
       tag.putBoolean("RedstonePowered", this.redstonePowered);
       if (this.outputTexture != null) {
          tag.putString("OutputTexture", this.outputTexture.toString());
@@ -488,6 +491,7 @@ public class FreezerBlockEntity extends BlockEntity {
       this.progress = tag.getInt("Progress");
       this.maxProgress = tag.getInt("MaxProgress");
       this.outputCount = tag.getInt("OutputCount");
+      this.maxOutputCount = tag.getInt("MaxOutputCount");
       this.redstonePowered = tag.getBoolean("RedstonePowered");
       if (tag.contains("OutputTexture")) {
          this.outputTexture = ResourceLocation.parse(tag.getString("OutputTexture"));
@@ -555,6 +559,10 @@ public class FreezerBlockEntity extends BlockEntity {
 
    public int getOutputCount() {
       return this.outputCount;
+   }
+
+   public int getMaxOutputCount() {
+      return this.maxOutputCount;
    }
 
    /** 漏斗/管道自动取产物的扣减入口（条件产物在 FreezerTransfer 侧已被拦截，不会走到这里）。 */

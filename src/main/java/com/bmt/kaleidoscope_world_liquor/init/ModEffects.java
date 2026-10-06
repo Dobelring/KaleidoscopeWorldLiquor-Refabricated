@@ -94,13 +94,6 @@ public class ModEffects {
          }
       }
    );
-   public static final Holder<MobEffect> BONEMEAL_SPREADER_EFFECT = register(
-      "bonemeal_spreader", () -> new MobEffect(MobEffectCategory.BENEFICIAL, 9498256) {
-         public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-            return duration % 20 == 0;
-         }
-      }
-   );
    public static final Holder<MobEffect> TREASURE_SENSE_EFFECT = register(
       "treasure_sense", () -> new MobEffect(MobEffectCategory.BENEFICIAL, 16766720) {
          public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {

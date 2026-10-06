@@ -13,6 +13,8 @@ public final class ClientForgeEvents {
    }
 
    public static void register() {
+      // 官方 1.1.11：宝藏感知改服务端下发——注册客户端 payload 接收
+      com.bmt.kaleidoscope_world_liquor.network.NetworkHandler.registerClient();
       WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
          Minecraft mc = Minecraft.getInstance();
          if (mc.player != null && mc.level != null) {
