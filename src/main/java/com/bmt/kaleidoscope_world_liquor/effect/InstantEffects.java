@@ -88,7 +88,15 @@ public final class InstantEffects {
         }
     }
 
-    /** 回到重生点 */
+    /**
+     * 回到重生点（宿命之海）。
+     * <p>官方 1.1.11（neo1111 {@code effect/RespawnEffect.java}）语义：
+     * 床/锚朝向由 {@code findRespawnPositionAndUseSpawnBlock} 给出的 transition 决定，
+     * 同维度 {@code teleportTo} + 朝向、跨维度 {@code teleport}；keepInventory 取游戏规则；
+     * 删掉原先手写的安全点搜索与 no_dimension 提示；两段传送音 + 饥饿惩罚。
+     * 26.3 差异：{@code DimensionTransition} → {@code TeleportTransition}、
+     * {@code changeDimension} → {@code teleport}、GameRules 在 {@code world.level.gamerules} 包。
+     */
     public static class RespawnEffect extends MobEffect {
         public RespawnEffect() {
             super(MobEffectCategory.NEUTRAL, 0x87CEEB);
@@ -102,17 +110,26 @@ public final class InstantEffects {
         @Override
         public boolean applyEffectTick(@NotNull ServerLevel level, @NotNull LivingEntity entity, int amplifier) {
             if (entity instanceof ServerPlayer serverPlayer) {
-                net.minecraft.world.level.portal.TeleportTransition transition =
-                        serverPlayer.findRespawnPositionAndUseSpawnBlock(false, net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING);
-                ServerLevel targetLevel = transition.newLevel();
-                Vec3 pos = transition.position();
                 level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(),
                         SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
-                serverPlayer.teleport(new net.minecraft.world.level.portal.TeleportTransition(
-                        targetLevel, pos, Vec3.ZERO, serverPlayer.getYRot(), serverPlayer.getXRot(),
-                        net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING));
+                boolean keepInventory = level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.KEEP_INVENTORY);
+                net.minecraft.world.level.portal.TeleportTransition transition =
+                        serverPlayer.findRespawnPositionAndUseSpawnBlock(keepInventory,
+                                net.minecraft.world.level.portal.TeleportTransition.DO_NOTHING);
+                ServerLevel targetLevel = transition.newLevel();
+                Vec3 targetPos = transition.position();
+                float yRot = transition.yRot();
+                float xRot = transition.xRot();
+                if (level.dimension() == targetLevel.dimension()) {
+                    serverPlayer.teleportTo(targetPos.x, targetPos.y, targetPos.z);
+                    serverPlayer.setYRot(yRot);
+                    serverPlayer.setXRot(xRot);
+                } else {
+                    serverPlayer.teleport(transition);
+                }
+
                 serverPlayer.fallDistance = 0.0F;
-                targetLevel.playSound(null, pos.x, pos.y, pos.z,
+                serverPlayer.level().playSound(null, targetPos.x, targetPos.y, targetPos.z,
                         SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0F, 1.0F);
                 serverPlayer.addEffect(new MobEffectInstance(MobEffects.HUNGER, 300, 0));
             }

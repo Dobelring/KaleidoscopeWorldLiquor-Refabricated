@@ -16,7 +16,8 @@ import net.minecraft.world.effect.MobEffectCategory;
 /**
  * 18 个本模组效果 + smc 联动效果（Holder 模式，1.21.11 必需）。
  * tick 节奏对应 1.20.1 shouldApplyEffectTickThisTick：
- * 常驻类每 tick 或标记型（TICK_NEVER）；bonemeal 每秒。
+ * 常驻类每 tick 或标记型（TICK_NEVER）；每秒型（TICK_PER_SECOND）。
+ * 官方 1.1.11：bonemeal_spreader（春野之息）效果整体移除。
  */
 public final class ModEffects {
     private ModEffects() {
@@ -31,7 +32,6 @@ public final class ModEffects {
     public static Holder<MobEffect> HOSTILE_DETECTION;
     public static Holder<MobEffect> BEHEADING;
     public static Holder<MobEffect> FROST_WALKER;
-    public static Holder<MobEffect> BONEMEAL_SPREADER;
     public static Holder<MobEffect> TREASURE_SENSE;
     public static Holder<MobEffect> GROUND_CRIT;
     public static Holder<MobEffect> EXPLOSION;
@@ -63,7 +63,6 @@ public final class ModEffects {
         HOSTILE_DETECTION = register("hostile_detection", new BaseEffect(MobEffectCategory.BENEFICIAL, 0xFF4404, BaseEffect.TICK_NEVER));
         BEHEADING = register("beheading", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x8B0000, BaseEffect.TICK_NEVER));
         FROST_WALKER = register("frost_walker", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x87CEEB, BaseEffect.TICK_NEVER));
-        BONEMEAL_SPREADER = register("bonemeal_spreader", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x90D490, BaseEffect.TICK_PER_SECOND));
         TREASURE_SENSE = register("treasure_sense", new BaseEffect(MobEffectCategory.BENEFICIAL, 0xFFC700, BaseEffect.TICK_NEVER));
         GROUND_CRIT = register("ground_crit", new BaseEffect(MobEffectCategory.BENEFICIAL, 0xFF3207, BaseEffect.TICK_NEVER));
         EXPLOSION = register("explosion", new InstantEffects.ExplosionEffect(0xFF0FA2));

@@ -27,6 +27,16 @@ public final class FreezerPonderPlugin implements PonderPlugin {
         KaleidoscopeWorldLiquor.LOGGER.info("Registered the Freezer ponder scene (kaleidoscope_world_liquor:freezer)");
     }
 
+    /**
+     * 官方 1.1.11：把冰柜挂进 tavern 的「酿造」Ponder 标签索引。
+     * 26.x 的 tavern 标签常量在 {@code compat/create/ponder/init/ModPonderTags}（不再是 TavernPonderTags）。
+     */
+    @Override
+    public void registerTags(com.zurrtum.create.client.ponder.api.registration.PonderTagRegistrationHelper<Identifier> helper) {
+        helper.addToTag(com.github.ysbbbbbb.kaleidoscopetavern.compat.create.ponder.init.ModPonderTags.BREWING)
+                .add(Identifier.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MOD_ID, "freezer"));
+    }
+
     public static void init() {
         PonderIndex.addPlugin(new FreezerPonderPlugin());
     }

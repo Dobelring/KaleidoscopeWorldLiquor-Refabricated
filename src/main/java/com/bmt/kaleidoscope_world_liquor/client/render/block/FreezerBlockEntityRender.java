@@ -104,6 +104,7 @@ public class FreezerBlockEntityRender implements BlockEntityRenderer<FreezerBloc
         state.hasOutput = blockEntity.hasOutput();
         state.outputTexture = blockEntity.getOutputTexture();
         state.outputCount = blockEntity.getOutputCount();
+        state.maxOutputCount = blockEntity.getMaxOutputCount();
     }
 
     @Override
@@ -147,27 +148,59 @@ public class FreezerBlockEntityRender implements BlockEntityRenderer<FreezerBloc
         });
     }
 
+    /**
+     * 官方 1.1.11「重构冰柜渲染」：漂浮物改 2×2 网格并随方块朝向整体旋转
+     * （NORTH 180 / EAST 90 / WEST 270 / 南 0），方块物品 0.4 缩放、其余 0.25。
+     * <p>保留本分支规格守卫：有液时物品须抬到液面之上（液面最高 0.625，高于固定基准
+     * 0.55，会被半透明液面盖住看不见——液体桶正是柜满后才进槽）。
+     */
     private void drawFloatingItems(FreezerBlockEntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-        // 有液体时物品整体抬到液面之上（二维平铺物品会被液面盖住）；液面最高 0.625，
-        // 基准 0.675 + 槽位 0.02 递增（封顶 ~0.745，仍在柜沿 0.75 之内）
-        float fluidY = 0.25F + 0.375F * Math.min(state.fluidPercent, 1.0F);
-        float baseY = state.hasFluid ? Math.max(0.55F, fluidY + 0.05F) : 0.2F;
-        float[][] quadrants = {{0.25F, 0.5F, 0.25F, 0.5F}, {0.5F, 0.75F, 0.25F, 0.5F},
-                {0.25F, 0.5F, 0.5F, 0.75F}, {0.5F, 0.75F, 0.5F, 0.75F}};
+        boolean hasFluid = state.hasFluid;
+        float liquidTop = hasFluid ? 0.25F + 0.375F * Math.min(state.fluidPercent, 1.0F) : 0.0F;
         for (int slot = 0; slot < 4; slot++) {
             if (state.items[slot].isEmpty() || state.itemStates[slot].isEmpty()) {
                 continue;
             }
+            ItemStack stack = state.items[slot];
+            boolean isBlockItem = stack.getItem() instanceof net.minecraft.world.item.BlockItem;
+            float itemY;
+            if (hasFluid) {
+                itemY = isBlockItem ? 0.55F : 0.65F;
+                // 本分支液面守卫（保留）：物品必须浮在液面之上，否则被液面盖住
+                itemY = Math.max(itemY, liquidTop + 0.05F);
+            } else {
+                itemY = 0.28F;
+            }
+
             RandomSource random = RandomSource.create(state.blockPos.hashCode() + slot * 999L);
-            float[] area = quadrants[slot];
-            float x = area[0] + random.nextFloat() * (area[1] - area[0]);
-            float z = area[2] + random.nextFloat() * (area[3] - area[2]);
-            float y = baseY + random.nextFloat() * 0.01F + slot * 0.02F;
             poseStack.pushPose();
-            poseStack.translate(x, y, z);
+            poseStack.translate(0.5F, 0.0F, 0.5F);
+            float yaw = switch (state.facing) {
+                case NORTH -> 180.0F;
+                case EAST -> 90.0F;
+                case WEST -> 270.0F;
+                default -> 0.0F;
+            };
+            poseStack.rotateDegrees(Axis.YP, yaw);
+            poseStack.translate(-0.5F, 0.0F, -0.5F);
+
+            // 2×2 网格（区域 0.15625/0.1875 起、单格 0.34375×0.28125、内缩 0.075）
+            float regionMinX = 0.15625F;
+            float regionMinZ = 0.1875F;
+            float cellW = 0.34375F;
+            float cellD = 0.28125F;
+            int col = slot % 2;
+            int row = slot / 2;
+            float cellMinX = regionMinX + col * cellW;
+            float cellMinZ = regionMinZ + row * cellD;
+            float pad = 0.075F;
+            float x = cellMinX + pad + random.nextFloat() * (cellW - 2.0F * pad);
+            float z = cellMinZ + pad + random.nextFloat() * (cellD - 2.0F * pad);
+
+            poseStack.translate(x, itemY, z);
             poseStack.rotateDegrees(Axis.YP, random.nextFloat() * 360.0F);
             poseStack.rotateDegrees(Axis.XP, 90.0F);
-            float scale = 0.3F + random.nextFloat() * 0.05F;
+            float scale = isBlockItem ? 0.4F : 0.25F;
             poseStack.scale(scale, scale, scale);
             state.itemStates[slot].submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
@@ -188,8 +221,12 @@ public class FreezerBlockEntityRender implements BlockEntityRenderer<FreezerBloc
             var matrix = pose.pose();
             float[] dims = fluidDims(state.facing);
             float x = dims[0], z = dims[1], width = dims[2], depth = dims[3];
-            int renderCount = Math.min(state.outputCount, 3);
-            float y = 0.75F - (5.0F - renderCount) * 0.08F;
+            // 官方 1.1.11：成品贴图按 count/maxOutputCount 比例从底部 0.3125 升到顶部 0.625
+            float topY = 0.625F;
+            float bottomY = 0.3125F;
+            int maxCount = state.maxOutputCount;
+            float ratio = maxCount > 0 ? Math.min(1.0F, (float) state.outputCount / maxCount) : 1.0F;
+            float y = bottomY + (topY - bottomY) * ratio;
             consumer.addVertex(matrix, x, y, z).setColor(color).setUv(u1, v0).setOverlay(0).setLight(state.lightCoords).setNormal(pose, 0, 1, 0);
             consumer.addVertex(matrix, x, y, z + depth).setColor(color).setUv(u1, v1).setOverlay(0).setLight(state.lightCoords).setNormal(pose, 0, 1, 0);
             consumer.addVertex(matrix, x + width, y, z + depth).setColor(color).setUv(u0, v1).setOverlay(0).setLight(state.lightCoords).setNormal(pose, 0, 1, 0);

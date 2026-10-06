@@ -51,6 +51,9 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         DollIntegration.register();
         ModCreativeModeTabs.register();
         com.bmt.kaleidoscope_world_liquor.blockentity.FreezerBlockEntity.registerFluidStorage();
+        // 官方 1.1.11：宝藏感知 S2C 载荷类型 + 吧台柜/酒窖柜漏斗自动化
+        com.bmt.kaleidoscope_world_liquor.network.NetworkHandler.register();
+        com.bmt.kaleidoscope_world_liquor.compat.transfer.CabinetTransfer.register();
         EventHandlers.register();
         DollInteractionEvents.register();
         MusicDiscEvents.register();

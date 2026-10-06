@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.bmt.kaleidoscope_world_liquor.mixin",
   "compatibilityLevel": "JAVA_25",
+  "plugin": "com.bmt.kaleidoscope_world_liquor.mixin.KaleidoscopeMixinConfigPlugin",
   "mixinextras": {
     "minVersion": "0.5.4"
   },
@@ -13,7 +14,10 @@
     "CaptainGiftMixin",
     "BoatMixin",
     "TapBlockMixin",
+    "ShakerItemMixin",
+    "BottleBlockItemMixin",
     "accessor.BarrelBlockEntityAccessor",
+    "accessor.BrushableBlockEntityAccessor",
     "accessor.CreativeModeTabAccessor"
   ],
   "client": [
@@ -22,7 +26,9 @@
     "GuiGraphicsMixin",
     "EntityRendererMixin",
     "ReverseGravityStrafeMixin",
-    "CreativeModeInventoryScreenMixin"
+    "CreativeModeInventoryScreenMixin",
+    "ShakerOverlayMixin",
+    "ShakerRecipeCategoryMixin"
   ],
   "server": [],
   "injectors": {

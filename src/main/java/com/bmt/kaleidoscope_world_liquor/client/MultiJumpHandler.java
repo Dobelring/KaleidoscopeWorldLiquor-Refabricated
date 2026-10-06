@@ -6,8 +6,10 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 
 /**
- * 多段跳客户端判定（1.20.1 ClientPlayerEntityMixinHooks 原样迁移）：
- * 落地/贴水重置跳数；跳跃键按下、下落中、未穿鞘翅且各项条件满足时消耗一次额外跳。
+ * 多段跳客户端判定（官方 1.1.11 同款结构）：
+ * 落地/贴水重置跳数；{@code canJump} 通过后再判「是否在下落」——
+ * 反重力下「下落」= 纵向速度为正（朝天花板掉），普通时仍为负。
+ * 尾部统一同步 {@code jumpedLastTick = 跳跃键}（官方把 else 分支挪到 if 外）。
  */
 public final class MultiJumpHandler {
     private int jumpCount = 0;
@@ -28,20 +30,26 @@ public final class MultiJumpHandler {
             this.jumpCount = maxJumps;
         }
 
-        if (this.canJump(player)
-                && !player.onGround()
-                && !this.jumpedLastTick
-                && this.jumpCount > 0
-                && player.getDeltaMovement().y < 0.0
-                && player.input.keyPresses.jump()
-                && !player.getAbilities().flying) {
-            this.jumpCount--;
-            player.jumpFromGround();
-            player.resetFallDistance();
-            this.jumpedLastTick = true;
-        } else {
-            this.jumpedLastTick = player.input.keyPresses.jump();
+        boolean jumping = player.input.keyPresses.jump();
+        if (this.canJump(player)) {
+            boolean reverseGravity = player.hasEffect(ModEffects.REVERSE_GRAVITY);
+            double velocityY = player.getDeltaMovement().y;
+            boolean isFalling = reverseGravity ? velocityY > 0.0 : velocityY < 0.0;
+            if (!player.onGround()
+                    && !this.jumpedLastTick
+                    && this.jumpCount > 0
+                    && isFalling
+                    && jumping
+                    && !player.getAbilities().flying) {
+                this.jumpCount--;
+                player.jumpFromGround();
+                player.resetFallDistance();
+                this.jumpedLastTick = true;
+                return;
+            }
         }
+
+        this.jumpedLastTick = jumping;
     }
 
     private boolean wearingUsableElytra(LocalPlayer player) {
