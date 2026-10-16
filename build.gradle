@@ -40,8 +40,8 @@ dependencies {
 	// ForgeConfigAPIPort (NeoForge config API on Fabric)
 	modImplementation ("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.11.1")
 
-	// Kaleidoscope Tavern (前置酒馆) — 文件依赖
-	modImplementation files("libs/kaleidoscope_tavern-1.2.0.6-fabric+mc1.21.11.jar")
+	// Kaleidoscope Tavern (前置酒馆)
+	modImplementation "maven.modrinth:kaleidoscope-tavern-refabricated:1.2.0.6-fabric+mc1.21.11"
 
 	// JEI（1.21.11 只适配 JEI）
 	modCompileOnly "mezz.jei:jei-1.21.11-fabric:27.48.0.106"
