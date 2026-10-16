@@ -86,9 +86,9 @@ dependencies {
 	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:base:${project.porting_lib_version}"
 	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:loot:${project.porting_lib_version}"
 	modRuntimeOnly "io.github.fabricators_of_create.Porting-Lib:transfer:${project.porting_lib_version}"
-	modImplementation files("libs/kaleidoscope_tavern-${project.kaleidoscope_tavern_version}.jar")
+	modImplementation "maven.modrinth:kaleidoscope-tavern-refabricated:${project.kaleidoscope_tavern_version}"
 	// doll（软依赖：运行时 isModLoaded 门控；无 doll 路径已用 modCompileOnly 实测通过 2026-10-03）
-	modImplementation files("libs/kaleidoscopedoll-1.20.1-fabric-1.0.9.jar")
+	modImplementation "maven.modrinth:kaleidoscope-doll:1.0.9"
 	// Kaleidoscope Doll (soft integration: 玩偶 doll_0..5 代注册，运行时 isModLoaded 门控)
 
 	// Optional compat integrations (compileOnly - guarded at runtime by isModLoaded)
