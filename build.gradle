@@ -51,7 +51,7 @@ dependencies {
 	modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
 	modImplementation "maven.modrinth:jade:${project.jade_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modImplementation files("libs/kaleidoscope_tavern-1.2.0.12-fabric+mc1.21.1.jar")
+	modImplementation "maven.modrinth:kaleidoscope-tavern-refabricated:1.2.0.12-fabric+mc1.21.1"
 	modImplementation files("libs/kaleidoscopedoll-1.21.1-fabric-1.0.9.jar")
 }
 
