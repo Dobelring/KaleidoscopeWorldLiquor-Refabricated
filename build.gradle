@@ -41,15 +41,15 @@ dependencies {
 	modImplementation ("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.11.1")
 
 	// Kaleidoscope Tavern (前置酒馆) — 文件依赖
-	modImplementation files("libs/kaleidoscope_tavern-1.2.0.5-fabric+mc1.21.11.jar")
+	modImplementation files("libs/kaleidoscope_tavern-1.2.0.6-fabric+mc1.21.11.jar")
 
 	// JEI（1.21.11 只适配 JEI）
-	modCompileOnly "mezz.jei:jei-1.21.11-fabric:27.4.0.15"
+	modCompileOnly "mezz.jei:jei-1.21.11-fabric:27.48.0.106"
 	// Jade
 	modImplementation "maven.modrinth:jade:21.1.6+fabric"
 	// MixinExtras（@ModifyExpressionValue 等，@Expression 需 >=0.5.0-beta.1）
-	include("io.github.llamalad7:mixinextras-fabric:0.5.4")
-	modImplementation("io.github.llamalad7:mixinextras-fabric:0.5.4")
+	include("io.github.llamalad7:mixinextras-fabric:0.5.5")
+	modImplementation("io.github.llamalad7:mixinextras-fabric:0.5.5")
 }
 
 processResources {
