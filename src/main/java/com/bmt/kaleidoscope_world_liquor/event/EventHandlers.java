@@ -60,6 +60,23 @@ public final class EventHandlers {
     /** 宝藏感知扫描半径（24 格 / 5×5 区块） */
     private static final int TREASURE_SENSE_RADIUS = 24;
 
+    /**
+     * 嗨棒飞行的跨模组共存状态（与黎明之星等其他飞行模组同装时互不打断）。
+     * own=本模组把 mayfly 从关翻到开过（所有权唯一：另一模组只会在 mayfly 为关时翻转）；
+     * pendingSince=两段式回收窗口起点——第一段只撤 mayfly 保留 flying（其他模组的授予分支
+     * 会在 ≤1 tick 内重新打开 mayfly），下一 tick 确认无人接手才完成回收；
+     * lastFlyingTick=近期飞行观察，重授予时同步还原 flying，封死“回收完成与对方重授予同 tick”的竞态。
+     * FLIGHT_TICK 用 JVM 内静态计数而非 server tick：跨世界重载单调，配合登录重建状态避免挂死。
+     */
+    private static final java.util.Map<java.util.UUID, FlightClaim> FLIGHT_CLAIMS = new java.util.HashMap<>();
+    private static int FLIGHT_TICK;
+
+    private static final class FlightClaim {
+        boolean own;
+        int pendingSince = -1;
+        int lastFlyingTick = -1000;
+    }
+
     private EventHandlers() {
     }
 
@@ -70,8 +87,14 @@ public final class EventHandlers {
         ServerLivingEntityEvents.AFTER_DEATH.register(EventHandlers::onLivingDeath);
         // ===== 淘金热：挖方块双倍掉落 =====
         PlayerBlockBreakEvents.AFTER.register(EventHandlers::onBlockBreak);
+        // ===== 飞行认领：登录按存档 mayfly/flying 对账（孤儿飞行由两段式回收兜底），断开清理 =====
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register(
+                (handler, sender, server) -> reconcileFlightClaim(handler.player));
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register(
+                (handler, server) -> FLIGHT_CLAIMS.remove(handler.player.getUUID()));
         // ===== 冰霜行者与宝藏感知：玩家 tick =====
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+            FLIGHT_TICK++;
             // 每个玩家在 PlayerTick 的等效：在服务端 tick 末尾遍历在线玩家
             for (Player player : server.getPlayerList().getPlayers()) {
                 if (player.isSpectator()) {
@@ -345,22 +368,75 @@ public final class EventHandlers {
 
     /** 冰霜行者：1.21.11 的 frost_walker 是数据驱动 location_changed 效果（slots: []），手动放置 frosted ice 圆盘（原版 ReplaceDisk 语义） */
     /**
-     * 嗨棒（creative_flight）：加 buff 只补 mayfly、不清已有飞行状态；掉 buff 只在非创造/旁观下清除。
-     * 官方 1.1.9 原样（「修复飞行buff会覆盖其他模组飞行能力的bug」）——不要自行加"记录来源"之类的改动。
+     * 嗨棒（creative_flight）：授予只补 mayfly 并登记翻转所有权；回收走两段式（见 {@link FlightClaim}）。
+     * 相对官方 1.1.9 的唯一偏离：官方回收侧是无条件清 mayfly+flying，会把黎明之星等其他模组
+     * 授予的飞行一并打断（跨模组冲突根因）；两段式回收保证只回收“本模组翻转打开、且无人接手”的飞行。
+     * 已验证原版在 mayfly=false 且 flying=true 时不做强制停飞（四个目标版本反编译核对），此逻辑勿改回一步清除。
      */
     private static void updateCreativeFlight(Player player) {
         Abilities abilities = player.getAbilities();
-        if (player.hasEffect(ModEffects.CREATIVE_FLIGHT)) {
-            if (!abilities.mayfly) {
-                abilities.mayfly = true;
+        FlightClaim claim = FLIGHT_CLAIMS.computeIfAbsent(player.getUUID(), k -> new FlightClaim());
+        if (player.isCreative() || player.isSpectator()) {
+            claim.own = false;
+            claim.pendingSince = -1;
+            return;
+        }
+        int tick = FLIGHT_TICK;
+        boolean source = player.hasEffect(ModEffects.CREATIVE_FLIGHT);
+
+        if (abilities.flying) {
+            claim.lastFlyingTick = tick;
+        }
+        // 来源回归（效果重新挂上）→ 取消进行中的回收
+        if (claim.pendingSince >= 0 && source) {
+            claim.pendingSince = -1;
+        }
+        // 两段式第一段：只撤 mayfly，flying 原样保留（其他模组的授予分支此刻仍可重新打开 mayfly）
+        if (claim.own && !source && claim.pendingSince < 0) {
+            if (abilities.mayfly) {
+                abilities.mayfly = false;
                 player.onUpdateAbilities();
             }
-        } else if (!player.isCreative() && !player.isSpectator() && (abilities.mayfly || abilities.flying)) {
-            abilities.flying = false;
-            abilities.mayfly = false;
-            player.onUpdateAbilities();
-            player.fallDistance = 0.0F;
+            claim.pendingSince = tick;
         }
+        // 回收评估：启动当 tick 不评估（给其他模组一次完整的重授予机会）
+        if (claim.pendingSince >= 0 && tick >= claim.pendingSince + 1) {
+            if (abilities.mayfly) {
+                // 有人在窗口内重新打开 → 所有权移交，放弃回收（flying 全程未动，无缝）
+                claim.pendingSince = -1;
+                claim.own = false;
+            } else if (tick >= claim.pendingSince + 2) {
+                // 连续两窗无人接手 → 完成回收
+                abilities.flying = false;
+                abilities.mayfly = false;
+                player.onUpdateAbilities();
+                player.fallDistance = 0.0F;
+                claim.pendingSince = -1;
+                claim.own = false;
+            }
+        }
+        // 授予：效果在场但 mayfly 为关 → 翻转并认领；近期（≤2 tick）观察到在飞则同步还原 flying，
+        // 封死“他方刚完成回收、本方同 tick 重授予”导致的 1 tick 掉飞竞态
+        if (source && !abilities.mayfly) {
+            abilities.mayfly = true;
+            claim.own = true;
+            if (!abilities.flying && tick - claim.lastFlyingTick <= 2) {
+                abilities.flying = true;
+            }
+            player.onUpdateAbilities();
+        }
+    }
+
+    /** 登录对账：存档里 mayfly/flying 已为开、或嗨棒在身时认领为本模组所有权（可能是也可能不是真所有者，
+     *  误认领由两段式回收的窗口协商自行化解）；两段式回收同时兜底跨重启遗留的孤儿飞行。 */
+    private static void reconcileFlightClaim(ServerPlayer player) {
+        Abilities abilities = player.getAbilities();
+        FlightClaim claim = new FlightClaim();
+        if (!player.isCreative() && !player.isSpectator()
+                && (abilities.mayfly || abilities.flying || player.hasEffect(ModEffects.CREATIVE_FLIGHT))) {
+            claim.own = true;
+        }
+        FLIGHT_CLAIMS.put(player.getUUID(), claim);
     }
 
     private static void applyFrostWalker(Player player, int amplifier) {
