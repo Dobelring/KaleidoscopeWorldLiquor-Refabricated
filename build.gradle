@@ -44,7 +44,7 @@ dependencies {
 	implementation ("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forge_config_api_version}")
 
 	// Kaleidoscope Tavern (前置酒馆) — 文件依赖
-	implementation files("libs/kaleidoscope_tavern-1.2.0.11-fabric+mc26.3.jar")
+	implementation files("libs/kaleidoscope_tavern-1.2.0.12-fabric+mc26.3.jar")
 
 	// Create Fly（第三方 Create Fabric 移植）软联动：装置上的酒柜/吧台凳交互 + 冰柜 Ponder 场景。
 	// 入口点按 isModLoaded("create") 守卫，未装 Create 时相关类不会被加载。
@@ -55,8 +55,8 @@ dependencies {
 	// Jade
 	implementation "maven.modrinth:jade:${project.jade_version}"
 	// MixinExtras（@ModifyExpressionValue 等，@Expression 需 >=0.5.0-beta.1）
-	include("io.github.llamalad7:mixinextras-fabric:0.5.4")
-	implementation("io.github.llamalad7:mixinextras-fabric:0.5.4")
+	include("io.github.llamalad7:mixinextras-fabric:0.5.5")
+	implementation("io.github.llamalad7:mixinextras-fabric:0.5.5")
 }
 
 processResources {
