@@ -228,9 +228,8 @@
   "subtitles.kaleidoscope_world_liquor.sour_plum_drink": "吹饮",
   "subtitles.kaleidoscope_world_liquor.cool_ice_tea_drink": "吹饮",
   "config.jade.plugin_kaleidoscope_world_liquor.freezer_fluid": "冰柜牛奶流体渲染",
-  "potion.potency.5": "VI",
-  "potion.potency.6": "VII",
-  "potion.potency.7": "VIII",
-  "potion.potency.8": "IX",
-  "potion.potency.9": "X"
+  "block.kaleidoscope_world_liquor.green_pendant_lamp": "绿色垂灯",
+  "block.kaleidoscope_world_liquor.pink_pendant_lamp": "粉色垂灯",
+  "effect.kaleidoscope_world_liquor.luck": "幸运+",
+  "effect.kaleidoscope_world_liquor.luck.description": "提升开箱、挖掘、钓鱼、打怪时获取更多种类稀有战利品的概率"
 }

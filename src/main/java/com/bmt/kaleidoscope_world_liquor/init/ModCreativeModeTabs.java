@@ -94,6 +94,9 @@ public class ModCreativeModeTabs {
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BAR_STOOL_PURPLE);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BAR_STOOL_MAGENTA);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BAR_STOOL_PINK);
+      // 官方 1.1.12：垂灯（粉在前绿在后，与官方创造栏顺序一致）
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.PINK_PENDANT_LAMP);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.GREEN_PENDANT_LAMP);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.OAK_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.OAK_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BIRCH_BAR_CABINET);

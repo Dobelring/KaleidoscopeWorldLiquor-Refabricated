@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level.ExplosionInteraction;
 import org.jetbrains.annotations.Nullable;
 
 public class ExplosionEffect extends MobEffect {
-   private static final float BASE_POWER = 3.0F;
+   private static final float BASE_POWER = 5.0F;
    private static final float POWER_PER_AMPLIFIER = 1.0F;
    private static final boolean SET_FIRE = false;
    private static final ExplosionInteraction BLOCK_MODE = ExplosionInteraction.TNT;
@@ -38,7 +38,7 @@ public class ExplosionEffect extends MobEffect {
    private void doExplosion(LivingEntity entity, int amplifier) {
       Level level = entity.level();
       if (!level.isClientSide()) {
-         float power = 3.0F + amplifier * 1.0F;
+         float power = BASE_POWER + amplifier * 1.0F;
          level.explode(entity, entity.getX(), entity.getY(), entity.getZ(), power, false, BLOCK_MODE);
       }
    }

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 
 public class ClientPlayerEntityMixinHooks {
    private int multiJump$jumpCount = 0;
@@ -37,7 +38,19 @@ public class ClientPlayerEntityMixinHooks {
                   && player.input.jumping
                   && !player.getAbilities().flying) {
                   this.multiJump$jumpCount--;
-                  player.jumpFromGround();
+                  // 官方 1.1.12：不再用原版跳跃（受多因素影响），改为定速起跳并显式吃跳跃提升加成
+                  double upwardsMotion = 0.5;
+                  if (player.hasEffect(MobEffects.JUMP)) {
+                     upwardsMotion += 0.1 * (player.getEffect(MobEffects.JUMP).getAmplifier() + 1);
+                  }
+
+                  if (reverseGravity) {
+                     upwardsMotion = -upwardsMotion;
+                  }
+
+                  Vec3 motion = player.getDeltaMovement();
+                  player.setDeltaMovement(motion.x, upwardsMotion, motion.z);
+                  player.hasImpulse = true;
                   player.fallDistance = 0.0F;
                   this.multiJump$jumpedLastTick = true;
                   return;
