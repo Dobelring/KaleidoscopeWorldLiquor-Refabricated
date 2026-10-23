@@ -45,6 +45,10 @@ public final class Clients {
          }
       }
       BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FREEZER, RenderType.cutout());
+      // 垂灯玻璃为半透明（模型 JSON 的 render_type 是 1.21.6+ 字段，1.21.1 不认）→ 与 tavern 自己的垂灯一致注册 translucent
+      BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(),
+         ModBlocks.GREEN_PENDANT_LAMP, ModBlocks.PINK_PENDANT_LAMP
+      );
       // 酒方块贴图均含 38%~86% 透明像素：世界路径默认 solid 层不丢弃透明像素会发暗，须统一注册 cutout
       // （BE 酒柜渲染走 renderSingleBlock→cutout 不受影响，未注册时表现为"酒柜里正常、放地上发暗"）
       BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(),
