@@ -128,6 +128,9 @@ public final class ModItems {
     public static final Item BAR_STOOL_PURPLE = registerItemViaBlock(ModBlocks.BAR_STOOL_PURPLE);
     public static final Item BAR_STOOL_MAGENTA = registerItemViaBlock(ModBlocks.BAR_STOOL_MAGENTA);
     public static final Item BAR_STOOL_PINK = registerItemViaBlock(ModBlocks.BAR_STOOL_PINK);
+    // 官方 1.1.13：垂灯
+    public static final Item GREEN_PENDANT_LAMP = registerItemViaBlock(ModBlocks.GREEN_PENDANT_LAMP);
+    public static final Item PINK_PENDANT_LAMP = registerItemViaBlock(ModBlocks.PINK_PENDANT_LAMP);
 
     // ========== 27 酒柜/酒窖柜 + 冰柜 ==========
     public static final Item OAK_BAR_CABINET = registerItemViaBlock(ModBlocks.OAK_BAR_CABINET);

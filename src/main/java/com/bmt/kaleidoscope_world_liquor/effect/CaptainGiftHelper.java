@@ -30,7 +30,7 @@ public final class CaptainGiftHelper {
         if (!(entity instanceof LivingEntity livingEntity)) {
             return original;
         }
-        if (original.y > 0.0 || !livingEntity.hasEffect(ModEffects.CAPTAIN_GIFT) || livingEntity.isCrouching()) {
+        if (original.y > 0.0 || !livingEntity.hasEffect(ModEffects.CAPTAIN_GIFT) || livingEntity.isUnderWater() || livingEntity.isCrouching()) {
             return original;
         }
         Level level = livingEntity.level();

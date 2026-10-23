@@ -15,6 +15,7 @@
     "BoatMixin",
     "TapBlockMixin",
     "ShakerItemMixin",
+    "LootTableLuckMixin",
     "BottleBlockItemMixin",
     "accessor.BarrelBlockEntityAccessor",
     "accessor.BrushableBlockEntityAccessor",

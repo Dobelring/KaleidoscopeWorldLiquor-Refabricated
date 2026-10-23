@@ -105,7 +105,7 @@ public final class TreasureSenseRenderer {
         PlayerTeam goldTeam = mc.level.getScoreboard().getPlayerTeam(GOLD_GLOW_TEAM);
         if (goldTeam == null) {
             goldTeam = mc.level.getScoreboard().addPlayerTeam(GOLD_GLOW_TEAM);
-            goldTeam.setColor(Optional.of(net.minecraft.world.scores.TeamColor.GOLD));
+            goldTeam.setColor(Optional.of(net.minecraft.world.scores.TeamColor.YELLOW));
             goldTeam.setCollisionRule(Team.CollisionRule.NEVER);
             goldTeam.setNameTagVisibility(Team.Visibility.NEVER);
         }
@@ -119,7 +119,10 @@ public final class TreasureSenseRenderer {
                     glowingMinecart.setGlowing(true);
                 } else {
                     glowingMinecart.setGlowing(false);
-                    mc.level.getScoreboard().removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                    // 官方 1.1.13：矿车可能在其它队伍，先确认在本队再移除
+                    if (mc.level.getScoreboard().getPlayersTeam(minecart.getStringUUID()) == goldTeam) {
+                        mc.level.getScoreboard().removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                    }
                 }
             }
         }
@@ -129,7 +132,10 @@ public final class TreasureSenseRenderer {
                 IGlowingEntity glowingMinecart = (IGlowingEntity) minecart;
                 if (glowingMinecart.isModGlowing()) {
                     glowingMinecart.setGlowing(false);
-                    mc.level.getScoreboard().removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                    // 官方 1.1.13：矿车可能在其它队伍，先确认在本队再移除
+                    if (mc.level.getScoreboard().getPlayersTeam(minecart.getStringUUID()) == goldTeam) {
+                        mc.level.getScoreboard().removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                    }
                 }
             }
             if (goldTeam.getPlayers().isEmpty()) {

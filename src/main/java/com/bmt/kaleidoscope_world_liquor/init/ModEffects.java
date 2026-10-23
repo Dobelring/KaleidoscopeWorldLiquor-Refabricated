@@ -37,6 +37,8 @@ public final class ModEffects {
     public static Holder<MobEffect> EXPLOSION;
     public static Holder<MobEffect> LEVEL_BOOST;
     public static Holder<MobEffect> CONTINUOUS_HEAL;
+    /** 官方 1.1.12：幸运+，纯状态标记，加成在 LootTableLuckMixin 的战利品重掷里生效 */
+    public static Holder<MobEffect> LUCK;
     /** 嗨棒：纯状态标记，飞行能力由 EventHandlers.updateCreativeFlight 同步（1.1.9 新增） */
     public static Holder<MobEffect> CREATIVE_FLIGHT;
     public static Holder<MobEffect> CRAZY;
@@ -68,6 +70,7 @@ public final class ModEffects {
         EXPLOSION = register("explosion", new InstantEffects.ExplosionEffect(0xFF0FA2));
         LEVEL_BOOST = register("level_boost", new InstantEffects.LevelBoostEffect(0x2EBD51));
         CONTINUOUS_HEAL = register("continuous_heal", new ContinuousHealEffect());
+        LUCK = register("luck", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x3CB371, BaseEffect.TICK_NEVER));
         CREATIVE_FLIGHT = register("creative_flight", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x87C8BA, BaseEffect.TICK_NEVER));
         CRAZY = register("crazy", new InstantEffects.CrazyEffect());
         RESPAWN = register("respawn", new InstantEffects.RespawnEffect());
