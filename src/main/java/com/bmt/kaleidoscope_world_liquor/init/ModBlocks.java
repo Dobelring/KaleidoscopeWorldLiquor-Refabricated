@@ -8,6 +8,7 @@ import com.bmt.kaleidoscope_world_liquor.block.FreezerBlock;
 import com.bmt.kaleidoscope_world_liquor.block.WallRecordBlock;
 import com.bmt.kaleidoscope_world_liquor.util.PortHelper;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.DrinkBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.deco.PendantLampBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.mixology.CocktailBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -133,6 +134,14 @@ public final class ModBlocks {
     private static Block cocktailReg(String name) {
         return commonReg(name, CocktailBlock::new, BlockBehaviour.Properties.of());
     }
+
+    // ========== 官方 1.1.13：绿/粉垂灯（方块类复用前置 tavern 的 PendantLampBlock） ==========
+    private static Block pendantLampReg(String name) {
+        return commonReg(name, PendantLampBlock::new, BlockBehaviour.Properties.of());
+    }
+
+    public static final Block GREEN_PENDANT_LAMP = pendantLampReg("green_pendant_lamp");
+    public static final Block PINK_PENDANT_LAMP = pendantLampReg("pink_pendant_lamp");
 
     public static final Block JERK = cocktailReg("jerk");
     public static final Block AROUND_THE_WORLD = cocktailReg("around_the_world");

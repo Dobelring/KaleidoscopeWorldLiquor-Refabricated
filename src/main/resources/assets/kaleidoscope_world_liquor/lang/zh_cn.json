@@ -266,14 +266,13 @@
   "effect.kaleidoscope_world_liquor.respawn.description": "传送回重生点",
   "effect.kaleidoscope_world_liquor.creative_flight.description": "给与玩家创造模式的飞行能力",
   "config.jade.plugin_kaleidoscope_world_liquor.freezer_fluid": "冰柜牛奶流体渲染",
-  "potion.potency.5": "VI",
-  "potion.potency.6": "VII",
-  "potion.potency.7": "VIII",
-  "potion.potency.8": "IX",
-  "potion.potency.9": "X",
   "tag.kaleidoscope_tavern.cocktail_ingredient": "调酒原料",
   "tag.kaleidoscope_tavern.cocktail_ingredient_brown": "棕色调酒原料",
   "tag.kaleidoscope_tavern.cocktail_ingredient_orange": "橙色调酒原料",
   "tag.kaleidoscope_tavern.cocktail_ingredient_light_blue": "淡蓝色调酒原料",
-  "tag.kaleidoscope_tavern.cocktail_ingredient_pink": "粉色调酒原料"
+  "tag.kaleidoscope_tavern.cocktail_ingredient_pink": "粉色调酒原料",
+  "block.kaleidoscope_world_liquor.green_pendant_lamp": "绿色垂灯",
+  "block.kaleidoscope_world_liquor.pink_pendant_lamp": "粉色垂灯",
+  "effect.kaleidoscope_world_liquor.luck": "幸运+",
+  "effect.kaleidoscope_world_liquor.luck.description": "提升开箱、挖掘、钓鱼、打怪时获取更多种类稀有战利品的概率"
 }

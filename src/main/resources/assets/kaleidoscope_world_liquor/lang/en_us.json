@@ -263,14 +263,13 @@
   "color.kaleidoscope_world_liquor.light_blue": "Light Blue",
   "color.kaleidoscope_world_liquor.pink": "Pink",
   "config.jade.plugin_kaleidoscope_world_liquor.freezer_fluid": "Freezer Tank Fluid Render",
-  "potion.potency.5": "VI",
-  "potion.potency.6": "VII",
-  "potion.potency.7": "VIII",
-  "potion.potency.8": "IX",
-  "potion.potency.9": "X",
   "tag.kaleidoscope_tavern.cocktail_ingredient": "Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_brown": "Brown Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_orange": "Orange Cocktail Ingredient",
   "tag.kaleidoscope_tavern.cocktail_ingredient_light_blue": "Light Blue Cocktail Ingredient",
-  "tag.kaleidoscope_tavern.cocktail_ingredient_pink": "Pink Cocktail Ingredient"
+  "tag.kaleidoscope_tavern.cocktail_ingredient_pink": "Pink Cocktail Ingredient",
+  "block.kaleidoscope_world_liquor.green_pendant_lamp": "Green Pendant Lamp",
+  "block.kaleidoscope_world_liquor.pink_pendant_lamp": "Pink Pendant Lamp",
+  "effect.kaleidoscope_world_liquor.luck": "Luck+",
+  "effect.kaleidoscope_world_liquor.luck.description": "Chance to gain items that did not drop, higher levels grant higher chance"
 }

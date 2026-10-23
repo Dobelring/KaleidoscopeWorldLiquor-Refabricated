@@ -4,6 +4,7 @@ import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * 多段跳客户端判定（1.20.1 ClientPlayerEntityMixinHooks 原样迁移）：
@@ -43,7 +44,19 @@ public final class MultiJumpHandler {
                     && player.input.keyPresses.jump()
                     && !player.getAbilities().flying) {
                 this.jumpCount--;
-                player.jumpFromGround();
+                // 官方 1.1.12：不再用原版跳跃（受多因素影响），改为定速起跳并显式吃跳跃提升加成
+                double upwardsMotion = 0.5;
+                if (player.hasEffect(MobEffects.JUMP_BOOST)) {
+                    upwardsMotion += 0.1 * (player.getEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1);
+                }
+
+                if (reverseGravity) {
+                    upwardsMotion = -upwardsMotion;
+                }
+
+                Vec3 motion = player.getDeltaMovement();
+                player.setDeltaMovement(motion.x, upwardsMotion, motion.z);
+                player.needsSync = true;
                 player.resetFallDistance();
                 this.jumpedLastTick = true;
                 return;
@@ -58,9 +71,9 @@ public final class MultiJumpHandler {
     }
 
     private boolean canJump(LocalPlayer player) {
+        // 官方 1.1.12：跳跃提升不再排除多段跳（改为显式加成，见上方定速起跳）
         return !this.wearingUsableElytra(player)
                 && !player.isInWater()
-                && !player.isPassenger()
-                && !player.hasEffect(MobEffects.JUMP_BOOST);
+                && !player.isPassenger();
     }
 }

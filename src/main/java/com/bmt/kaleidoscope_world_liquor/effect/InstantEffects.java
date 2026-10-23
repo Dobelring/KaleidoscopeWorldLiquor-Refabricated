@@ -35,7 +35,7 @@ public final class InstantEffects {
 
     /** 爆炸 */
     public static class ExplosionEffect extends MobEffect {
-        private static final float BASE_POWER = 3.0F;
+        private static final float BASE_POWER = 5.0F;
         private static final float POWER_PER_AMPLIFIER = 1.0F;
 
         public ExplosionEffect(int color) {

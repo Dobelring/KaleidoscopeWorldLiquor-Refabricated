@@ -30,7 +30,8 @@ public final class CaptainGiftHelper {
         if (!(entity instanceof LivingEntity livingEntity)) {
             return original;
         }
-        if (original.y > 0.0 || !livingEntity.hasEffect(ModEffects.CAPTAIN_GIFT) || livingEntity.isCrouching()) {
+        // 官方 1.1.13：潜入水下时不再托举，可正常下潜
+        if (original.y > 0.0 || !livingEntity.hasEffect(ModEffects.CAPTAIN_GIFT) || livingEntity.isUnderWater() || livingEntity.isCrouching()) {
             return original;
         }
         Level level = livingEntity.level();
