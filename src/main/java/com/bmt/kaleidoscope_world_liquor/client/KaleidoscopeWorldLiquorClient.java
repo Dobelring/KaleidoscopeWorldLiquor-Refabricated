@@ -104,6 +104,9 @@ public class KaleidoscopeWorldLiquorClient implements ClientModInitializer {
     };
     /** 鸡尾酒：模型声明 translucent。 */
     private static final String[] TRANSLUCENT_BLOCKS = {
+        // 垂灯玻璃为半透明（模型 JSON 的 render_type 是 1.21.6+ 字段，1.20.1 不认）→ 与 tavern 自己的垂灯一致注册 translucent
+        "kaleidoscope_world_liquor:green_pendant_lamp",
+        "kaleidoscope_world_liquor:pink_pendant_lamp",
         "kaleidoscope_world_liquor:around_the_world",
         "kaleidoscope_world_liquor:gin_tonic",
         "kaleidoscope_world_liquor:highball",
