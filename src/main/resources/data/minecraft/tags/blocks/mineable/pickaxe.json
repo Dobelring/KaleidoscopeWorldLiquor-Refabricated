@@ -16,6 +16,11 @@
     "kaleidoscope_world_liquor:bar_stool_purple",
     "kaleidoscope_world_liquor:bar_stool_magenta",
     "kaleidoscope_world_liquor:bar_stool_pink",
-    "kaleidoscope_world_liquor:freezer"
+    "kaleidoscope_world_liquor:freezer",
+    "kaleidoscope_world_liquor:green_pendant_lamp",
+    "kaleidoscope_world_liquor:pink_pendant_lamp",
+    "kaleidoscope_tavern:yellow_pendant_lamp",
+    "kaleidoscope_tavern:blue_pendant_lamp",
+    "kaleidoscope_tavern:bell_pendant_lamp"
   ]
 }

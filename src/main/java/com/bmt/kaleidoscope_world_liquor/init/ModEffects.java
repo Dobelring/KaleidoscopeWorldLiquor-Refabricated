@@ -82,6 +82,12 @@ public class ModEffects {
     public static final MobEffect EXPLOSION = new ExplosionEffect(16720418);
     public static final MobEffect LEVEL_BOOST = new LevelBoostEffect(3066993);
     public static final MobEffect CONTINUOUS_HEAL = new ContinuousHealEffect();
+    // 官方 1.1.13：幸运+，纯状态标记，加成在 LootTableLuckMixin 的战利品重掷里生效
+    public static final MobEffect LUCK = new MobEffect(MobEffectCategory.BENEFICIAL, 3978097) {
+        public boolean isDurationEffectTick(int duration, int amplifier) {
+            return false;
+        }
+    };
     public static final MobEffect CRAZY = new CrazyEffect();
     public static final MobEffect RESPAWN = new RespawnEffect();
     public static final MobEffect DOUBLE_DAMAGE_EFFECT = new DoubleDamageEffect();
@@ -119,6 +125,7 @@ public class ModEffects {
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "explosion"), EXPLOSION);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "level_boost"), LEVEL_BOOST);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "continuous_heal"), CONTINUOUS_HEAL);
+        Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "luck"), LUCK);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "crazy"), CRAZY);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "respawn"), RESPAWN);
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "double_damage"), DOUBLE_DAMAGE_EFFECT);

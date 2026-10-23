@@ -7,6 +7,7 @@ import com.bmt.kaleidoscope_world_liquor.block.ChairBlock;
 import com.bmt.kaleidoscope_world_liquor.block.FreezerBlock;
 import com.bmt.kaleidoscope_world_liquor.block.WallRecordBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.brew.DrinkBlock;
+import com.github.ysbbbbbb.kaleidoscopetavern.block.deco.PendantLampBlock;
 import com.github.ysbbbbbb.kaleidoscopetavern.block.mixology.CocktailBlock;
 import java.util.function.Supplier;
 import net.minecraft.core.Registry;
@@ -241,6 +242,9 @@ public class ModBlocks {
     public static final Block BAR_STOOL_PURPLE = new ChairBlock();
     public static final Block BAR_STOOL_MAGENTA = new ChairBlock();
     public static final Block BAR_STOOL_PINK = new ChairBlock();
+    // 官方 1.1.13：绿/粉垂灯（方块类复用前置 tavern 的 PendantLampBlock）
+    public static final Block GREEN_PENDANT_LAMP = new PendantLampBlock();
+    public static final Block PINK_PENDANT_LAMP = new PendantLampBlock();
     public static final Block FREEZER = new FreezerBlock(Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).strength(5.0F, 1200.0F).noOcclusion())
    ;
     public static final Block WALL_RECORD = new WallRecordBlock(Properties.of().noCollission().strength(0.1F).sound(SoundType.METAL))
@@ -315,6 +319,8 @@ public class ModBlocks {
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "bar_stool_purple"), BAR_STOOL_PURPLE);
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "bar_stool_magenta"), BAR_STOOL_MAGENTA);
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "bar_stool_pink"), BAR_STOOL_PINK);
+        Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "green_pendant_lamp"), GREEN_PENDANT_LAMP);
+        Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "pink_pendant_lamp"), PINK_PENDANT_LAMP);
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "freezer"), FREEZER);
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "wall_record"), WALL_RECORD);
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "jerk"), JERK);

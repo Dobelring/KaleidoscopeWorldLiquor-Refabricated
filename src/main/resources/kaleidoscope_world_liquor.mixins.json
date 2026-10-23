@@ -22,7 +22,8 @@
     "accessor.BrushableBlockEntityAccessor",
     "accessor.RandomizableContainerBlockEntityAccessor",
     "ShakerItemMixin",
-    "BottleBlockItemMixin"
+    "BottleBlockItemMixin",
+    "LootTableLuckMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin",

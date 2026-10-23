@@ -199,16 +199,15 @@
   "color.kaleidoscope_world_liquor.light_blue": "Light Blue",
   "color.kaleidoscope_world_liquor.pink": "Pink",
   "config.jade.plugin_kaleidoscope_world_liquor.freezer_fluid": "Freezer Tank Fluid Render",
-  "potion.potency.5": "VI",
-  "potion.potency.6": "VII",
-  "potion.potency.7": "VIII",
-  "potion.potency.8": "IX",
-  "potion.potency.9": "X",
   "subtitles.kaleidoscope_world_liquor.pochi_pudding_feed": "Pochi: Arigato!",
   "subtitles.kaleidoscope_world_liquor.ice_tea_eat": "Sip",
   "subtitles.kaleidoscope_world_liquor.sour_plum_drink": "Sip",
   "subtitles.kaleidoscope_world_liquor.cool_ice_tea_drink": "Sip",
   "subtitles.kaleidoscope_world_liquor.custom_record_placeholder": "Record placed",
   "subtitles.kaleidoscope_world_liquor.custom_music_1": "Bar music plays",
-  "subtitles.kaleidoscope_world_liquor.custom_music_2": "Bar music plays"
+  "subtitles.kaleidoscope_world_liquor.custom_music_2": "Bar music plays",
+  "block.kaleidoscope_world_liquor.green_pendant_lamp": "Green Pendant Lamp",
+  "block.kaleidoscope_world_liquor.pink_pendant_lamp": "Pink Pendant Lamp",
+  "effect.kaleidoscope_world_liquor.luck": "Luck+",
+  "effect.kaleidoscope_world_liquor.luck.description": "Chance to gain items that did not drop, higher levels grant higher chance"
 }

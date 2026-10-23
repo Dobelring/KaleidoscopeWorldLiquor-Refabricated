@@ -137,7 +137,7 @@ public class TreasureSenseRender {
             PlayerTeam goldTeam = scoreboard.getPlayerTeam("kaleidoscope_gold_glow");
             if (goldTeam == null) {
                 goldTeam = scoreboard.addPlayerTeam("kaleidoscope_gold_glow");
-                goldTeam.setColor(ChatFormatting.GOLD);
+                goldTeam.setColor(ChatFormatting.YELLOW);
                 goldTeam.setCollisionRule(CollisionRule.NEVER);
                 goldTeam.setNameTagVisibility(Visibility.NEVER);
             }
@@ -153,7 +153,10 @@ public class TreasureSenseRender {
                         glowingMinecart.setGlowing(true);
                     } else {
                         glowingMinecart.setGlowing(false);
-                        scoreboard.removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                        // 官方 1.1.13：矿车可能在其它队伍，先确认在本队再移除
+                        if (scoreboard.getPlayersTeam(minecart.getStringUUID()) == goldTeam) {
+                            scoreboard.removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
+                        }
                     }
                 }
             }
@@ -243,7 +246,7 @@ public class TreasureSenseRender {
                     IGlowingEntity glowingMinecart = (IGlowingEntity)minecart;
                     if (glowingMinecart.isModGlowing()) {
                         glowingMinecart.setGlowing(false);
-                        if (goldTeam != null) {
+                        if (goldTeam != null && scoreboard.getPlayersTeam(minecart.getStringUUID()) == goldTeam) {
                             scoreboard.removePlayerFromTeam(minecart.getStringUUID(), goldTeam);
                         }
                     }

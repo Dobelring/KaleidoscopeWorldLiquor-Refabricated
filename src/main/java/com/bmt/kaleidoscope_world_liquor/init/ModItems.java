@@ -119,6 +119,8 @@ public class ModItems {
         blockItem("bar_stool_purple", ModBlocks.BAR_STOOL_PURPLE);
         blockItem("bar_stool_magenta", ModBlocks.BAR_STOOL_MAGENTA);
         blockItem("bar_stool_pink", ModBlocks.BAR_STOOL_PINK);
+        blockItem("green_pendant_lamp", ModBlocks.GREEN_PENDANT_LAMP);
+        blockItem("pink_pendant_lamp", ModBlocks.PINK_PENDANT_LAMP);
         blockItem("freezer", ModBlocks.FREEZER);
         blockItem("oak_bar_cabinet", ModBlocks.OAK_BAR_CABINET);
         blockItem("oak_glass_bar_cabinet", ModBlocks.OAK_GLASS_BAR_CABINET);

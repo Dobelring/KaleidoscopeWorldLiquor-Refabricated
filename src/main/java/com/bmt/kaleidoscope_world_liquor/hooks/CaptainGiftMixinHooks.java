@@ -23,6 +23,9 @@ public class CaptainGiftMixinHooks {
                 return original;
             } else if (!livingEntity.hasEffect(ModEffects.CAPTAIN_GIFT_EFFECT)) {
                 return original;
+            } else if (livingEntity.isUnderWater()) {
+                // 官方 1.1.13：潜入水下时不再托举，可正常下潜
+                return original;
             } else if (livingEntity.isShiftKeyDown()) {
                 return original;
             } else {
