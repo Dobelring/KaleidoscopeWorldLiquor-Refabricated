@@ -6,7 +6,7 @@
         "effect": "minecraft:nausea",
         "duration": 30,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       }
     ],
     [
@@ -14,7 +14,7 @@
         "effect": "kaleidoscope_tavern:slightly_tipsy",
         "duration": 45,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       }
     ],
     [
@@ -22,39 +22,39 @@
         "effect": "kaleidoscope_tavern:slightly_tipsy",
         "duration": 30,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       },
       {
         "effect": "minecraft:levitation",
         "duration": 15,
-        "amplifier": 0,
-        "probability": 1
-      },
-      {
-        "effect": "minecraft:slow_falling",
-        "duration": 35,
-        "amplifier": 0,
-        "probability": 1
-      }
-    ],
-    [
-      {
-        "effect": "kaleidoscope_tavern:slightly_tipsy",
-        "duration": 30,
-        "amplifier": 0,
-        "probability": 1
-      },
-      {
-        "effect": "minecraft:levitation",
-        "duration": 20,
         "amplifier": 1,
-        "probability": 1
+        "probability": 1.0
       },
       {
         "effect": "minecraft:slow_falling",
         "duration": 40,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
+      }
+    ],
+    [
+      {
+        "effect": "kaleidoscope_tavern:slightly_tipsy",
+        "duration": 30,
+        "amplifier": 0,
+        "probability": 1.0
+      },
+      {
+        "effect": "minecraft:levitation",
+        "duration": 25,
+        "amplifier": 2,
+        "probability": 1.0
+      },
+      {
+        "effect": "minecraft:slow_falling",
+        "duration": 60,
+        "amplifier": 0,
+        "probability": 1.0
       }
     ],
     [
@@ -62,19 +62,19 @@
         "effect": "kaleidoscope_tavern:slightly_tipsy",
         "duration": 20,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       },
       {
         "effect": "minecraft:levitation",
-        "duration": 25,
-        "amplifier": 2,
-        "probability": 1
+        "duration": 35,
+        "amplifier": 3,
+        "probability": 1.0
       },
       {
         "effect": "minecraft:slow_falling",
-        "duration": 45,
+        "duration": 80,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       }
     ],
     [
@@ -82,19 +82,19 @@
         "effect": "kaleidoscope_tavern:slightly_tipsy",
         "duration": 10,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       },
       {
         "effect": "minecraft:levitation",
-        "duration": 30,
-        "amplifier": 3,
-        "probability": 1
+        "duration": 45,
+        "amplifier": 4,
+        "probability": 1.0
       },
       {
         "effect": "minecraft:slow_falling",
-        "duration": 50,
+        "duration": 100,
         "amplifier": 0,
-        "probability": 1
+        "probability": 1.0
       }
     ]
   ]

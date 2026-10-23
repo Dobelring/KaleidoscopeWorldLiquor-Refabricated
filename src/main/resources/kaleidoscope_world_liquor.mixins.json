@@ -17,6 +17,7 @@
     "accessor.CreativeModeTabAccessor",
     "accessor.BrushableBlockEntityAccessor",
     "ShakerItemMixin",
+    "LootTableLuckMixin",
     "BottleBlockItemMixin"
   ],
   "client": [
