@@ -5,7 +5,7 @@
 > A Minecraft Fabric mod that brings the world's most famous liquors and cocktails — from Bombay Sapphire Gin to Feitian Moutai — to Kaleidoscope Tavern.
 
 ## Compendium
-- This is the **Fabric port** of [**森罗酒馆：世界名酒**](https://www.mcmod.cn/class/25477.html) (Kaleidoscope World Liquor)**, corresponding to version `1.1.11` (Forge 1.20.1 官方 `fix-all`).
+- This is the **Fabric port** of [**森罗酒馆：世界名酒**](https://www.mcmod.cn/class/25477.html) (Kaleidoscope World Liquor).
 - Requires [**森罗物语：酒馆**](https://www.mcmod.cn/class/25200.html) (Kaleidoscope Tavern) and [**Forge Config API Port**](https://modrinth.com/mod/forge-config-api-port).
 
 ## Overview
