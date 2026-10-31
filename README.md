@@ -31,7 +31,7 @@
 - **Kaleidoscope Doll (森罗物语：玩偶)**: 6 contributor dolls (doll_0 ~ doll_5) with author tooltips, craftable from pink wool in a stonecutter; feed them Pochi Pudding for a surprise. 全部联动均带门控——未安装玩偶模组时不会加载相关注册。
 
 ## Build
-Targets **Minecraft 1.20.1 (Fabric)** — branch `1.20.1-fabric`. Gradle runs on **JDK 21** (fabric-loom 1.17 要求)，字节码目标 **Java 17**。
+Targets **Minecraft 1.20.1 (Fabric)** — branch `1.20.1-fabric`. Gradle runs on **JDK 21**，字节码目标 **Java 17**。
 
 Dependency jars (Kaleidoscope Tavern, Kaleidoscope Doll) are committed under `libs/` and referenced directly by `build.gradle`.
 
