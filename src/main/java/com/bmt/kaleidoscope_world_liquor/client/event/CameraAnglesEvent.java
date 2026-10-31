@@ -2,7 +2,7 @@ package com.bmt.kaleidoscope_world_liquor.client.event;
 
 import com.bmt.kaleidoscope_world_liquor.init.ModEffects;
 import com.github.ysbbbbbb.kaleidoscopetavern.api.event.ViewportEvent;
-import com.github.ysbbbbbb.kaleidoscopetavern.util.event.IEvent;
+import com.github.ysbbbbbb.kaleidoscopetavern.util.event.IKTEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,8 @@ import net.minecraft.client.player.LocalPlayer;
  * Fabric 1.20.1 的 fabric-api 0.92.12 没有任何相机角度事件（无 camera 模块），因此复用前置
  * tavern 已有的同名事件类 {@code com.github.ysbbbbbb.kaleidoscopetavern.api.event.ViewportEvent.ComputeCameraAngles}：
  * 由 tavern 的 {@code mixin/client/CameraMixin} 在 {@code Camera.setup} 中每帧 post，
- * 本类在 {@link #register()} 里把监听挂到 tavern 的 {@code IEvent.CALLBACK} 总线上修改 roll。
+ * 本类在 {@link #register()} 里把监听挂到 tavern 的 {@code IKTEvent.CALLBACK} 总线上修改 roll
+ * （tavern 1.2.0.13 起事件接口由 {@code IEvent} 改名 {@code IKTEvent}）。
  *
  * <p>已接线：mixins/client/GameRendererMixin 在 Camera.setup 后直接调用本类 onCameraAngles 并把 roll 应用到 PoseStack（原设计备忘：tavern 的 CameraMixin 只回写 yaw/pitch、丢弃 roll，故需要独立 mixin，见
  * {@code mixin/client/GameRendererMixin}（照 CK 的 GameRendererMixin 写法）：在
@@ -43,7 +44,7 @@ public class CameraAnglesEvent {
         }
 
         registered = true;
-        IEvent.CALLBACK.register(event -> {
+        IKTEvent.CALLBACK.register(event -> {
             if (event instanceof ViewportEvent.ComputeCameraAngles computeCameraAngles) {
                 onCameraAngles(computeCameraAngles);
             }
