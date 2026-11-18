@@ -3,7 +3,9 @@
   "fluid": "kaleidoscope_tavern:sweet_berries_juice",
   "fluid_amount": 1000,
   "ingredients": [
-    {"item": "minecraft:snowball"}
+    {
+      "item": "minecraft:snowball"
+    }
   ],
   "result": {
     "item": "kaleidoscope_twilight:kita_stuffed_crisp",

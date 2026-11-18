@@ -144,7 +144,6 @@ public class KaleidoscopeWorldLiquorClient implements ClientModInitializer {
         com.bmt.kaleidoscope_world_liquor.client.creativetab.CreativeTabFilter.register();
 
         // twilight 四食物 tooltip（原 init.kaleidoscope_twilight.TooltipEvents，@EventBusSubscriber Dist.CLIENT）
-        com.bmt.kaleidoscope_world_liquor.init.kaleidoscope_twilight.TooltipEvents.register();
 
         // Ponder 场景（原 compat.ponder.init.ClientSetupEvents，Forge mod 总线事件）
         if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("create")) {

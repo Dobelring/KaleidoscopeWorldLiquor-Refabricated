@@ -21,6 +21,11 @@ public final class CreateCompat {
         registerBarCabinets(cabinetInteraction);
         BarCellarCabinetMovingInteraction cellarCabinetInteraction = new BarCellarCabinetMovingInteraction();
         registerCellarCabinets(cellarCabinetInteraction);
+        // 官方 1.2.0：冰箱与挂墙唱片也支持装置交互
+        FreezerMovingInteraction freezerInteraction = new FreezerMovingInteraction();
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.FREEZER, freezerInteraction);
+        WallRecordMovingInteraction wallRecordInteraction = new WallRecordMovingInteraction();
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.WALL_RECORD, wallRecordInteraction);
         if (FabricLoader.getInstance().isModLoaded("kaleidoscope_contraption")) {
             KaleidoscopeContraptionCompat.register();
         }
@@ -62,6 +67,11 @@ public final class CreateCompat {
     }
 
     private static void registerBarCabinets(MovingInteractionBehaviour interaction) {
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.OAK_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.BIRCH_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.SPRUCE_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.DARK_OAK_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.CHERRY_GLASS_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.OAK_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.BIRCH_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.SPRUCE_BAR_CABINET, interaction);

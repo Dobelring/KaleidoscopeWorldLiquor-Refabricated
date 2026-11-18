@@ -99,14 +99,20 @@ public class ModEffects {
     // 原版 smc 已装时不代注册肘击效果（否则与 smc 自己的注册冲突），语义与官方 Forge 版一致
     public static final MobEffect ELBOW_STRIKE;
 
+    /** 官方 1.2.0：干杯之歌效果（smc:ohh_ye_ye），同样仅在 smc 未装时由本模组代注册 */
+    public static MobEffect OHH_YE_YE;
+
     public ModEffects() {
     }
 
     static {
         if (!FabricLoader.getInstance().isModLoaded("smc")) {
             ELBOW_STRIKE = new SMCEffect();
+            OHH_YE_YE = new net.minecraft.world.effect.MobEffect(net.minecraft.world.effect.MobEffectCategory.BENEFICIAL, 6640463) {
+            };
         } else {
             ELBOW_STRIKE = null;
+            OHH_YE_YE = null;
         }
     }
 
@@ -132,6 +138,9 @@ public class ModEffects {
         Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("kaleidoscope_world_liquor", "creative_flight"), CREATIVE_FLIGHT);
         if (ELBOW_STRIKE != null) {
             Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("smc", "elbow_strike"), ELBOW_STRIKE);
+        }
+        if (OHH_YE_YE != null) {
+            Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("smc", "ohh_ye_ye"), OHH_YE_YE);
         }
     }
 }

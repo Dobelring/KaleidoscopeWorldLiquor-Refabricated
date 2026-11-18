@@ -23,6 +23,10 @@ public class ModBlockEntities {
             new Block[]{
                 ModBlocks.OAK_BAR_CABINET,
                 ModBlocks.OAK_GLASS_BAR_CABINET,
+                ModBlocks.BIRCH_GLASS_BAR_CABINET,
+                ModBlocks.SPRUCE_GLASS_BAR_CABINET,
+                ModBlocks.DARK_OAK_GLASS_BAR_CABINET,
+                ModBlocks.CHERRY_GLASS_BAR_CABINET,
                 ModBlocks.BIRCH_BAR_CABINET,
                 ModBlocks.SPRUCE_BAR_CABINET,
                 ModBlocks.DARK_OAK_BAR_CABINET,

@@ -6,7 +6,9 @@
     "XXX"
   ],
   "key": {
-    "X": {"item": "minecraft:cherry_slab"}
+    "X": {
+      "item": "minecraft:cherry_slab"
+    }
   },
   "result": {
     "item": "kaleidoscope_world_liquor:cherry_bar_cabinet",

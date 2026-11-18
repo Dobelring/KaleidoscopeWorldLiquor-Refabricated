@@ -301,17 +301,28 @@ public class EventHandlers {
      * LivingEntity#actuallyHurt 的 getDamageAfterMagicAbsorb 之后回调本方法。
      */
     public static float onLivingHurt(LivingEntity target, DamageSource source, float amount) {
+        // 官方 1.2.0：破势放宽为任意持效果生物（玩家播原版暴击，其余播音效+粒子）
         if (source.getDirectEntity() instanceof LivingEntity attacker
-            && attacker instanceof Player player
-            && player.hasEffect(ModEffects.GROUND_CRIT_EFFECT)
+            && attacker.hasEffect(ModEffects.GROUND_CRIT_EFFECT)
             && isMeleeAttack(source)) {
-            int critAmplifier = Objects.requireNonNull(player.getEffect(ModEffects.GROUND_CRIT_EFFECT)).getAmplifier();
+            int critAmplifier = Objects.requireNonNull(attacker.getEffect(ModEffects.GROUND_CRIT_EFFECT)).getAmplifier();
             double baseCritChance = 0.2;
             double extraCritChance = critAmplifier * 0.1;
             double totalCritChance = baseCritChance + extraCritChance;
-            if (!isVanillaCrit(player) && RANDOM.nextDouble() < totalCritChance) {
+            if (!isVanillaCrit(attacker) && RANDOM.nextDouble() < totalCritChance) {
                 float critDamage = amount * 1.5F;
-                player.crit(target);
+                if (attacker instanceof Player player) {
+                    player.crit(target);
+                } else {
+                    target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                        net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.5F);
+                    for (int i = 0; i < 5; i++) {
+                        double px = target.getX() + (target.level().random.nextDouble() - 0.5) * 2.0;
+                        double py = target.getY() + target.getBbHeight() * 0.5 + target.level().random.nextDouble();
+                        double pz = target.getZ() + (target.level().random.nextDouble() - 0.5) * 2.0;
+                        target.level().addParticle(net.minecraft.core.particles.ParticleTypes.CRIT, px, py, pz, 0.0, -0.1, 0.0);
+                    }
+                }
                 return critDamage;
             }
         }
@@ -326,7 +337,7 @@ public class EventHandlers {
         }
     }
 
-    private static boolean isVanillaCrit(Player player) {
+    private static boolean isVanillaCrit(LivingEntity player) {
         return !player.onGround()
             && !player.onClimbable()
             && !player.isInWater()
@@ -418,11 +429,6 @@ public class EventHandlers {
     private static void onPlayerTick(Player player) {
         if (!player.level().isClientSide()) {
             updateCreativeFlight(player);
-            if (player.hasEffect(ModEffects.FROST_WALKER_EFFECT)) {
-                int amplifier = Objects.requireNonNull(player.getEffect(ModEffects.FROST_WALKER_EFFECT)).getAmplifier();
-                FrostWalkerEnchantment.onEntityMoved(player, player.level(), player.blockPosition(), amplifier + 1);
-            }
-
             // 官方 1.1.12：春野之息（骨粉扩散）移除，改为宝藏感知每 20tick 服务端扫描并下发目标
             if (player.hasEffect(ModEffects.TREASURE_SENSE_EFFECT) && player.tickCount % 20 == 0) {
                 syncTreasureSenseTargets(player);

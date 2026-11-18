@@ -1,15 +1,20 @@
 package com.bmt.kaleidoscope_world_liquor.mixins;
 
-import com.bmt.kaleidoscope_world_liquor.init.ModEnchantments;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+/**
+ * 官方 1.2.0：附魔书冷却条改读每本书自身 NBT（kaleidoscope_brew_cooldown_until），
+ * 没有冷却数据的书直接不显示冷却覆盖层。
+ */
 @Mixin({GuiGraphics.class})
 public abstract class GuiGraphicsMixin {
     public GuiGraphicsMixin() {
@@ -17,12 +22,20 @@ public abstract class GuiGraphicsMixin {
 
     @ModifyVariable(
         method = {"renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V"},
-        at = @At("STORE"),
+        at = {@At("STORE")},
         ordinal = 0
     )
-    private float kaleidoscope_world_liquor$filterEnchantedBookCooldown(float cooldownPercent, Font font, ItemStack stack, int x, int y, String text) {
-        return stack.getItem() instanceof EnchantedBookItem && !EnchantmentHelper.getEnchantments(stack).containsKey(ModEnchantments.BREW_ACCELERATOR)
-            ? 0.0F
-            : cooldownPercent;
+    private float kaleidoscope_world_liquor$stackCooldown(float cooldownPercent, Font font, ItemStack stack, int x, int y, String text) {
+        if (!(stack.getItem() instanceof EnchantedBookItem)) {
+            return cooldownPercent;
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) {
+            return 0.0F;
+        }
+        CompoundTag tag = stack.getTag();
+        long cooldownUntil = tag == null ? 0L : tag.getLong("kaleidoscope_brew_cooldown_until");
+        long remaining = cooldownUntil - minecraft.level.getGameTime();
+        return remaining <= 0L ? 0.0F : Mth.clamp((float) remaining / 2400.0F, 0.0F, 1.0F);
     }
 }

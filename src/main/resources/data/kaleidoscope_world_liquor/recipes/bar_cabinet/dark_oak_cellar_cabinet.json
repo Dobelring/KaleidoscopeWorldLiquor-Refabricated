@@ -6,10 +6,12 @@
     "XXX"
   ],
   "key": {
-    "X": {"item": "minecraft:dark_oak_slab"}
+    "X": {
+      "item": "minecraft:dark_oak_slab"
+    }
   },
   "result": {
-    "item": "kaleidoscope_world_liquor:spruce_cellar_cabinet",
+    "item": "kaleidoscope_world_liquor:dark_oak_cellar_cabinet",
     "count": 1
   }
 }

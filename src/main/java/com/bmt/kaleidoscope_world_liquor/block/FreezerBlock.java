@@ -53,7 +53,7 @@ public class FreezerBlock extends BaseEntityBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
     // 官方 1.1.12：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)
-    private static final java.util.Map<Direction, VoxelShape> SHAPES = com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(0.0, 0.0, 1.0, 16.0, 12.0, 14.0));
+    private static final java.util.Map<Direction, VoxelShape> SHAPES = com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(0.0, 0.0, 0.0, 16.0, 13.0, 16.0));
 
     public FreezerBlock(Properties properties) {
         super(properties);
@@ -239,13 +239,18 @@ public class FreezerBlock extends BaseEntityBlock {
                         }
                     }
 
-                    if (held.isEmpty()) {
-                        be.extractItem(player);
+                    // 官方 1.2.0：先尝试取出输入（空手直接取；持对应容器物按容器数量取出），失败再塞入
+                    if (be.extractItem(player, held)) {
                         level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
-                    } else {
-                        be.insertItem(held, player);
-                        level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
+                        return InteractionResult.CONSUME;
                     }
+
+                    if (held.isEmpty()) {
+                        return InteractionResult.PASS;
+                    }
+
+                    be.insertItem(held, player);
+                    level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
 
                     return InteractionResult.CONSUME;
                 }
@@ -262,7 +267,8 @@ public class FreezerBlock extends BaseEntityBlock {
     }
 
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof FreezerBlockEntity freezer) {
+        // 官方 1.2.0：有产出或配方在途时不再撒出原料
+        if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof FreezerBlockEntity freezer && !freezer.hasOutput() && !freezer.hasMatchingRecipe()) {
             for (int i = 0; i < 4; i++) {
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), freezer.inputInventory.getStackInSlot(i));
             }

@@ -2,6 +2,11 @@ package com.bmt.kaleidoscope_world_liquor.block.entity;
 
 import com.bmt.kaleidoscope_world_liquor.block.FreezerBlock;
 import com.bmt.kaleidoscope_world_liquor.crafting.FreezerRecipe;
+import net.minecraft.tags.TagKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import com.bmt.kaleidoscope_world_liquor.util.ItemUtils;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModRecipes;
 import com.github.ysbbbbbb.kaleidoscopetavern.util.fluids.CustomFluidTank;
@@ -54,6 +59,9 @@ public class FreezerBlockEntity extends BlockEntity {
         FluidStorage.SIDED.registerForBlockEntity((be, side) -> be.getFluidStorage(side), ModBlockEntities.FREEZER_BE);
     }
 
+    /** 官方 1.2.0：禁止塞入冰箱的物品黑名单（工具/盔甲/桶/潜影盒/碗/花盆/玻璃瓶等） */
+    public static final TagKey<Item> FREEZER_BLACKLIST = TagKey.create(Registries.ITEM, new ResourceLocation("kaleidoscope_world_liquor", "freezer_blacklist"));
+
     public FreezerRecipe recipe = FreezerRecipe.EMPTY;
     private FreezerRecipe cachedRecipe = FreezerRecipe.EMPTY;
     // 原 Forge：public final FluidTank tank = new FluidTank(1000) { onContentsChanged 同步 / fill 守卫 }。
@@ -71,12 +79,46 @@ public class FreezerBlockEntity extends BlockEntity {
         }
 
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() ? super.isItemValid(slot, stack) : false;
+            // 官方 1.2.0：黑名单拦截 + 带容器物的物品（桶等）禁入
+            return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking()
+                ? !stack.is(FREEZER_BLACKLIST) && ItemUtils.getContainerItem(stack) == Items.AIR && super.isItemValid(slot, stack)
+                : false;
         }
 
         @NotNull
         public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() ? super.insertItem(slot, stack, simulate) : stack;
+            return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking()
+                && !stack.isEmpty() && !stack.is(FREEZER_BLACKLIST)
+                && ItemUtils.getContainerItem(stack) == Items.AIR
+                ? super.insertItem(slot, stack, simulate) : stack;
+        }
+
+        // 官方 1.2.0：自动化只能取出不带容器物的输入
+        @NotNull
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (!FreezerBlockEntity.this.isWorking() && amount > 0) {
+                ItemStack stack = this.getStackInSlot(slot);
+                if (!stack.isEmpty() && ItemUtils.getContainerItem(stack) == Items.AIR) {
+                    int extractCount = Math.min(amount, stack.getCount());
+                    if (extractCount <= 0) {
+                        return ItemStack.EMPTY;
+                    }
+                    ItemStack extracted = stack.copyWithCount(extractCount);
+                    if (!simulate) {
+                        ItemStack remaining = stack.copy();
+                        remaining.shrink(extractCount);
+                        this.setStackInSlot(slot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+                    }
+                    return extracted;
+                }
+                return ItemStack.EMPTY;
+            }
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 1;
         }
     };
     public final ItemStackHandler outputInventory = new ItemStackHandler(1) {
@@ -263,27 +305,78 @@ public class FreezerBlockEntity extends BlockEntity {
         this.checkForMatchingRecipe();
     }
 
-    public void insertItem(ItemStack stack, Player player) {
-        if (!this.hasOutput() && !this.isWorking()) {
+    /** 官方 1.2.0：黑名单拦截 + 创造不消耗 + 带容器物塞入时把容器退还玩家 */
+    public boolean insertItem(ItemStack stack, Player player) {
+        if (!this.hasOutput() && !this.isWorking() && !stack.isEmpty() && !stack.is(FREEZER_BLACKLIST)) {
+            Item container = ItemUtils.getContainerItem(stack);
             for (int i = 0; i < 4; i++) {
                 if (this.inputInventory.getStackInSlot(i).isEmpty()) {
-                    ItemStack copy = stack.copy();
-                    copy.setCount(1);
-                    this.inputInventory.setStackInSlot(i, copy);
-                    stack.shrink(1);
-                    return;
+                    this.inputInventory.setStackInSlot(i, stack.copyWithCount(1));
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    if (container != Items.AIR) {
+                        ItemUtils.giveItemToPlayer(player, new ItemStack(container));
+                    }
+                    return true;
                 }
             }
+            return false;
         }
+        return false;
+    }
+
+    /** 官方 1.2.0：空手取最上层输入；持对应容器物时按容器数量取出（need_item 提示） */
+    public boolean extractItem(Player player, ItemStack held) {
+        if (this.isWorking()) {
+            return false;
+        }
+        int index = -1;
+        for (int i = 3; i >= 0; i--) {
+            if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
+                index = i;
+                break;
+            }
+        }
+        if (index < 0) {
+            return false;
+        }
+        ItemStack stack = this.inputInventory.getStackInSlot(index);
+        Item container = ItemUtils.getContainerItem(stack);
+        int extractCount;
+        if (container != Items.AIR) {
+            if (!held.is(container)) {
+                if (held.isEmpty()) {
+                    player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.need_item", new ItemStack(container).getHoverName()), true);
+                }
+                return false;
+            }
+            extractCount = player.isCreative() ? stack.getCount() : Math.min(stack.getCount(), held.getCount());
+        } else {
+            if (!held.isEmpty()) {
+                return false;
+            }
+            extractCount = stack.getCount();
+        }
+        if (extractCount <= 0) {
+            return false;
+        }
+        ItemStack extracted = stack.copyWithCount(extractCount);
+        if (!ItemUtils.fitsInInventory(player, extracted)) {
+            return false;
+        }
+        if (container != Items.AIR && !player.isCreative()) {
+            held.shrink(extractCount);
+        }
+        ItemStack remaining = stack.copy();
+        remaining.shrink(extractCount);
+        this.inputInventory.setStackInSlot(index, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+        ItemUtils.giveItemToPlayer(player, extracted);
+        return true;
     }
 
     public void extractItem(Player player) {
-        for (int i = 3; i >= 0; i--) {
-            if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
-                player.addItem(this.inputInventory.extractItem(i, 1, false));
-                return;
-            }
-        }
+        this.extractItem(player, ItemStack.EMPTY);
     }
 
     public boolean hasOutput() {

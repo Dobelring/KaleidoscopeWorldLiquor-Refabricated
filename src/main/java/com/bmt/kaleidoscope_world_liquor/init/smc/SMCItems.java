@@ -33,8 +33,22 @@ public class SMCItems {
     public SMCItems() {
     }
 
+    // 官方 1.2.0：干杯之歌（4 杯）
+    public static final Block SMC_FRIENDS_DRINK_BLOCK = DrinkBlock.create()
+            .maxCount(4)
+            .shapes(new net.minecraft.world.phys.shapes.VoxelShape[]{
+                    net.minecraft.world.level.block.Block.box(6.0, 0.0, 6.0, 10.0, 16.0, 10.0),
+                    net.minecraft.world.level.block.Block.box(2.0, 0.0, 6.0, 14.0, 16.0, 10.0),
+                    net.minecraft.world.phys.shapes.Shapes.or(net.minecraft.world.level.block.Block.box(2.0, 0.0, 10.0, 14.0, 16.0, 14.0), net.minecraft.world.level.block.Block.box(6.0, 0.0, 2.0, 10.0, 16.0, 14.0)),
+                    net.minecraft.world.level.block.Block.box(2.0, 0.0, 2.0, 14.0, 16.0, 14.0)
+            })
+            .build();
+    public static final Item SMC_FRIENDS_DRINK_ITEM = new com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem(SMC_FRIENDS_DRINK_BLOCK);
+
     public static void registerSMCItems() {
         Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(SMC_MODID, "ice_tea"), SMC_ICE_TEA_BLOCK);
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(SMC_MODID, "ice_tea"), SMC_ICE_TEA_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(SMC_MODID, "friends_drink"), SMC_FRIENDS_DRINK_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(SMC_MODID, "friends_drink"), SMC_FRIENDS_DRINK_ITEM);
     }
 }

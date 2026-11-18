@@ -3,7 +3,6 @@ package com.bmt.kaleidoscope_world_liquor.init;
 import com.bmt.kaleidoscope_world_liquor.KaleidoscopeWorldLiquor;
 import com.bmt.kaleidoscope_world_liquor.item.BottledDrinkItem;
 import com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem;
-import com.bmt.kaleidoscope_world_liquor.item.CustomRecordItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.CocktailBlockItem;
 import com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem;
 import net.minecraft.core.Registry;
@@ -65,7 +64,6 @@ public class ModItems {
     public static final Item PINE_COLADA = new CocktailBlockItem(ModBlocks.PINE_COLADA);
     public static final Item GIN_TONIC = new CocktailBlockItem(ModBlocks.GIN_TONIC);
     public static final Item HIGHBALL = new CocktailBlockItem(ModBlocks.HIGHBALL);
-    public static final Item CUSTOM_RECORD = new CustomRecordItem();
 
     public ModItems() {
     }
@@ -102,7 +100,6 @@ public class ModItems {
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "pine_colada"), PINE_COLADA);
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "gin_tonic"), GIN_TONIC);
         Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "highball"), HIGHBALL);
-        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KaleidoscopeWorldLiquor.MODID, "custom_record"), CUSTOM_RECORD);
         blockItem("bar_stool_black", ModBlocks.BAR_STOOL_BLACK);
         blockItem("bar_stool_white", ModBlocks.BAR_STOOL_WHITE);
         blockItem("bar_stool_light_gray", ModBlocks.BAR_STOOL_LIGHT_GRAY);
@@ -124,6 +121,10 @@ public class ModItems {
         blockItem("freezer", ModBlocks.FREEZER);
         blockItem("oak_bar_cabinet", ModBlocks.OAK_BAR_CABINET);
         blockItem("oak_glass_bar_cabinet", ModBlocks.OAK_GLASS_BAR_CABINET);
+        blockItem("birch_glass_bar_cabinet", ModBlocks.BIRCH_GLASS_BAR_CABINET);
+        blockItem("spruce_glass_bar_cabinet", ModBlocks.SPRUCE_GLASS_BAR_CABINET);
+        blockItem("dark_oak_glass_bar_cabinet", ModBlocks.DARK_OAK_GLASS_BAR_CABINET);
+        blockItem("cherry_glass_bar_cabinet", ModBlocks.CHERRY_GLASS_BAR_CABINET);
         blockItem("birch_bar_cabinet", ModBlocks.BIRCH_BAR_CABINET);
         blockItem("spruce_bar_cabinet", ModBlocks.SPRUCE_BAR_CABINET);
         blockItem("dark_oak_bar_cabinet", ModBlocks.DARK_OAK_BAR_CABINET);

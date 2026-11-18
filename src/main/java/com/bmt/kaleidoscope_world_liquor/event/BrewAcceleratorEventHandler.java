@@ -81,12 +81,14 @@ public class BrewAcceleratorEventHandler {
             }
 
             if (isEnchantedBook && enchantLevel != 0) {
-                if (player.getCooldowns().isOnCooldown(Items.ENCHANTED_BOOK)) {
-                    float cooldownPercent = player.getCooldowns().getCooldownPercent(Items.ENCHANTED_BOOK, 0.0F);
-                    int remainingTicks = (int) (cooldownPercent * 2400.0F);
-                    int remainingSeconds = remainingTicks / 20;
+                // 官方 1.2.0：冷却改为每本书自身 NBT（kaleidoscope_brew_cooldown_until），不再全局冷却附魔书
+                long gameTime = level.getGameTime();
+                net.minecraft.nbt.CompoundTag stackTag = stack.getOrCreateTag();
+                long cooldownUntil = stackTag.getLong("kaleidoscope_brew_cooldown_until");
+                if (cooldownUntil > gameTime) {
+                    int remainingSeconds = (int) ((cooldownUntil - gameTime) / 20L);
                     player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.cooldown", remainingSeconds), true);
-                    return InteractionResult.FAIL; // 原 setCanceled + FAIL
+                    return InteractionResult.FAIL;
                 }
 
                 if (level.getBlockState(pos).getBlock() instanceof BarrelBlock) {
@@ -106,7 +108,7 @@ public class BrewAcceleratorEventHandler {
                                 int newBrewTime = accessor.invokeGetBrewTimeForLevel();
                                 accessor.setBrewTime(newBrewTime);
                                 ((BarrelBlockEntity) barrel).refresh();
-                                player.getCooldowns().addCooldown(Items.ENCHANTED_BOOK, 2400);
+                                stackTag.putLong("kaleidoscope_brew_cooldown_until", gameTime + 2400L);
                                 level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, 1.2F);
                                 player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.success", newLevel), true);
                                 return InteractionResult.SUCCESS; // 原 setCanceled + SUCCESS

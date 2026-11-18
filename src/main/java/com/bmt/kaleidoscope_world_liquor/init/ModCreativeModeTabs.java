@@ -60,7 +60,6 @@ public class ModCreativeModeTabs {
         accept(output, LIQUOR_ITEMS, (ItemLike) ModItems.PINE_COLADA);
         accept(output, LIQUOR_ITEMS, (ItemLike) ModItems.GIN_TONIC);
         accept(output, LIQUOR_ITEMS, (ItemLike) ModBlocks.FREEZER);
-        accept(output, LIQUOR_ITEMS, (ItemLike) ModItems.CUSTOM_RECORD);
         if (!FabricLoader.getInstance().isModLoaded("kaleidoscope_twilight")) {
             accept(output, LIQUOR_ITEMS, (ItemLike) KTItems.LIANGSHAN_ICE_CONE);
             accept(output, LIQUOR_ITEMS, (ItemLike) KTItems.KITA_STUFFED_CRISP);
@@ -93,15 +92,21 @@ public class ModCreativeModeTabs {
         // 官方 1.1.13：垂灯（粉在前绿在后，与官方创造栏顺序一致）
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.PINK_PENDANT_LAMP);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.GREEN_PENDANT_LAMP);
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_FRIENDS_DRINK_ITEM));
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.OAK_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BIRCH_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BIRCH_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BIRCH_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.SPRUCE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.SPRUCE_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.SPRUCE_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.DARK_OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.DARK_OAK_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.DARK_OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CHERRY_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CHERRY_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CHERRY_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.JUNGLE_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.JUNGLE_CELLAR_CABINET);

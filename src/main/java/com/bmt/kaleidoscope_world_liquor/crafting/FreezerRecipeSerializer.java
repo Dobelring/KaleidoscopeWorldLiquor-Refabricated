@@ -47,9 +47,13 @@ public class FreezerRecipeSerializer implements RecipeSerializer<FreezerRecipe> 
         // 现有 freezer 配方 result 均无 nbt 字段，行为一致。
         ItemStack resultItem = ShapedRecipe.itemStackFromJson(resultObj);
         int craftTime = GsonHelper.getAsInt(pJson, "craft_time", 200);
-        String textureId = GsonHelper.getAsString(pJson, "texture");
+        // 官方 1.2.0：texture 可选，缺省原版雪块贴图
+        String textureId = GsonHelper.getAsString(pJson, "texture", "minecraft:block/snow");
         Ingredient extractIngredient = Ingredient.EMPTY;
-        if (pJson.has("extract_condition")) {
+        if (pJson.has("carrier")) {
+            extractIngredient = parseIngredientLenient(pJson.get("carrier"));
+        } else if (pJson.has("extract_condition")) {
+            // 旧键兼容
             extractIngredient = parseIngredientLenient(pJson.get("extract_condition"));
         }
 

@@ -55,38 +55,45 @@ public class FreezerRecipe implements Recipe<SimpleContainer> {
         this.extractIngredient = extractIngredient;
     }
 
-    public boolean matches(FluidVariant fluid, long amount, NonNullList<ItemStack> items, Level level) {
-        if (fluid.getFluid().isSame(this.inputFluid.getFluid()) && amount >= this.fluidAmount) {
-            boolean[] used = new boolean[items.size()];
-
-            for (Ingredient ingredient : this.ingredients) {
-                if (!ingredient.isEmpty()) {
-                    boolean matched = false;
-
-                    for (int i = 0; i < items.size(); i++) {
-                        if (!used[i] && ingredient.test((ItemStack)items.get(i))) {
-                            used[i] = true;
-                            matched = true;
-                            break;
-                        }
-                    }
-
-                    if (!matched) {
-                        return false;
-                    }
-                }
-            }
-
-            for (int ix = 0; ix < items.size(); ix++) {
-                if (!((ItemStack)items.get(ix)).isEmpty() && !used[ix]) {
-                    return false;
-                }
-            }
-
-            return true;
-        } else {
+        public boolean matches(FluidVariant fluid, long amount, NonNullList<ItemStack> items, Level level) {
+        if (fluid.getFluid() != this.inputFluid.getFluid() || amount < this.fluidAmount) {
             return false;
         }
+        // 官方 1.2.0：数量相等 + 双射匹配（NeoForge RecipeMatcher 语义，回溯实现）
+        java.util.List<Ingredient> required = new java.util.ArrayList<>();
+        for (Ingredient ingredient : this.ingredients) {
+            if (!ingredient.isEmpty()) {
+                required.add(ingredient);
+            }
+        }
+        java.util.List<ItemStack> present = new java.util.ArrayList<>();
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                present.add(stack);
+            }
+        }
+        return present.size() == required.size() && (required.isEmpty() || findMatches(present, required));
+    }
+
+    private static boolean findMatches(java.util.List<ItemStack> present, java.util.List<Ingredient> required) {
+        boolean[] used = new boolean[required.size()];
+        return matchAt(present, required, 0, used);
+    }
+
+    private static boolean matchAt(java.util.List<ItemStack> present, java.util.List<Ingredient> required, int index, boolean[] used) {
+        if (index == present.size()) {
+            return true;
+        }
+        for (int r = 0; r < required.size(); r++) {
+            if (!used[r] && required.get(r).test(present.get(index))) {
+                used[r] = true;
+                if (matchAt(present, required, index + 1, used)) {
+                    return true;
+                }
+                used[r] = false;
+            }
+        }
+        return false;
     }
 
     public boolean canExtract(ItemStack heldItem) {

@@ -69,6 +69,10 @@ public class KaleidoscopeWorldLiquor implements ModInitializer {
         MusicDiscEvents.register();
         BrewAcceleratorEventHandler.register();
         CreativeTabEvents.register();
+        // 官方 1.2.0：干杯之歌服务端跟踪 + 家具燃料 + CarryOn 搬运黑名单
+        com.bmt.kaleidoscope_world_liquor.event.FriendsDrinkEvent.register();
+        com.bmt.kaleidoscope_world_liquor.init.ModFuels.register();
+        com.bmt.kaleidoscope_world_liquor.compat.carryon.CarryOnCompat.register();
         // 原 RegisterCommandsEvent → CommandRegistrationCallback（BrewCommands 内部注册）
         BrewCommands.register();
         // 原 Forge 仅在 smc 装载时注册本监听——但代注册冰红茶（smc 未装时由本模组提供物品/效果）

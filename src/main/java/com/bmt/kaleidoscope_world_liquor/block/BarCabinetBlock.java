@@ -54,13 +54,41 @@ public class BarCabinetBlock extends BaseEntityBlock {
     );
     private static final VoxelShape FULL_SAFE_SHAPE = Block.box(0.001, 0.001, 0.001, 15.999, 15.999, 15.999);
 
+    // 官方 1.2.0：WoodType 决定相邻拼接——只有同木种酒柜（同朝向）才相接成排；扩展木种各自成类
+    public enum WoodType {
+        OAK, BIRCH, SPRUCE, DARK_OAK, CHERRY, JUNGLE, ACACIA, MANGROVE, BAMBOO, CRIMSON, WARPED
+    }
+
+    private final WoodType woodType;
+
+    protected static boolean canConnect(BlockState self, BlockState neighbor) {
+        if (neighbor.getBlock() instanceof BarCabinetBlock other) {
+            return neighbor.getValue(FACING) != self.getValue(FACING) ? false
+                    : ((BarCabinetBlock) self.getBlock()).getWoodType() == other.getWoodType();
+        }
+        return false;
+    }
+
+    public WoodType getWoodType() {
+        return this.woodType;
+    }
+
+    public BarCabinetBlock(WoodType woodType) {
+        this(SoundType.WOOD, woodType);
+    }
+
     public BarCabinetBlock() {
         this(SoundType.WOOD);
     }
 
     /** 新木种酒柜按原版木板音效放置/破坏（音效随木种对齐原版，参考其他版本铺开）。 */
     public BarCabinetBlock(SoundType sound) {
+        this(sound, WoodType.OAK);
+    }
+
+    public BarCabinetBlock(SoundType sound, WoodType woodType) {
         super(Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(sound).noOcclusion().ignitedByLava());
+        this.woodType = woodType;
         this.registerDefaultState((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH)).setValue(POSITION, PositionType.SINGLE));
     }
 
@@ -171,52 +199,27 @@ public class BarCabinetBlock extends BaseEntityBlock {
     }
 
     public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        Direction self = (Direction)state.getValue(FACING);
-        Direction left = self.getClockWise();
-        Direction right = self.getCounterClockWise();
-        if (direction == left) {
-            boolean leftIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-            PositionType position = (PositionType)state.getValue(POSITION);
-            if (leftIsCabinet) {
-                if (position == PositionType.SINGLE) {
-                    return (BlockState)state.setValue(POSITION, PositionType.RIGHT);
-                }
-
-                if (position == PositionType.LEFT) {
-                    return (BlockState)state.setValue(POSITION, PositionType.MIDDLE);
-                }
-            } else {
-                if (position == PositionType.RIGHT) {
-                    return (BlockState)state.setValue(POSITION, PositionType.SINGLE);
-                }
-
-                if (position == PositionType.MIDDLE) {
-                    return (BlockState)state.setValue(POSITION, PositionType.LEFT);
-                }
-            }
-        } else if (direction == right) {
-            boolean rightIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-            PositionType position = (PositionType)state.getValue(POSITION);
-            if (rightIsCabinet) {
-                if (position == PositionType.SINGLE) {
-                    return (BlockState)state.setValue(POSITION, PositionType.LEFT);
-                }
-
-                if (position == PositionType.RIGHT) {
-                    return (BlockState)state.setValue(POSITION, PositionType.MIDDLE);
-                }
-            } else {
-                if (position == PositionType.LEFT) {
-                    return (BlockState)state.setValue(POSITION, PositionType.SINGLE);
-                }
-
-                if (position == PositionType.MIDDLE) {
-                    return (BlockState)state.setValue(POSITION, PositionType.RIGHT);
-                }
-            }
+        Direction facing = (Direction)state.getValue(FACING);
+        Direction left = facing.getClockWise();
+        Direction right = facing.getCounterClockWise();
+        if (direction != left && direction != right) {
+            return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        }
+        // 官方 1.2.0：两侧连接状态一起求值（同木种 + 同朝向）
+        boolean leftIsCabinet = canConnect(state, level.getBlockState(pos.relative(left)));
+        boolean rightIsCabinet = canConnect(state, level.getBlockState(pos.relative(right)));
+        PositionType position;
+        if (leftIsCabinet && rightIsCabinet) {
+            position = PositionType.MIDDLE;
+        } else if (leftIsCabinet) {
+            position = PositionType.RIGHT;
+        } else if (rightIsCabinet) {
+            position = PositionType.LEFT;
+        } else {
+            position = PositionType.SINGLE;
         }
 
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+        return (BlockState)state.setValue(POSITION, position);
     }
 
     @Nullable
@@ -227,8 +230,9 @@ public class BarCabinetBlock extends BaseEntityBlock {
         BlockState left = level.getBlockState(pos.relative(opposite.getClockWise()));
         BlockState right = level.getBlockState(pos.relative(opposite.getCounterClockWise()));
         PositionType position = PositionType.SINGLE;
-        boolean leftIsCabinet = left.is(this) && left.getValue(FACING) == opposite;
-        boolean rightIsCabinet = right.is(this) && right.getValue(FACING) == opposite;
+        BlockState self = (BlockState)this.defaultBlockState().setValue(FACING, opposite);
+        boolean leftIsCabinet = canConnect(self, left);
+        boolean rightIsCabinet = canConnect(self, right);
         if (leftIsCabinet && rightIsCabinet) {
             position = PositionType.MIDDLE;
         } else if (leftIsCabinet) {
@@ -295,11 +299,4 @@ public class BarCabinetBlock extends BaseEntityBlock {
         return RenderShape.MODEL;
     }
 
-    public BlockState rotate(BlockState state, Rotation rot) {
-        return (BlockState)state.setValue(FACING, rot.rotate((Direction)state.getValue(FACING)));
-    }
-
-    public BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
-    }
 }

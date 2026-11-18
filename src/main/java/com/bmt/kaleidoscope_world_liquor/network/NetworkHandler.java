@@ -16,6 +16,8 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public final class NetworkHandler {
     public static final ResourceLocation CHANNEL = new ResourceLocation("kaleidoscope_world_liquor", "treasure_sense");
+    // 官方 1.2.0：干杯之歌效果同步通道
+    public static final ResourceLocation FRIENDS_DRINK_CHANNEL = new ResourceLocation("kaleidoscope_world_liquor", "friends_drink");
 
     private NetworkHandler() {
     }
@@ -26,11 +28,21 @@ public final class NetworkHandler {
         ServerPlayNetworking.send(player, CHANNEL, buf);
     }
 
+    public static void send(ServerPlayer player, FriendsDrinkPacket packet) {
+        net.minecraft.network.FriendlyByteBuf buf = PacketByteBufs.create();
+        packet.encode(buf);
+        ServerPlayNetworking.send(player, FRIENDS_DRINK_CHANNEL, buf);
+    }
+
     @Environment(EnvType.CLIENT)
     public static void registerClient() {
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL, (client, handler, buf, responseSender) -> {
             TreasureSensePacket packet = TreasureSensePacket.decode(buf);
             client.execute(() -> ClientPacketHandler.handleTreasureSense(packet));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(FRIENDS_DRINK_CHANNEL, (client, handler, buf, responseSender) -> {
+            FriendsDrinkPacket packet = FriendsDrinkPacket.decode(buf);
+            client.execute(() -> com.bmt.kaleidoscope_world_liquor.client.FriendsDrinkClientState.accept(packet.entityIds(), packet.durations()));
         });
     }
 }

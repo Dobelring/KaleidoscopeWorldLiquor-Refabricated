@@ -3,19 +3,23 @@
   "category": "food",
   "ingredients": [
     {
-      "fabric:type": "fabric:nbt",
-      "base": {
-        "item": "minecraft:potion"
-      },
-      "nbt": "{Potion:\"minecraft:water\"}",
-      "strict": false
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "fabric:type": "fabric:nbt",
+          "base": {
+            "item": "minecraft:potion"
+          },
+          "nbt": "{Potion:\"minecraft:water\"}",
+          "strict": false
+        },
+        {
+          "item": "minecraft:potion"
+        }
+      ]
     },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:vine"
-    }
+    "minecraft:sugar",
+    "minecraft:vine"
   ],
   "result": {
     "item": "kaleidoscope_world_liquor:tonic_water",

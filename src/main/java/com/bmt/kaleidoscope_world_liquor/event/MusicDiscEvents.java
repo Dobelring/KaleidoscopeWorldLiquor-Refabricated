@@ -98,7 +98,7 @@ public class MusicDiscEvents {
                             if (recordId != null && VANILLA_RECORD_MAP.containsKey(recordId)) {
                                 modelIndex = VANILLA_RECORD_MAP.get(recordId);
                             } else {
-                                modelIndex = 16 + RANDOM.nextInt(6);
+                                modelIndex = 19 + RANDOM.nextInt(6);
                             }
 
                             state = state.setValue(WallRecordBlock.MODEL_INDEX, modelIndex);
@@ -150,5 +150,11 @@ public class MusicDiscEvents {
         VANILLA_RECORD_MAP.put(DISC_PIGSTEP, 13);
         VANILLA_RECORD_MAP.put(DISC_5, 14);
         VANILLA_RECORD_MAP.put(DISC_RELIC, 15);
+        // 官方 1.2.0：森罗厨唱片 → 挂墙模型 25-29（唱片实体由 smc 提供，未装 smc 时不存在）
+        VANILLA_RECORD_MAP.put(new ResourceLocation("smc:music_disc_friends_drink"), 25);
+        VANILLA_RECORD_MAP.put(new ResourceLocation("smc:music_disc_laoda"), 26);
+        VANILLA_RECORD_MAP.put(new ResourceLocation("smc:music_disc_bad_apple"), 27);
+        VANILLA_RECORD_MAP.put(new ResourceLocation("smc:music_disc_nyan_cat"), 28);
+        VANILLA_RECORD_MAP.put(new ResourceLocation("smc:music_disc_god_pickaxe"), 29);
     }
 }

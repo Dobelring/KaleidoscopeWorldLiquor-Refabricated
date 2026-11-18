@@ -12,6 +12,8 @@
     "LivingEntityDamageMixin",
     "LivingEntityDropsMixin",
     "MultiJumpFallDamageMixin",
+    "LivingEntityFrostWalkerMixin",
+    "LivingEntityEffectMixin",
     "accessor.ItemCombinerMenuAccessor",
     "accessor.LivingEntityAccessor",
     "EnchantmentHelperMixin",

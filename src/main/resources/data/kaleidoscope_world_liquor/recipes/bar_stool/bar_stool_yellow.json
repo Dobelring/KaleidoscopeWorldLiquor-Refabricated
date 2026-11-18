@@ -1,5 +1,10 @@
 {
   "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "W",
+    "C",
+    "L"
+  ],
   "key": {
     "C": {
       "item": "minecraft:chain"
@@ -11,12 +16,8 @@
       "item": "minecraft:yellow_carpet"
     }
   },
-  "pattern": [
-    "W",
-    "C",
-    "L"
-  ],
   "result": {
-    "item": "kaleidoscope_world_liquor:bar_stool_yellow"
+    "item": "kaleidoscope_world_liquor:bar_stool_yellow",
+    "count": 1
   }
 }
