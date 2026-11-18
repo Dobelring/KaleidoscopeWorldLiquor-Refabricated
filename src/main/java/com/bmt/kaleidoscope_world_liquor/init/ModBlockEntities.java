@@ -26,7 +26,8 @@ public final class ModBlockEntities {
                 FabricBlockEntityTypeBuilder.create(WallRecordBlockEntity::new, ModBlocks.WALL_RECORD).build());
         BAR_CABINET_BE = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, PortHelper.id("oak_bar_cabinet"),
                 FabricBlockEntityTypeBuilder.create(BarCabinetBlockEntity::new,
-                        ModBlocks.OAK_BAR_CABINET, ModBlocks.OAK_GLASS_BAR_CABINET, ModBlocks.BIRCH_BAR_CABINET,
+                        ModBlocks.OAK_BAR_CABINET, ModBlocks.OAK_GLASS_BAR_CABINET, ModBlocks.BIRCH_GLASS_BAR_CABINET,
+                        ModBlocks.SPRUCE_GLASS_BAR_CABINET, ModBlocks.DARK_OAK_GLASS_BAR_CABINET, ModBlocks.CHERRY_GLASS_BAR_CABINET, ModBlocks.BIRCH_BAR_CABINET,
                         ModBlocks.SPRUCE_BAR_CABINET, ModBlocks.DARK_OAK_BAR_CABINET, ModBlocks.CHERRY_BAR_CABINET,
                         ModBlocks.JUNGLE_BAR_CABINET, ModBlocks.ACACIA_BAR_CABINET, ModBlocks.MANGROVE_BAR_CABINET, ModBlocks.PALE_OAK_BAR_CABINET, ModBlocks.BAMBOO_BAR_CABINET, ModBlocks.CRIMSON_BAR_CABINET, ModBlocks.WARPED_BAR_CABINET).build());
         BAR_CELLAR_CABINET_BE = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, PortHelper.id("bar_cellar_cabinet"),

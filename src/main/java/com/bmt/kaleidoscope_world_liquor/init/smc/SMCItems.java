@@ -36,6 +36,26 @@ public final class SMCItems {
             ICE_TEA_ITEM_ID,
             withBlock(new CustomDrinkItem.IceTea(SMC_ICE_TEA_BLOCK)));
 
+    // 官方 1.2.0：干杯之歌（4 杯）
+    public static final Block SMC_FRIENDS_DRINK_BLOCK = Registry.register(BuiltInRegistries.BLOCK,
+            blockId("friends_drink"),
+            DrinkBlock.create()
+                    .setId("friends_drink")
+                    .maxCount(4)
+                    .shapes(new net.minecraft.world.phys.shapes.VoxelShape[]{
+                            net.minecraft.world.level.block.Block.box(6.0, 0.0, 6.0, 10.0, 16.0, 10.0),
+                            net.minecraft.world.level.block.Block.box(2.0, 0.0, 6.0, 14.0, 16.0, 10.0),
+                            net.minecraft.world.phys.shapes.Shapes.or(net.minecraft.world.level.block.Block.box(2.0, 0.0, 10.0, 14.0, 16.0, 14.0), net.minecraft.world.level.block.Block.box(6.0, 0.0, 2.0, 10.0, 16.0, 14.0)),
+                            net.minecraft.world.level.block.Block.box(2.0, 0.0, 2.0, 14.0, 16.0, 14.0)
+                    })
+                    .build());
+
+    private static final ResourceKey<Item> FRIENDS_DRINK_ITEM_ID = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(SMC_MODID, "friends_drink"));
+
+    public static final Item SMC_FRIENDS_DRINK_ITEM = Registry.register(BuiltInRegistries.ITEM,
+            FRIENDS_DRINK_ITEM_ID,
+            withBlock(new DrinkBlockItem(SMC_FRIENDS_DRINK_BLOCK, new Item.Properties().setId(FRIENDS_DRINK_ITEM_ID))));
+
     private static Item withBlock(DrinkBlockItem item) {
         item.registerBlocks(Item.BY_BLOCK, item);
         return item;

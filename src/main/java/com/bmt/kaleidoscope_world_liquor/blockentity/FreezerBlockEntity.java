@@ -2,6 +2,7 @@ package com.bmt.kaleidoscope_world_liquor.blockentity;
 
 import com.bmt.kaleidoscope_world_liquor.block.FreezerBlock;
 import com.bmt.kaleidoscope_world_liquor.crafting.FreezerInput;
+import com.bmt.kaleidoscope_world_liquor.util.ItemUtils;
 import com.bmt.kaleidoscope_world_liquor.crafting.FreezerRecipe;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModRecipes;
@@ -13,6 +14,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,6 +47,10 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     private static final String REDSTONE_POWERED = "RedstonePowered";
     private static final String OUTPUT_TEXTURE = "OutputTexture";
     private static final String RECIPE_ID = "RecipeId";
+
+    /** 官方 1.2.0：禁止塞入冰箱的物品黑名单（工具/盔甲/桶/潜影盒/碗/花盆/玻璃瓶等） */
+    public static final TagKey<net.minecraft.world.item.Item> FREEZER_BLACKLIST = TagKey.create(
+            net.minecraft.core.registries.Registries.ITEM, Identifier.fromNamespaceAndPath("kaleidoscope_world_liquor", "freezer_blacklist"));
 
     public final CustomFluidTank tank;
     public final ItemStackHandler inputInventory;
@@ -90,14 +96,42 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() && super.isItemValid(slot, stack);
+                // 官方 1.2.0：黑名单拦截 + 带容器物的物品（桶等）禁入
+                return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking()
+                        && !stack.is(FREEZER_BLACKLIST) && ItemUtils.getContainerItem(stack) == net.minecraft.world.item.Items.AIR
+                        && super.isItemValid(slot, stack);
             }
 
             @Override
             public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
                 return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking()
+                        && !stack.isEmpty() && !stack.is(FREEZER_BLACKLIST)
+                        && ItemUtils.getContainerItem(stack) == net.minecraft.world.item.Items.AIR
                         ? super.insertItem(slot, stack, simulate)
                         : stack;
+            }
+
+            // 官方 1.2.0：自动化只能取出不带容器物的输入
+            @Override
+            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+                if (!FreezerBlockEntity.this.isWorking() && amount > 0) {
+                    ItemStack stack = this.getStackInSlot(slot);
+                    if (!stack.isEmpty() && ItemUtils.getContainerItem(stack) == net.minecraft.world.item.Items.AIR) {
+                        int extractCount = Math.min(amount, stack.getCount());
+                        if (extractCount <= 0) {
+                            return ItemStack.EMPTY;
+                        }
+                        ItemStack extracted = stack.copyWithCount(extractCount);
+                        if (!simulate) {
+                            ItemStack remaining = stack.copy();
+                            remaining.shrink(extractCount);
+                            this.setStackInSlot(slot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+                        }
+                        return extracted;
+                    }
+                    return ItemStack.EMPTY;
+                }
+                return ItemStack.EMPTY;
             }
         };
     }
@@ -109,10 +143,27 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         }
     }
 
+    private boolean suppressInputUpdates = false;
+
     private void onContentsChanged() {
+        if (this.suppressInputUpdates) {
+            return;
+        }
         this.refresh();
         if (level != null && !level.isClientSide()) {
             this.checkForMatchingRecipe();
+        }
+    }
+
+    /** 官方 1.2.0：配方匹配启动期间的静默清槽（避免触发重复配方检查） */
+    private void clearInputsSilently() {
+        this.suppressInputUpdates = true;
+        try {
+            for (int i = 0; i < 4; i++) {
+                this.inputInventory.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        } finally {
+            this.suppressInputUpdates = false;
         }
     }
 
@@ -163,10 +214,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
     }
 
     private void autoStartCrafting() {
-        if (this.tryStartCrafting()) {
-            BlockState state = this.getBlockState();
-            level.setBlockAndUpdate(this.worldPosition, state.setValue(FreezerBlock.WORKING, true));
-        }
+        this.startCraftingAndUpdateState();
     }
 
     private void restoreRecipe() {
@@ -198,10 +246,20 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         // fluidAmount 以 mB 记，转 Fabric transfer 单位（droplets）
         this.tank.drain(this.cachedRecipe.value().fluidAmount() * (FluidConstants.BUCKET / CustomFluidTank.MB_PER_BUCKET),
                 CustomFluidTank.FluidAction.EXECUTE);
-        for (int i = 0; i < 4; i++) {
-            this.inputInventory.setStackInSlot(i, ItemStack.EMPTY);
-        }
+        this.clearInputsSilently();
         this.setChanged();
+        return true;
+    }
+
+    /** 官方 1.2.0：启动成功时一并关盖并进入工作态，供方块交互与红石统一调用 */
+    public boolean startCraftingAndUpdateState() {
+        if (!this.tryStartCrafting()) {
+            return false;
+        }
+        if (level != null && !level.isClientSide()) {
+            BlockState state = this.getBlockState();
+            level.setBlock(this.worldPosition, state.setValue(FreezerBlock.OPEN, false).setValue(FreezerBlock.WORKING, true), 3);
+        }
         return true;
     }
 
@@ -218,25 +276,80 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         this.checkForMatchingRecipe();
     }
 
-    public void insertItem(ItemStack stack, Player player) {
-        if (!this.hasOutput() && !this.isWorking()) {
+    /** 官方 1.2.0：黑名单拦截 + 创造不消耗 + 带容器物塞入时把容器退还玩家 */
+    public boolean insertItem(ItemStack stack, Player player) {
+        if (!this.hasOutput() && !this.isWorking() && !stack.isEmpty() && !stack.is(FREEZER_BLACKLIST)) {
+            net.minecraft.world.item.Item container = ItemUtils.getContainerItem(stack);
             for (int i = 0; i < 4; i++) {
                 if (this.inputInventory.getStackInSlot(i).isEmpty()) {
                     this.inputInventory.setStackInSlot(i, stack.copyWithCount(1));
-                    stack.shrink(1);
-                    return;
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                    }
+                    if (container != net.minecraft.world.item.Items.AIR) {
+                        ItemUtils.giveItemToPlayer(player, new net.minecraft.world.item.ItemStack(container));
+                    }
+                    return true;
                 }
             }
+            return false;
         }
+        return false;
+    }
+
+    /** 官方 1.2.0：空手取最上层输入；持对应容器物时按容器数量取出（need_item 提示） */
+    public boolean extractItem(Player player, ItemStack held) {
+        if (this.isWorking()) {
+            return false;
+        }
+        int index = -1;
+        for (int i = 3; i >= 0; i--) {
+            if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
+                index = i;
+                break;
+            }
+        }
+        if (index < 0) {
+            return false;
+        }
+        ItemStack stack = this.inputInventory.getStackInSlot(index);
+        net.minecraft.world.item.Item container = ItemUtils.getContainerItem(stack);
+        int extractCount;
+        if (container != net.minecraft.world.item.Items.AIR) {
+            if (!held.is(container)) {
+                if (held.isEmpty()) {
+                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable(
+                            "message.kaleidoscope_world_liquor.freezer.need_item",
+                            new net.minecraft.world.item.ItemStack(container).getHoverName()));
+                }
+                return false;
+            }
+            extractCount = player.isCreative() ? stack.getCount() : Math.min(stack.getCount(), held.getCount());
+        } else {
+            if (!held.isEmpty()) {
+                return false;
+            }
+            extractCount = stack.getCount();
+        }
+        if (extractCount <= 0) {
+            return false;
+        }
+        ItemStack extracted = stack.copyWithCount(extractCount);
+        if (!ItemUtils.fitsInInventory(player, extracted)) {
+            return false;
+        }
+        if (container != net.minecraft.world.item.Items.AIR && !player.isCreative()) {
+            held.shrink(extractCount);
+        }
+        ItemStack remaining = stack.copy();
+        remaining.shrink(extractCount);
+        this.inputInventory.setStackInSlot(index, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+        ItemUtils.giveItemToPlayer(player, extracted);
+        return true;
     }
 
     public void extractItem(Player player) {
-        for (int i = 3; i >= 0; i--) {
-            if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
-                player.getInventory().add(this.inputInventory.extractItem(i, 1, false));
-                return;
-            }
-        }
+        this.extractItem(player, ItemStack.EMPTY);
     }
 
     public boolean hasOutput() {
@@ -286,7 +399,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
             FreezerRecipe r = this.recipe.value();
             if (!r.canExtract(held)) {
                 // 照 1.21.1 范式：提示需要手持的物品名（波奇布丁 → 碗）
-                net.minecraft.world.item.crafting.Ingredient condition = r.extractIngredient().orElse(null);
+                net.minecraft.world.item.crafting.Ingredient condition = r.carrier().orElse(null);
                 ItemStack displayStack = condition != null
                         ? condition.items().findFirst().map(h -> new ItemStack(h.value())).orElse(ItemStack.EMPTY)
                         : ItemStack.EMPTY;
@@ -300,7 +413,7 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
             ItemStack result = r.result().create();
             result.setCount(1);
             // extract_condition 非空（波奇布丁）：消耗手持碗；创造不消耗（清单 36）
-            if (r.extractIngredient().isPresent() && !player.isCreative()) {
+            if (r.carrier().isPresent() && !player.isCreative()) {
                 held.shrink(1);
                 if (held.isEmpty()) {
                     player.setItemInHand(hand, result);
@@ -453,7 +566,7 @@ public static final int OUTPUT_SLOT = 4;
         }
         FreezerRecipe r = this.currentOutputRecipe();
         // 需要碗的配方（extract_condition 非空）不开放漏斗抽取
-        return r != null && r.extractIngredient().isEmpty();
+        return r != null && r.carrier().isEmpty();
     }
 
     @Override

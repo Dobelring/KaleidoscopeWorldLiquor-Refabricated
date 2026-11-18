@@ -30,6 +30,10 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // 官方 1.2.0：干杯之歌服务端跟踪 + 家具燃料 + CarryOn 搬运黑名单
+        com.bmt.kaleidoscope_world_liquor.event.FriendsDrinkEvent.register();
+        com.bmt.kaleidoscope_world_liquor.init.ModFuels.register();
+        com.bmt.kaleidoscope_world_liquor.compat.carryon.CarryOnCompat.register();
         ModConfigs.register();
         ModSounds.register();
         // 流体先于方块：MILK_LIQUID_BLOCK 构造需要 MILK_STILL 实例

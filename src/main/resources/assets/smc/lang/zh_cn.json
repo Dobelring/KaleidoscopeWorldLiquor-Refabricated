@@ -1,6 +1,10 @@
 {
+  "item.smc.ice_tea": "冰红茶",
+  "block.smc.ice_tea": "冰红茶",
+  "item.smc.friends_drink": "朋友的酒",
+  "block.smc.friends_drink": "朋友的酒",
   "effect.smc.elbow_strike": "肘击",
   "effect.smc.elbow_strike.description": "增加击退强度，附带特殊音效",
-  "item.smc.ice_tea": "冰红茶",
-  "block.smc.ice_tea": "冰红茶"
+  "effect.smc.ohh_ye_ye": "哦耶耶～",
+  "effect.smc.ohh_ye_ye.description": "旋转，并且变得 Q 弹！这个效果会对半径 16 格内所有生物生效"
 }

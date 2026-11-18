@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:black_dye",
+    [
+      "kaleidoscope_tavern:white_sofa",
+      "kaleidoscope_tavern:orange_sofa",
+      "kaleidoscope_tavern:magenta_sofa",
+      "kaleidoscope_tavern:light_blue_sofa",
+      "kaleidoscope_tavern:yellow_sofa",
+      "kaleidoscope_tavern:lime_sofa",
+      "kaleidoscope_tavern:pink_sofa",
+      "kaleidoscope_tavern:gray_sofa",
+      "kaleidoscope_tavern:light_gray_sofa",
+      "kaleidoscope_tavern:cyan_sofa",
+      "kaleidoscope_tavern:purple_sofa",
+      "kaleidoscope_tavern:blue_sofa",
+      "kaleidoscope_tavern:brown_sofa",
+      "kaleidoscope_tavern:green_sofa",
+      "kaleidoscope_tavern:red_sofa"
+    ]
+  ],
+  "result": {
+    "id": "kaleidoscope_tavern:black_sofa"
+  }
+}

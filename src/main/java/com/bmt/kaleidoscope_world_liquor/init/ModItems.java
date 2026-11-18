@@ -33,12 +33,6 @@ public final class ModItems {
     private ModItems() {
     }
 
-    /** 1.21.11 的自定义唱片：纯物品 + jukebox_playable 组件指向 jukebox_song 数据（随机双曲在 sounds.json） */
-    public static final ResourceKey<JukeboxSong> JUKEBOX_SONG_RANDOM_DISC =
-            ResourceKey.create(Registries.JUKEBOX_SONG, PortHelper.id("random_disc"));
-    public static final ResourceKey<JukeboxSong> JUKEBOX_SONG_RANDOM_DISC_SHORT =
-            ResourceKey.create(Registries.JUKEBOX_SONG, PortHelper.id("random_disc_short"));
-
     // ========== 注册辅助（照 cookery 范式） ==========
     public static Item registerItem(ResourceKey<Item> key, Function<Item.Properties, Item> factory, Item.Properties properties) {
         Item item = factory.apply(properties.setId(key));
@@ -135,6 +129,10 @@ public final class ModItems {
     // ========== 11 酒柜/酒窖柜 + 冰柜 ==========
     public static final Item OAK_BAR_CABINET = registerItemViaBlock(ModBlocks.OAK_BAR_CABINET);
     public static final Item OAK_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.OAK_GLASS_BAR_CABINET);
+    public static final Item BIRCH_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.BIRCH_GLASS_BAR_CABINET);
+    public static final Item SPRUCE_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.SPRUCE_GLASS_BAR_CABINET);
+    public static final Item DARK_OAK_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.DARK_OAK_GLASS_BAR_CABINET);
+    public static final Item CHERRY_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.CHERRY_GLASS_BAR_CABINET);
     public static final Item BIRCH_BAR_CABINET = registerItemViaBlock(ModBlocks.BIRCH_BAR_CABINET);
     public static final Item SPRUCE_BAR_CABINET = registerItemViaBlock(ModBlocks.SPRUCE_BAR_CABINET);
     public static final Item DARK_OAK_BAR_CABINET = registerItemViaBlock(ModBlocks.DARK_OAK_BAR_CABINET);
@@ -160,10 +158,6 @@ public final class ModItems {
     public static final Item WARPED_CELLAR_CABINET = registerItemViaBlock(ModBlocks.WARPED_CELLAR_CABINET);
     public static final Item FREEZER = registerItemViaBlock(ModBlocks.FREEZER);
 
-    // ========== 唱片 ==========
-    public static final Item CUSTOM_RECORD = registerItem("custom_record",
-            p -> new Item(p.jukeboxPlayable(JUKEBOX_SONG_RANDOM_DISC)),
-            new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
     /** 静态字段随类加载完成注册，此方法仅用于在 onInitialize 中固定初始化顺序 */
     public static void register() {
     }

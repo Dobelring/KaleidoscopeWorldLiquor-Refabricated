@@ -54,7 +54,8 @@ public class FreezerBlock extends BaseEntityBlock {
 
     // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)
     private static final java.util.Map<Direction, VoxelShape> SHAPES =
-            com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(0.0, 0.0, 1.0, 16.0, 12.0, 14.0));
+            com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(
+                    Block.box(0.0, 0.0, 0.0, 16.0, 13.0, 16.0));
 
     public FreezerBlock(Properties properties) {
         super(properties);
@@ -107,12 +108,12 @@ public class FreezerBlock extends BaseEntityBlock {
                 level.playSound(null, pos, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
         } else {
-            if (be.tryStartCrafting()) {
-                level.setBlock(pos, state.setValue(OPEN, false).setValue(WORKING, true), 3);
+            if (be.startCraftingAndUpdateState()) {
+                level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
             } else {
                 level.setBlock(pos, state.setValue(OPEN, false), 3);
+                level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
@@ -157,9 +158,8 @@ public class FreezerBlock extends BaseEntityBlock {
         if (player.isCrouching()) {
             boolean isOpen = state.getValue(OPEN);
             if (isOpen) {
-                boolean success = be.tryStartCrafting();
+                boolean success = be.startCraftingAndUpdateState();
                 if (success) {
-                    level.setBlock(pos, state.setValue(OPEN, false).setValue(WORKING, true), 3);
                     player.sendOverlayMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.start_crafting"));
                 } else {
                     level.setBlock(pos, state.setValue(OPEN, false), 3);
@@ -183,6 +183,11 @@ public class FreezerBlock extends BaseEntityBlock {
                 if (extracted) {
                     level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
+                return InteractionResult.CONSUME;
+            }
+            // 官方 1.2.0：先尝试取出输入（空手直接取；持对应容器物按容器数量取出）
+            if (be.extractItem(player, held)) {
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
                 return InteractionResult.CONSUME;
             }
             if (!held.isEmpty()) {
@@ -227,9 +232,7 @@ public class FreezerBlock extends BaseEntityBlock {
                 level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
                 return InteractionResult.CONSUME;
             }
-            be.extractItem(player);
-            level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
-            return InteractionResult.CONSUME;
+            return InteractionResult.PASS;
         }
         return InteractionResult.PASS;
     }
@@ -274,7 +277,8 @@ public class FreezerBlock extends BaseEntityBlock {
 
     @Override
     protected void spawnAfterBreak(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull ItemStack tool, boolean dropExperience) {
-        if (level.getBlockEntity(pos) instanceof FreezerBlockEntity be) {
+        // 官方 1.2.0：有产出或配方在途时不再撒出原料
+        if (level.getBlockEntity(pos) instanceof FreezerBlockEntity be && !be.hasOutput() && !be.hasMatchingRecipe()) {
             for (int i = 0; i < 4; i++) {
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), be.inputInventory.getStackInSlot(i));
             }

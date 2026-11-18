@@ -1,0 +1,260 @@
+{
+  "variants": {
+    "facing=east,position=left,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 90
+    },
+    "facing=east,position=left,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 90
+    },
+    "facing=east,position=left,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 90
+    },
+    "facing=east,position=left,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left_1",
+      "y": 90
+    },
+    "facing=east,position=middle,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_1",
+      "y": 90
+    },
+    "facing=east,position=middle,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_right",
+      "y": 90
+    },
+    "facing=east,position=middle,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle",
+      "y": 90
+    },
+    "facing=east,position=middle,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_left",
+      "y": 90
+    },
+    "facing=east,position=right,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 90
+    },
+    "facing=east,position=right,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right_1",
+      "y": 90
+    },
+    "facing=east,position=right,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 90
+    },
+    "facing=east,position=right,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 90
+    },
+    "facing=east,position=single,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 90
+    },
+    "facing=east,position=single,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 90
+    },
+    "facing=east,position=single,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 90
+    },
+    "facing=east,position=single,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 90
+    },
+    "facing=north,position=left,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 0
+    },
+    "facing=north,position=left,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 0
+    },
+    "facing=north,position=left,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 0
+    },
+    "facing=north,position=left,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left_1",
+      "y": 0
+    },
+    "facing=north,position=middle,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_1",
+      "y": 0
+    },
+    "facing=north,position=middle,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_right",
+      "y": 0
+    },
+    "facing=north,position=middle,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle",
+      "y": 0
+    },
+    "facing=north,position=middle,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_left",
+      "y": 0
+    },
+    "facing=north,position=right,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 0
+    },
+    "facing=north,position=right,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right_1",
+      "y": 0
+    },
+    "facing=north,position=right,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 0
+    },
+    "facing=north,position=right,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 0
+    },
+    "facing=north,position=single,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 0
+    },
+    "facing=north,position=single,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 0
+    },
+    "facing=north,position=single,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 0
+    },
+    "facing=north,position=single,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 0
+    },
+    "facing=south,position=left,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 180
+    },
+    "facing=south,position=left,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 180
+    },
+    "facing=south,position=left,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 180
+    },
+    "facing=south,position=left,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left_1",
+      "y": 180
+    },
+    "facing=south,position=middle,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_1",
+      "y": 180
+    },
+    "facing=south,position=middle,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_right",
+      "y": 180
+    },
+    "facing=south,position=middle,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle",
+      "y": 180
+    },
+    "facing=south,position=middle,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_left",
+      "y": 180
+    },
+    "facing=south,position=right,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 180
+    },
+    "facing=south,position=right,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right_1",
+      "y": 180
+    },
+    "facing=south,position=right,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 180
+    },
+    "facing=south,position=right,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 180
+    },
+    "facing=south,position=single,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 180
+    },
+    "facing=south,position=single,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 180
+    },
+    "facing=south,position=single,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 180
+    },
+    "facing=south,position=single,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 180
+    },
+    "facing=west,position=left,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 270
+    },
+    "facing=west,position=left,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 270
+    },
+    "facing=west,position=left,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left",
+      "y": 270
+    },
+    "facing=west,position=left,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/left_1",
+      "y": 270
+    },
+    "facing=west,position=middle,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_1",
+      "y": 270
+    },
+    "facing=west,position=middle,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_right",
+      "y": 270
+    },
+    "facing=west,position=middle,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle",
+      "y": 270
+    },
+    "facing=west,position=middle,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/middle_left",
+      "y": 270
+    },
+    "facing=west,position=right,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 270
+    },
+    "facing=west,position=right,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right_1",
+      "y": 270
+    },
+    "facing=west,position=right,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 270
+    },
+    "facing=west,position=right,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/right",
+      "y": 270
+    },
+    "facing=west,position=single,wood_side=both": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 270
+    },
+    "facing=west,position=single,wood_side=left": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 270
+    },
+    "facing=west,position=single,wood_side=none": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 270
+    },
+    "facing=west,position=single,wood_side=right": {
+      "model": "kaleidoscope_world_liquor:block/brew/birch_glass_bar_cabinet/single",
+      "y": 270
+    }
+  }
+}

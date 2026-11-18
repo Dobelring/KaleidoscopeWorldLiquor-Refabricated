@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -20,7 +22,6 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.skeleton.Skeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
-import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
@@ -37,8 +38,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.tags.BlockTags;
@@ -48,13 +49,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 淘金热（treasure_guide）/ 斩首（beheading）/ 宝藏感知（treasure_sense，服务端扫描下发）/
+ * 淘金热（treasure_guide）/ 斩首（beheading）/ 宝藏感知服务端下发（treasure_sense）/
  * 冰霜行者（frost_walker）/ 多段跳摔落豁免（multi_jump，mixin 部分）的服务端逻辑。
- * 官方 1.1.11：春野之息（bonemeal_spreader）整段移除。
+ * <p>
+ * 官方 1.1.11：春野之息（bonemeal_spreader）整体移除，宝藏感知改为服务端每 20 tick
+ * 扫描后经 TreasureSensePayload 下发。
  */
 public final class EventHandlers {
     private static final RandomSource RANDOM = RandomSource.create();
-    /** 官方 1.1.11：宝藏感知服务端扫描半径（矿车 inflate 用） */
+    /** 宝藏感知扫描半径（24 格 / 5×5 区块） */
     private static final int TREASURE_SENSE_RADIUS = 24;
 
     /**
@@ -89,66 +92,92 @@ public final class EventHandlers {
                 (handler, sender, server) -> reconcileFlightClaim(handler.player));
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register(
                 (handler, server) -> FLIGHT_CLAIMS.remove(handler.player.getUUID()));
-        // ===== 冰霜行者/宝藏感知/嗨棒：玩家 tick =====
+        // ===== 冰霜行者与宝藏感知：玩家 tick =====
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
             FLIGHT_TICK++;
             // 每个玩家在 PlayerTick 的等效：在服务端 tick 末尾遍历在线玩家
             for (Player player : server.getPlayerList().getPlayers()) {
-                // 官方 1.1.11：宝藏感知改服务端每 20tick 扫描下发（春野之息已移除）
-                if (player.hasEffect(ModEffects.TREASURE_SENSE) && player.tickCount % 20 == 0) {
-                    syncTreasureSenseTargets(player);
-                }
                 if (player.isSpectator()) {
                     continue;
                 }
-                var frost = player.getEffect(ModEffects.FROST_WALKER);
-                if (frost != null) {
-                    applyFrostWalker(player, frost.getAmplifier());
-                }
                 updateCreativeFlight(player);
+                // 官方 1.2.0：效果离身即清缓存
+                if (!player.hasEffect(ModEffects.TREASURE_SENSE)) {
+                    LAST_SENT.remove(player);
+                }
+                // 官方 1.1.11：春野之息移除，改为宝藏感知每 20tick 服务端扫描下发
+                if (player.hasEffect(ModEffects.TREASURE_SENSE) && player.tickCount % 20 == 0) {
+                    syncTreasureSenseTargets(player);
+                }
             }
         });
     }
 
-    /** 官方 1.1.11：服务端扫描 5×5 区块 576 格²内有战利品表的容器/饰纹陶罐/陶罐 + 近身容器矿车，打包下发。 */
+    /**
+     * 官方 1.1.11：服务端扫描 5×5 区块 24 格内有战利品表的容器 / 饰纹陶罐（Brushable）/
+     * 陶罐（DecoratedPot）+ 近身 24 格有战利品表的容器矿车，打包下发。
+     */
     private static void syncTreasureSenseTargets(Player player) {
-        if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel level) {
-            List<BlockPos> targets = new ArrayList<>();
-            BlockPos playerPos = player.blockPosition();
-            ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
-            int chunkRadius = 2;
-            double radiusSq = 576.0;
+        if (!(player instanceof ServerPlayer serverPlayer) || !(player.level() instanceof ServerLevel level)) {
+            return;
+        }
+        ArrayList<BlockPos> targets = new ArrayList<>();
+        BlockPos playerPos = player.blockPosition();
+        // 26.x：ChunkPos 已改为 record——用 ChunkPos.containing(BlockPos) 工厂 + x()/z() 访问器
+        ChunkPos playerChunkPos = ChunkPos.containing(playerPos);
+        int chunkRadius = 2;
+        double radiusSq = 576.0;
 
-            for (int cx = playerChunkPos.x() - chunkRadius; cx <= playerChunkPos.x() + chunkRadius; cx++) {
-                for (int cz = playerChunkPos.z() - chunkRadius; cz <= playerChunkPos.z() + chunkRadius; cz++) {
-                    LevelChunk chunk = level.getChunk(cx, cz);
-                    if (chunk != null && !chunk.isEmpty()) {
-                        for (BlockEntity be : chunk.getBlockEntities().values()) {
-                            if (!be.isRemoved()) {
-                                BlockPos pos = be.getBlockPos();
-                                if (!(pos.distSqr(playerPos) > radiusSq)) {
-                                    if (be instanceof RandomizableContainerBlockEntity container && container.getLootTable() != null) {
-                                        targets.add(pos.immutable());
-                                    } else if (be instanceof BrushableBlockEntity && ((BrushableBlockEntityAccessor) be).kwl$getLootTable() != null) {
-                                        targets.add(pos.immutable());
-                                    } else if (be instanceof DecoratedPotBlockEntity pot && pot.getLootTable() != null) {
-                                        targets.add(pos.immutable());
-                                    }
-                                }
-                            }
-                        }
+        for (int cx = playerChunkPos.x() - chunkRadius; cx <= playerChunkPos.x() + chunkRadius; cx++) {
+            for (int cz = playerChunkPos.z() - chunkRadius; cz <= playerChunkPos.z() + chunkRadius; cz++) {
+                LevelChunk chunk = level.getChunk(cx, cz);
+                if (chunk == null || chunk.isEmpty()) {
+                    continue;
+                }
+                for (BlockEntity be : chunk.getBlockEntities().values()) {
+                    if (be.isRemoved()) {
+                        continue;
+                    }
+                    BlockPos pos = be.getBlockPos();
+                    if (pos.distSqr(playerPos) > radiusSq) {
+                        continue;
+                    }
+                    // 26.x：getLootTable() 返回 ResourceKey<LootTable>（非 ResourceLocation）
+                    if (be instanceof RandomizableContainerBlockEntity container && container.getLootTable() != null) {
+                        targets.add(pos.immutable());
+                    } else if (be instanceof BrushableBlockEntity
+                            && ((BrushableBlockEntityAccessor) be).kwl$getLootTable() != null) {
+                        targets.add(pos.immutable());
+                    } else if (be instanceof DecoratedPotBlockEntity pot && pot.getLootTable() != null) {
+                        targets.add(pos.immutable());
                     }
                 }
             }
+        }
 
-            List<Integer> lootMinecartIds = new ArrayList<>();
-            for (AbstractMinecartContainer minecart : level.getEntitiesOfClass(
-                    AbstractMinecartContainer.class, player.getBoundingBox().inflate(TREASURE_SENSE_RADIUS),
-                    minecartx -> !minecartx.isRemoved() && minecartx.getContainerLootTable() != null)) {
-                lootMinecartIds.add(minecart.getId());
-            }
+        List<Integer> lootMinecartIds = new ArrayList<>();
+        for (AbstractMinecartContainer minecart : level.getEntitiesOfClass(
+                AbstractMinecartContainer.class,
+                player.getBoundingBox().inflate(TREASURE_SENSE_RADIUS),
+                minecartx -> !minecartx.isRemoved() && minecartx.getContainerLootTable() != null)) {
+            lootMinecartIds.add(minecart.getId());
+        }
 
+        // 官方 1.2.0：目标集缓存去重——排序比较，仅在变化时发包
+        java.util.Collections.sort(targets);
+        java.util.Collections.sort(lootMinecartIds);
+        CachedTargets cached = LAST_SENT.get(player);
+        if (cached == null || !cached.matches(targets, lootMinecartIds)) {
+            LAST_SENT.put(player, new CachedTargets(java.util.List.copyOf(targets), java.util.List.copyOf(lootMinecartIds)));
             NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+        }
+    }
+
+    private static final java.util.Map<Player, CachedTargets> LAST_SENT = new java.util.WeakHashMap<>();
+
+    private record CachedTargets(java.util.List<BlockPos> positions, java.util.List<Integer> minecartIds) {
+        boolean matches(java.util.List<BlockPos> positions, java.util.List<Integer> minecartIds) {
+            return this.positions.equals(positions) && this.minecartIds.equals(minecartIds);
         }
     }
 
@@ -169,21 +198,38 @@ public final class EventHandlers {
         }
         // 破势（ground_crit）：地面近战 20%+10%/级 → 暴击 1.5 倍（非原版跳劈时）
         // Fabric 无伤害修改事件，与龙舌兰同款 cancel+重打一次结算（AFTER_DAMAGE 补刀会被无敌帧吞）
+        // 官方 1.2.0：破势放宽为任意持效果生物（玩家播原版暴击，其余播音效+粒子）
         if (source.getDirectEntity() instanceof LivingEntity critAttacker
-                && critAttacker instanceof Player critPlayer
-                && critPlayer.hasEffect(ModEffects.GROUND_CRIT)
+                && critAttacker.hasEffect(ModEffects.GROUND_CRIT)
                 && isMeleeAttack(source)
                 && !CRIT_PROCESSING.contains(entity.getUUID())) {
-            int critAmplifier = critPlayer.getEffect(ModEffects.GROUND_CRIT).getAmplifier();
+            int critAmplifier = critAttacker.getEffect(ModEffects.GROUND_CRIT).getAmplifier();
             double totalCritChance = 0.2 + critAmplifier * 0.1;
-            if (!isVanillaCrit(critPlayer) && RANDOM.nextDouble() < totalCritChance) {
+            if (!isVanillaCrit(critAttacker) && RANDOM.nextDouble() < totalCritChance) {
                 CRIT_PROCESSING.add(entity.getUUID());
                 try {
-                    critPlayer.crit(entity);
-                    DamageSource critSource = entity.damageSources().playerAttack(critPlayer);
-                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
-                            && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
-                        return false;
+                    if (critAttacker instanceof Player critPlayer) {
+                        critPlayer.crit(entity);
+                        DamageSource critSource = entity.damageSources().playerAttack(critPlayer);
+                        if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
+                                && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
+                            return false;
+                        }
+                    } else {
+                        // 非玩家生物破势：播放暴击音+粒子（官方 1.2.0 spawnCritEffect）
+                        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                                net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.5F);
+                        for (int i = 0; i < 5; i++) {
+                            double px = entity.getX() + (entity.level().getRandom().nextDouble() - 0.5) * 2.0;
+                            double py = entity.getY() + entity.getBbHeight() * 0.5 + entity.level().getRandom().nextDouble();
+                            double pz = entity.getZ() + (entity.level().getRandom().nextDouble() - 0.5) * 2.0;
+                            entity.level().addParticle(net.minecraft.core.particles.ParticleTypes.CRIT, px, py, pz, 0.0, -0.1, 0.0);
+                        }
+                        DamageSource critSource = entity.damageSources().mobAttack(critAttacker);
+                        if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
+                                && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
+                            return false;
+                        }
                     }
                     // 结算失败则放行原伤害
                     return true;
@@ -215,7 +261,7 @@ public final class EventHandlers {
                         target.hurt(killSource, 2.0F);
                         if (target.isAlive()) {
                             target.setHealth(0.0F);
-                            target.die(killSource);
+                            target.die(source);
                         }
                     }
                 }
@@ -227,7 +273,7 @@ public final class EventHandlers {
     /** 斩首掉头 + 淘金热双倍掉落（AFTER_DEATH）：目标被标记秒杀或攻击者有斩首效果时补头；
      *  攻击者有淘金热时按概率复制死亡位置 2 格内的掉落物（1.21.1 同款） */
     private static void onLivingDeath(LivingEntity entity, net.minecraft.world.damagesource.DamageSource source) {
-        // 淘金热：复制掉落物（官方 1.1.11：概率封顶 1.0）
+        // 淘金热：复制掉落物
         if (source.getEntity() instanceof LivingEntity attacker && attacker.hasEffect(ModEffects.TREASURE_GUIDE)) {
             int amplifier = attacker.getEffect(ModEffects.TREASURE_GUIDE).getAmplifier();
             double totalChance = Math.min(0.15 + amplifier * 0.05, 1.0);
@@ -268,7 +314,7 @@ public final class EventHandlers {
                 ? source.getDirectEntity() == source.getEntity() : false;
     }
 
-    private static boolean isVanillaCrit(Player player) {
+    private static boolean isVanillaCrit(LivingEntity player) {
         return !player.onGround()
                 && !player.onClimbable()
                 && !player.isInWater()
@@ -286,7 +332,7 @@ public final class EventHandlers {
             return new ItemStack(Items.CREEPER_HEAD);
         } else if (entity.getClass() == WitherSkeleton.class) {
             return new ItemStack(Items.WITHER_SKELETON_SKULL);
-        } else if (entity.getClass() == Piglin.class) {
+        } else if (entity.getClass() == net.minecraft.world.entity.monster.piglin.Piglin.class) {
             return new ItemStack(Items.PIGLIN_HEAD);
         } else if (entity instanceof Player player) {
             ItemStack playerHead = new ItemStack(Items.PLAYER_HEAD);
@@ -294,8 +340,8 @@ public final class EventHandlers {
             playerHead.set(DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createResolved(player.getGameProfile()));
             return playerHead;
         } else {
-            // 官方 1.1.11：通用命名匹配（<ns>:<path>_head/_skull、skull_/head_ 前缀、dead_、_item）
-            var entityId = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+            // 官方 1.1.11：通用命名匹配（<ns>:<path>_head/_skull、skull_/head_<path> 前缀、dead_、_item）
+            Identifier entityId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
             if (entityId != null) {
                 String ns = entityId.getNamespace();
                 String path = entityId.getPath();
@@ -307,8 +353,8 @@ public final class EventHandlers {
                 };
                 for (String[] group : patterns) {
                     for (String suffix : group) {
-                        var headId = net.minecraft.resources.Identifier.fromNamespaceAndPath(ns, suffix);
-                        Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(headId);
+                        // 26.x：DefaultedRegistry 用 getValue，缺失回落 AIR
+                        Item item = BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(ns, suffix));
                         if (item != null && item != Items.AIR) {
                             return new ItemStack(item);
                         }
@@ -319,7 +365,7 @@ public final class EventHandlers {
         }
     }
 
-    /** 淘金热：挖掘作物/矿物 概率补一份掉落（官方 1.1.11：判定改 isCrop/isOre，概率封顶 1.0） */
+    /** 淘金热：挖掘作物/矿物统一 15%+5%/级（上限 100%），补一份掉落 */
     private static void onBlockBreak(net.minecraft.world.level.Level world, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         if (world.isClientSide() || player == null) {
             return;
@@ -425,18 +471,4 @@ public final class EventHandlers {
         FLIGHT_CLAIMS.put(player.getUUID(), claim);
     }
 
-    private static void applyFrostWalker(Player player, int amplifier) {
-        if (!(player.level() instanceof ServerLevel serverLevel) || !player.onGround()) {
-            return;
-        }
-        BlockPos center = player.blockPosition();
-        int radius = 2 + Math.min(amplifier, 4);
-        for (BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(
-                center.offset(-radius, -1, -radius), center.offset(radius, -1, radius))) {
-            if (serverLevel.getFluidState(pos).is(net.minecraft.world.level.material.Fluids.WATER) && serverLevel.getBlockState(pos).getBlock() instanceof net.minecraft.world.level.block.LiquidBlock
-                    && serverLevel.getBlockState(pos.above()).isAir()) {
-                serverLevel.setBlockAndUpdate(pos.immutable(), net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState());
-            }
-        }
-    }
 }

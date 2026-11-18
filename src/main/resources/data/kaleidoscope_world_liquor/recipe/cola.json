@@ -1,14 +1,21 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     {
-      "fabric:type": "fabric:components",
-      "base": "minecraft:potion",
-      "components": {
-        "minecraft:potion_contents": {
-          "potion": "minecraft:water"
-        }
-      }
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "fabric:type": "fabric:components",
+          "base": "minecraft:potion",
+          "components": {
+            "minecraft:potion_contents": {
+              "potion": "minecraft:water"
+            }
+          }
+        },
+        "minecraft:potion"
+      ]
     },
     "minecraft:sugar",
     "minecraft:ink_sac"
@@ -16,6 +23,5 @@
   "result": {
     "id": "kaleidoscope_world_liquor:cola",
     "count": 1
-  },
-  "category": "misc"
+  }
 }
