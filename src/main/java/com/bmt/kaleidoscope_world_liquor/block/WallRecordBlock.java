@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WallRecordBlock extends Block implements EntityBlock {
    public static final DirectionProperty FACING = DirectionProperty.create("facing", Plane.HORIZONTAL);
-   public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 24);
+   public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 29);
    // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)
    private static final java.util.Map<Direction, VoxelShape> WALL_SHAPES = com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(1.0, 1.0, 0.0, 15.0, 15.0, 1.0));
 

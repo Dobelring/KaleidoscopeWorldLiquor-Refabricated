@@ -1,3 +1,4 @@
 {
-  "parent": "kaleidoscope_world_liquor:block/brew/oak_glass_bar_cabinet/single"
+  "parent": "kaleidoscope_world_liquor:block/brew/oak_glass_bar_cabinet/single",
+  "gui_light": "front"
 }

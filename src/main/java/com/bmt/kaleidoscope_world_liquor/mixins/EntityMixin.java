@@ -20,16 +20,6 @@ public abstract class EntityMixin implements IGlowingEntity {
    @Shadow
    public float yRotO;
    private boolean kaleidoscope_world_liquor$modGlowing = false;
-   private boolean kaleidoscope_world_liquor$originalGlowing = false;
-
-   @Shadow
-   public abstract void setSharedFlag(int var1, boolean var2);
-
-   @Shadow
-   public abstract void setGlowingTag(boolean var1);
-
-   @Shadow
-   public abstract boolean isCurrentlyGlowing();
 
    @Shadow
    public abstract void turn(double var1, double var3);
@@ -46,18 +36,10 @@ public abstract class EntityMixin implements IGlowingEntity {
    @Shadow
    public abstract void setYRot(float var1);
 
+   // 官方 1.2.0：只跟踪模组发光位，不再直接改 sharedFlag/glowingTag（避免覆盖原版发光）
    @Override
    public void setGlowing(boolean glowing) {
-      if (glowing) {
-         this.kaleidoscope_world_liquor$originalGlowing = this.isCurrentlyGlowing();
-         this.kaleidoscope_world_liquor$modGlowing = true;
-         this.setGlowingTag(true);
-         this.setSharedFlag(6, true);
-      } else {
-         this.kaleidoscope_world_liquor$modGlowing = false;
-         this.setGlowingTag(this.kaleidoscope_world_liquor$originalGlowing);
-         this.setSharedFlag(6, this.kaleidoscope_world_liquor$originalGlowing);
-      }
+      this.kaleidoscope_world_liquor$modGlowing = glowing;
    }
 
    @Override
@@ -71,12 +53,13 @@ public abstract class EntityMixin implements IGlowingEntity {
    }
 
    @Inject(
-      method = {"setGlowingTag"},
-      at = {@At("HEAD")}
+      method = {"isCurrentlyGlowing"},
+      at = {@At("RETURN")},
+      cancellable = true
    )
-   private void onSetGlowingTag(boolean pGlowingTag, CallbackInfo ci) {
-      if (!this.kaleidoscope_world_liquor$modGlowing) {
-         this.kaleidoscope_world_liquor$originalGlowing = pGlowingTag;
+   private void kaleidoscope$augmentGlowing(CallbackInfoReturnable<Boolean> cir) {
+      if (this.kaleidoscope_world_liquor$modGlowing) {
+         cir.setReturnValue(true);
       }
    }
 

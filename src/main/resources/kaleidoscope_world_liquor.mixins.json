@@ -8,16 +8,16 @@
   },
   "mixins": [
     "MultiJumpFallDamageMixin",
+    "LivingEntityFrostWalkerMixin",
+    "LivingEntityEffectMixin",
     "BoatMixin",
     "accessor.BarrelBlockEntityAccessor",
-    "accessor.ItemCombinerMenuAccessor",
     "accessor.CreativeModeTabAccessor",
     "CaptainGiftMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "GuiGraphicsMixin",
     "TapBlockMixin",
-    "AnvilMenuMixin",
     "CreativeModeTabsMixin",
     "PlayerMixin",
     "BlockEntityTypeMixin",
@@ -33,7 +33,8 @@
     "EntityRendererMixin",
     "CreativeModeInventoryScreenMixin",
     "ShakerOverlayMixin",
-    "ShakerRecipeCategoryMixin"
+    "ShakerRecipeCategoryMixin",
+    "client.EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

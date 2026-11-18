@@ -1,5 +1,6 @@
 package com.bmt.kaleidoscope_world_liquor.network;
 
+import com.bmt.kaleidoscope_world_liquor.client.FriendsDrinkClientState;
 import com.bmt.kaleidoscope_world_liquor.client.network.ClientPacketHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +21,8 @@ public final class NetworkHandler {
     /** 服务端侧：注册 S2C payload 类型（幂等由 PayloadTypeRegistry 保证，只调用一次）。 */
     public static void register() {
         PayloadTypeRegistry.playS2C().register(TreasureSensePayload.TYPE, TreasureSensePayload.CODEC);
+        // 官方 1.2.0：干杯之歌效果同步包
+        PayloadTypeRegistry.playS2C().register(FriendsDrinkPayload.TYPE, FriendsDrinkPayload.CODEC);
     }
 
     public static void send(ServerPlayer player, TreasureSensePayload payload) {
@@ -30,6 +33,9 @@ public final class NetworkHandler {
     public static void registerClient() {
         ClientPlayNetworking.registerGlobalReceiver(TreasureSensePayload.TYPE, (payload, context) -> {
             context.client().execute(() -> ClientPacketHandler.handleTreasureSense(payload));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(FriendsDrinkPayload.TYPE, (payload, context) -> {
+            context.client().execute(() -> FriendsDrinkClientState.accept(payload.entityIds(), payload.durations()));
         });
     }
 }

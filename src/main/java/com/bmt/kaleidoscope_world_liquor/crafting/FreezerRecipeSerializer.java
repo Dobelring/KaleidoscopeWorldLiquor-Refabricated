@@ -18,6 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class FreezerRecipeSerializer implements RecipeSerializer<FreezerRecipe> {
    public static final int MAX_INGREDIENTS = 4;
+   // 官方 1.2.0：texture 可选，缺省原版雪块贴图
+   public static final ResourceLocation DEFAULT_TEXTURE = ResourceLocation.withDefaultNamespace("block/snow");
+   private static final Codec<ResourceLocation> TEXTURE_CODEC = Codec.STRING
+      .xmap(s -> s != null && !s.isBlank() ? ResourceLocation.parse(s) : DEFAULT_TEXTURE, ResourceLocation::toString);
    public static final MapCodec<FreezerRecipe> CODEC = RecordCodecBuilder.mapCodec(
       instance -> instance.group(
             BuiltInRegistries.FLUID.byNameCodec().fieldOf("fluid").forGetter(recipe -> recipe.getInputFluid().getFluid()),
@@ -37,13 +41,13 @@ public class FreezerRecipeSerializer implements RecipeSerializer<FreezerRecipe> 
                .forGetter(FreezerRecipe::getInputIngredients),
             ItemStack.CODEC.fieldOf("result").forGetter(FreezerRecipe::getResultItem),
             Codec.INT.optionalFieldOf("craft_time", 200).forGetter(FreezerRecipe::getCraftTime),
-            ResourceLocation.CODEC.fieldOf("texture").forGetter(FreezerRecipe::getResultTexture),
-            Ingredient.CODEC.optionalFieldOf("extract_condition", Ingredient.EMPTY).forGetter(FreezerRecipe::getExtractCondition)
+            TEXTURE_CODEC.optionalFieldOf("texture", DEFAULT_TEXTURE).forGetter(FreezerRecipe::getResultTexture),
+            Ingredient.CODEC.optionalFieldOf("carrier", Ingredient.EMPTY).forGetter(FreezerRecipe::getCarrier)
          )
          .apply(
             instance,
-            (fluid, fluidAmount, ingredients, resultItem, craftTime, resultTexture, extractCondition) -> new FreezerRecipe(
-               new FluidStack(fluid, fluidAmount), ingredients, resultItem, craftTime, resultTexture, extractCondition
+            (fluid, fluidAmount, ingredients, resultItem, craftTime, resultTexture, carrier) -> new FreezerRecipe(
+               new FluidStack(fluid, fluidAmount), ingredients, resultItem, craftTime, resultTexture, carrier
             )
          )
    );
@@ -80,8 +84,8 @@ public class FreezerRecipeSerializer implements RecipeSerializer<FreezerRecipe> 
       ItemStack resultItem = (ItemStack)OPTIONAL_ITEM_STACK.decode(pBuffer);
       int craftTime = pBuffer.readInt();
       ResourceLocation resultTexture = pBuffer.readResourceLocation();
-      Ingredient extractCondition = (Ingredient)Ingredient.CONTENTS_STREAM_CODEC.decode(pBuffer);
-      return new FreezerRecipe(new FluidStack(inputFluid, fluidAmount), ingredients, resultItem, craftTime, resultTexture, extractCondition);
+      Ingredient carrier = (Ingredient)Ingredient.CONTENTS_STREAM_CODEC.decode(pBuffer);
+      return new FreezerRecipe(new FluidStack(inputFluid, fluidAmount), ingredients, resultItem, craftTime, resultTexture, carrier);
    }
 
    public static void toNetwork(@NotNull RegistryFriendlyByteBuf pBuffer, FreezerRecipe pRecipe) {
@@ -97,6 +101,6 @@ public class FreezerRecipeSerializer implements RecipeSerializer<FreezerRecipe> 
       OPTIONAL_ITEM_STACK.encode(pBuffer, pRecipe.getResultItem());
       pBuffer.writeInt(pRecipe.getCraftTime());
       pBuffer.writeResourceLocation(pRecipe.getResultTexture());
-      Ingredient.CONTENTS_STREAM_CODEC.encode(pBuffer, pRecipe.getExtractCondition());
+      Ingredient.CONTENTS_STREAM_CODEC.encode(pBuffer, pRecipe.getCarrier());
    }
 }

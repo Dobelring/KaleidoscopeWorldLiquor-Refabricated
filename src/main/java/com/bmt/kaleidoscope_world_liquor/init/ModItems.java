@@ -78,6 +78,10 @@ public class ModItems {
    public static final Item PINK_PENDANT_LAMP = new BlockItem(ModBlocks.PINK_PENDANT_LAMP, new Properties());
    public static final Item OAK_BAR_CABINET = new BlockItem(ModBlocks.OAK_BAR_CABINET, new Properties());
    public static final Item OAK_GLASS_BAR_CABINET = new BlockItem(ModBlocks.OAK_GLASS_BAR_CABINET, new Properties());
+   public static final Item BIRCH_GLASS_BAR_CABINET = new BlockItem(ModBlocks.BIRCH_GLASS_BAR_CABINET, new Properties());
+   public static final Item SPRUCE_GLASS_BAR_CABINET = new BlockItem(ModBlocks.SPRUCE_GLASS_BAR_CABINET, new Properties());
+   public static final Item DARK_OAK_GLASS_BAR_CABINET = new BlockItem(ModBlocks.DARK_OAK_GLASS_BAR_CABINET, new Properties());
+   public static final Item CHERRY_GLASS_BAR_CABINET = new BlockItem(ModBlocks.CHERRY_GLASS_BAR_CABINET, new Properties());
    public static final Item BIRCH_BAR_CABINET = new BlockItem(ModBlocks.BIRCH_BAR_CABINET, new Properties());
    public static final Item SPRUCE_BAR_CABINET = new BlockItem(ModBlocks.SPRUCE_BAR_CABINET, new Properties());
    public static final Item DARK_OAK_BAR_CABINET = new BlockItem(ModBlocks.DARK_OAK_BAR_CABINET, new Properties());
@@ -100,7 +104,6 @@ public class ModItems {
    public static final Item CRIMSON_CELLAR_CABINET = new BlockItem(ModBlocks.CRIMSON_CELLAR_CABINET, new Properties());
    public static final Item WARPED_CELLAR_CABINET = new BlockItem(ModBlocks.WARPED_CELLAR_CABINET, new Properties());
    public static final Item FREEZER = new BlockItem(ModBlocks.FREEZER, new Properties());
-   public static final Item CUSTOM_RECORD = new Item(new Properties().stacksTo(1).rarity(Rarity.RARE).jukeboxPlayable(ModJukeboxSongs.RANDOM_DISC));
    public static void registerItems() {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "bombay_sapphire_gin"), BOMBAY_SAPPHIRE_GIN);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "jack_daniel"), JACK_DANIEL);
@@ -148,6 +151,10 @@ public class ModItems {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "pink_pendant_lamp"), PINK_PENDANT_LAMP);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "oak_bar_cabinet"), OAK_BAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "oak_glass_bar_cabinet"), OAK_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "birch_glass_bar_cabinet"), BIRCH_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "spruce_glass_bar_cabinet"), SPRUCE_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "dark_oak_glass_bar_cabinet"), DARK_OAK_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "cherry_glass_bar_cabinet"), CHERRY_GLASS_BAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "birch_bar_cabinet"), BIRCH_BAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "spruce_bar_cabinet"), SPRUCE_BAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "dark_oak_bar_cabinet"), DARK_OAK_BAR_CABINET);
@@ -170,6 +177,5 @@ public class ModItems {
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "crimson_cellar_cabinet"), CRIMSON_CELLAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "warped_cellar_cabinet"), WARPED_CELLAR_CABINET);
         Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "freezer"), FREEZER);
-        Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "custom_record"), CUSTOM_RECORD);
    }
 }

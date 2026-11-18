@@ -68,9 +68,9 @@ public class EmiFreezerRecipe extends BasicEmiRecipe {
          List<EmiStack> outputs = List.of(EmiStack.of(recipe.getResultItem()));
 
          List<EmiIngredient> catalysts = new java.util.ArrayList<>();
-         Ingredient extractCondition = recipe.getExtractCondition();
-         if (!extractCondition.isEmpty()) {
-            catalysts.add(EmiIngredient.of(extractCondition));
+         Ingredient carrier = recipe.getCarrier();
+         if (!carrier.isEmpty()) {
+            catalysts.add(EmiIngredient.of(carrier));
          }
 
          int seconds = recipe.getCraftTime() / 20;

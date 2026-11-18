@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.Set;
 import java.util.UUID;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -161,7 +162,7 @@ public class EventHandlers {
                   target.hurt(killSource, 2.0F);
                   if (target.isAlive()) {
                      target.setHealth(0.0F);
-                     target.die(killSource);
+                     target.die(source);
                   }
                }
 
@@ -178,25 +179,43 @@ public class EventHandlers {
          return;
       }
 
+      // 官方 1.2.0：地面暴击放宽为任意持效果生物（玩家播原版暴击，其余播音效+粒子）
       if (source.getDirectEntity() instanceof LivingEntity attacker
-         && attacker instanceof Player player
-         && player.hasEffect(ModEffects.GROUND_CRIT_EFFECT)
+         && attacker.hasEffect(ModEffects.GROUND_CRIT_EFFECT)
          && isMeleeAttack(source)) {
-         int critAmplifier = player.getEffect(ModEffects.GROUND_CRIT_EFFECT).getAmplifier();
+         int critAmplifier = attacker.getEffect(ModEffects.GROUND_CRIT_EFFECT).getAmplifier();
          double baseCritChance = 0.2;
          double extraCritChance = critAmplifier * 0.1;
          double totalCritChance = baseCritChance + extraCritChance;
-         if (!isVanillaCrit(player) && RANDOM.nextDouble() < totalCritChance) {
+         if (!isVanillaCrit(attacker) && RANDOM.nextDouble() < totalCritChance) {
             CRIT_PROCESSING.add(target.getUUID());
             try {
-               player.crit(target);
-               if (target.isAlive()) {
-                  target.hurt(target.damageSources().playerAttack(player), originalAmount * 0.5F);
+               if (attacker instanceof Player player) {
+                  player.crit(target);
+                  if (target.isAlive()) {
+                     target.hurt(target.damageSources().playerAttack(player), originalAmount * 0.5F);
+                  }
+               } else {
+                  spawnCritEffect(target);
+                  if (target.isAlive()) {
+                     target.hurt(target.damageSources().mobAttack(attacker), originalAmount * 0.5F);
+                  }
                }
             } finally {
                CRIT_PROCESSING.remove(target.getUUID());
             }
          }
+      }
+   }
+
+   private static void spawnCritEffect(LivingEntity target) {
+      net.minecraft.world.level.Level level = target.level();
+      level.playSound(null, target.getX(), target.getY(), target.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.5F);
+      for (int i = 0; i < 5; i++) {
+         double x = target.getX() + (level.random.nextDouble() - 0.5) * 2.0;
+         double y = target.getY() + target.getBbHeight() * 0.5 + level.random.nextDouble();
+         double z = target.getZ() + (level.random.nextDouble() - 0.5) * 2.0;
+         level.addParticle(net.minecraft.core.particles.ParticleTypes.CRIT, x, y, z, 0.0, -0.1, 0.0);
       }
    }
 
@@ -208,7 +227,7 @@ public class EventHandlers {
       }
    }
 
-   private static boolean isVanillaCrit(Player player) {
+   private static boolean isVanillaCrit(LivingEntity player) {
       return !player.onGround()
          && !player.onClimbable()
          && !player.isInWater()
@@ -329,9 +348,9 @@ public class EventHandlers {
          return;
       }
 
-      if (player.hasEffect(ModEffects.FROST_WALKER_EFFECT)) {
-         int amplifier = player.getEffect(ModEffects.FROST_WALKER_EFFECT).getAmplifier();
-         freezeWater(player, (ServerLevel)player.level(), player.blockPosition(), amplifier + 1);
+      // 官方 1.2.0：效果离身即清缓存
+      if (!player.hasEffect(ModEffects.TREASURE_SENSE_EFFECT)) {
+         LAST_SENT.remove(player);
       }
 
       // 官方 1.1.11：春野之息移除，改为宝藏感知每 20tick 服务端扫描下发
@@ -381,7 +400,22 @@ public class EventHandlers {
             lootMinecartIds.add(minecart.getId());
          }
 
-         NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+         // 官方 1.2.0：目标集缓存去重——排序比较，仅在变化时发包
+         java.util.Collections.sort(targets);
+         java.util.Collections.sort(lootMinecartIds);
+         CachedTargets cached = LAST_SENT.get(player);
+         if (cached == null || !cached.matches(targets, lootMinecartIds)) {
+            LAST_SENT.put(player, new CachedTargets(List.copyOf(targets), List.copyOf(lootMinecartIds)));
+            NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+         }
+      }
+   }
+
+   private static final Map<Player, CachedTargets> LAST_SENT = new WeakHashMap<>();
+
+   private record CachedTargets(List<BlockPos> positions, List<Integer> minecartIds) {
+      boolean matches(List<BlockPos> positions, List<Integer> minecartIds) {
+         return this.positions.equals(positions) && this.minecartIds.equals(minecartIds);
       }
    }
 
@@ -455,29 +489,6 @@ public class EventHandlers {
          claim.own = true;
       }
       FLIGHT_CLAIMS.put(player.getUUID(), claim);
-   }
-
-   private static void freezeWater(LivingEntity entity, ServerLevel world, BlockPos centerPos, int amplifier) {
-      if (entity.onGround()) {
-         int radius = 2 + amplifier;
-         BlockState frostedIceState = net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState();
-
-         for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-               if (x * x + z * z <= radius * radius) {
-                  BlockPos pos = centerPos.offset(x, -1, z);
-                  BlockState state = world.getBlockState(pos);
-                  if (state.is(net.minecraft.world.level.block.Blocks.WATER)
-                     && state.getFluidState().is(Fluids.WATER)
-                     && state.getFluidState().isSource()
-                     && world.getBlockState(pos.above()).isAir()) {
-                     world.setBlockAndUpdate(pos, frostedIceState);
-                     world.scheduleTick(pos, frostedIceState.getBlock(), 60);
-                  }
-               }
-            }
-         }
-      }
    }
 
    private static void onClientTick() {

@@ -4,7 +4,6 @@ import com.bmt.kaleidoscope_world_liquor.client.renderer.ClientForgeEvents;
 import com.bmt.kaleidoscope_world_liquor.client.renderer.TreasureSenseRenderer;
 import com.bmt.kaleidoscope_world_liquor.event.EventHandlers;
 import com.bmt.kaleidoscope_world_liquor.event.MusicDiscEvents;
-import com.bmt.kaleidoscope_world_liquor.event.TooltipEvents;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,6 +18,6 @@ public final class KaleidoscopeWorldLiquorClient implements ClientModInitializer
       ClientForgeEvents.register();
       EventHandlers.registerClient();
       MusicDiscEvents.registerClient();
-      TooltipEvents.registerClient();
+      com.bmt.kaleidoscope_world_liquor.client.FriendsDrinkSoundHandler.register();
    }
 }

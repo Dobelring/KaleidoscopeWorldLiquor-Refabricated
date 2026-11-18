@@ -5,7 +5,7 @@
       "item": "minecraft:chain"
     },
     "L": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:ingots/iron"
     },
     "W": {
       "item": "minecraft:blue_carpet"

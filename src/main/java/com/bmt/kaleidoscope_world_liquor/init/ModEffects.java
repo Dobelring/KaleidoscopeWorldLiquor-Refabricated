@@ -129,6 +129,15 @@ public class ModEffects {
          BuiltInRegistries.MOB_EFFECT, ResourceLocation.fromNamespaceAndPath("smc", "elbow_strike"), new SMCEffect()
       );
 
+   // 官方 1.2.0：干杯之歌效果（smc:ohh_ye_ye），同样仅在 smc 未装时由本模组代注册
+   public static final Holder<MobEffect> OHH_YE_YE = FabricLoader.getInstance().isModLoaded("smc")
+      ? null
+      : Registry.registerForHolder(
+         BuiltInRegistries.MOB_EFFECT, ResourceLocation.fromNamespaceAndPath("smc", "ohh_ye_ye"),
+         new MobEffect(MobEffectCategory.BENEFICIAL, 6640463) {
+         }
+      );
+
    private static Holder<MobEffect> register(String name, Supplier<MobEffect> effectSupplier) {
       return Registry.registerForHolder(
          BuiltInRegistries.MOB_EFFECT, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, name), effectSupplier.get()

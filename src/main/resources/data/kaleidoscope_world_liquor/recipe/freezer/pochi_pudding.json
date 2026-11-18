@@ -8,12 +8,12 @@
     }
   ],
   "result": {
-    "count": 1,
-    "id": "kaleidoscope_twilight:pochi_pudding"
+    "id": "kaleidoscope_twilight:pochi_pudding",
+    "count": 1
   },
   "craft_time": 1200,
   "texture": "minecraft:block/snow",
-  "extract_condition": {
+  "carrier": {
     "item": "minecraft:bowl"
   }
 }

@@ -17,10 +17,7 @@ import com.bmt.kaleidoscope_world_liquor.init.ModSounds;
 import com.bmt.kaleidoscope_world_liquor.integration.KaleidoscopeDollIntegration;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.fml.config.ModConfig.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +25,6 @@ import org.slf4j.LoggerFactory;
 public class KaleidoscopeWorldLiquor implements ModInitializer {
    public static final String MODID = "kaleidoscope_world_liquor";
    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-   public static final ResourceKey<DamageType> LIFE_OR_DEATH_DAMAGE = ResourceKey.create(
-      Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MODID, "life_or_death")
-   );
-
    @Override
    public void onInitialize() {
       NeoForgeConfigRegistry.INSTANCE.register(MODID, Type.COMMON, ModConfigs.SPEC);
@@ -52,6 +45,10 @@ public class KaleidoscopeWorldLiquor implements ModInitializer {
       com.bmt.kaleidoscope_world_liquor.network.NetworkHandler.register();
       EventHandlers.register();
       BrewCommands.register();
+      // 官方 1.2.0：干杯之歌服务端跟踪 + 家具燃料 + CarryOn 搬运黑名单
+      com.bmt.kaleidoscope_world_liquor.event.FriendsDrinkEvent.register();
+      com.bmt.kaleidoscope_world_liquor.init.ModFuels.register();
+      com.bmt.kaleidoscope_world_liquor.compat.carryon.CarryOnCompat.register();
    }
 
    public static ResourceLocation id(String name) {

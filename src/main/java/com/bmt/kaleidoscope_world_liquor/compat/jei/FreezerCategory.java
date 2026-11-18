@@ -33,13 +33,13 @@ public class FreezerCategory implements IRecipeCategory<FreezerRecipe> {
    public static final RecipeType<FreezerRecipe> TYPE = RecipeType.create("kaleidoscope_world_liquor", "freezer", FreezerRecipe.class);
    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "textures/gui/jei/freezer.png");
    private static final Component TITLE = Component.translatable("block.kaleidoscope_world_liquor.freezer");
-   public static final int WIDTH = 180;
-   public static final int HEIGHT = 150;
+   public static final int WIDTH = 175;
+   public static final int HEIGHT = 145;
    private final IDrawable bgDraw;
    private final IDrawable iconDraw;
 
    public FreezerCategory(IGuiHelper guiHelper) {
-      this.bgDraw = guiHelper.createDrawable(BG, 0, 0, 180, 150);
+      this.bgDraw = guiHelper.createDrawable(BG, 0, 0, 175, 145);
       this.iconDraw = guiHelper.createDrawableItemLike(ModBlocks.FREEZER.asItem());
    }
 
@@ -85,14 +85,14 @@ public class FreezerCategory implements IRecipeCategory<FreezerRecipe> {
          }
       }
 
-      Ingredient extractCondition = recipe.getExtractCondition();
-      if (!extractCondition.isEmpty()) {
-         builder.addSlot(RecipeIngredientRole.CATALYST, 115, 100).addItemStacks(Arrays.asList(extractCondition.getItems()));
+      Ingredient carrier = recipe.getCarrier();
+      if (!carrier.isEmpty()) {
+         builder.addSlot(RecipeIngredientRole.CATALYST, 102, 100).addItemStacks(Arrays.asList(carrier.getItems()));
       }
 
       int seconds = recipe.getCraftTime() / 20;
       ItemStack outputStack = recipe.getResultItem(Minecraft.getInstance().level.registryAccess()).copy();
-      ((IRecipeSlotBuilder)builder.addSlot(RecipeIngredientRole.OUTPUT, 152, 86).addItemStack(outputStack))
+      ((IRecipeSlotBuilder)builder.addSlot(RecipeIngredientRole.OUTPUT, 143, 86).addItemStack(outputStack))
          .addTooltipCallback(
             (recipeSlotView, tooltip) -> tooltip.add(Component.translatable("jei.kaleidoscope_world_liquor.freezer.freeze_time", new Object[]{seconds}))
          );
@@ -109,11 +109,11 @@ public class FreezerCategory implements IRecipeCategory<FreezerRecipe> {
    }
 
    public int getWidth() {
-      return 180;
+      return 175;
    }
 
    public int getHeight() {
-      return 150;
+      return 145;
    }
 
    @Nullable

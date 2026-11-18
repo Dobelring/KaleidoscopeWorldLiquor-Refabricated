@@ -69,12 +69,13 @@ public class ModCreativeModeTabs {
       accept(output, LIQUOR_ITEMS, (ItemLike)ModItems.PINE_COLADA);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModItems.GIN_TONIC);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModItems.FREEZER);
-      accept(output, LIQUOR_ITEMS, (ItemLike)ModItems.CUSTOM_RECORD);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModCompatItems.LIANGSHAN_ICE_CONE);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModCompatItems.KITA_STUFFED_CRISP);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModCompatItems.POCHI_PUDDING);
       accept(output, LIQUOR_ITEMS, (ItemLike)ModCompatItems.MAGIC_CRISPY_CORNER);
       accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModCompatItems.ICE_TEA));
+      // 官方 1.2.0：干杯之歌（smc 未装时代注册），进栏前换成最高酿造等级
+      accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(ModCompatItems.FRIENDS_DRINK));
    }
 
    private static void addFurnitureItems(Output output) {
@@ -98,14 +99,19 @@ public class ModCreativeModeTabs {
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.PINK_PENDANT_LAMP);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.GREEN_PENDANT_LAMP);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.OAK_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.OAK_GLASS_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.OAK_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BIRCH_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BIRCH_GLASS_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.BIRCH_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.SPRUCE_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.SPRUCE_GLASS_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.SPRUCE_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.DARK_OAK_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.DARK_OAK_GLASS_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.DARK_OAK_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CHERRY_BAR_CABINET);
+      accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CHERRY_GLASS_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.CHERRY_CELLAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.JUNGLE_BAR_CABINET);
       accept(output, FURNITURE_ITEMS, (ItemLike)ModItems.JUNGLE_CELLAR_CABINET);

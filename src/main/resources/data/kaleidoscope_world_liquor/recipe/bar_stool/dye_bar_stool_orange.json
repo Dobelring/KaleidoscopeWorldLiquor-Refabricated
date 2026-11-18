@@ -1,0 +1,58 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:orange_dye"
+    },
+    [
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_black"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_blue"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_brown"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_cyan"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_gray"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_green"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_light_blue"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_light_gray"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_lime"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_magenta"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_pink"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_purple"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_red"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_yellow"
+      },
+      {
+        "item": "kaleidoscope_world_liquor:bar_stool_white"
+      }
+    ]
+  ],
+  "result": {
+    "id": "kaleidoscope_world_liquor:bar_stool_orange"
+  }
+}

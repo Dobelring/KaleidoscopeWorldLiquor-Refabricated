@@ -1,0 +1,58 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:green_dye"
+    },
+    [
+      {
+        "item": "kaleidoscope_tavern:white_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:orange_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:magenta_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:light_blue_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:yellow_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:lime_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:pink_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:gray_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:light_gray_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:cyan_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:purple_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:blue_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:brown_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:red_sofa"
+      },
+      {
+        "item": "kaleidoscope_tavern:black_sofa"
+      }
+    ]
+  ],
+  "result": {
+    "id": "kaleidoscope_tavern:green_sofa"
+  }
+}

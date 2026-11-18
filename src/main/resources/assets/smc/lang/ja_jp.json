@@ -1,0 +1,10 @@
+{
+  "item.smc.ice_tea": "アイスティー",
+  "block.smc.ice_tea": "アイスティー",
+  "item.smc.friends_drink": "友の酒",
+  "block.smc.friends_drink": "友の酒",
+  "effect.smc.elbow_strike": "エルボーストライク",
+  "effect.smc.elbow_strike.description": "ノックバック強度を上昇させ、専用効果音が付く",
+  "effect.smc.ohh_ye_ye": "おっイエイイエ～",
+  "effect.smc.ohh_ye_ye.description": "回転し、ぷにぷにになる！この効果は半径16ブロック内の全てのMobに適用される"
+}

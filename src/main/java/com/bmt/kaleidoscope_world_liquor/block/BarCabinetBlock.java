@@ -25,9 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,17 +53,45 @@ public class BarCabinetBlock extends BaseEntityBlock {
       Registries.ITEM, ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "bar_cabinet_irregular")
    );
    private static final VoxelShape FULL_SAFE_SHAPE = Block.box(0.001, 0.001, 0.001, 15.999, 15.999, 15.999);
+   private final WoodType woodType;
+
+   // 官方 1.2.0：WoodType 决定相邻拼接——只有同木种酒柜（同朝向）才相接成排；扩展木种各自成类
+   public enum WoodType {
+      OAK, BIRCH, SPRUCE, DARK_OAK, CHERRY, JUNGLE, ACACIA, MANGROVE, BAMBOO, CRIMSON, WARPED
+   }
 
    public BarCabinetBlock() {
-      this(SoundType.WOOD);
+      this(WoodType.OAK, SoundType.WOOD);
    }
 
    // 按木种指定音效：放置/打碎/踩踏/击打音效都取自 SoundType
    public BarCabinetBlock(SoundType sound) {
+      this(WoodType.OAK, sound);
+   }
+
+   public BarCabinetBlock(WoodType woodType) {
+      this(woodType, SoundType.WOOD);
+   }
+
+   public BarCabinetBlock(WoodType woodType, SoundType sound) {
       super(Properties.of().mapColor(MapColor.WOOD).strength(2.0F, 3.0F).sound(sound).noOcclusion().ignitedByLava());
+      this.woodType = woodType;
       this.registerDefaultState(
          (BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(FACING, Direction.NORTH)).setValue(POSITION, PositionType.SINGLE)
       );
+   }
+
+   public WoodType getWoodType() {
+      return this.woodType;
+   }
+
+   // 官方 1.2.0：同木种 + 同朝向才允许拼接
+   protected static boolean canConnect(BlockState self, BlockState neighbor) {
+      if (neighbor.getBlock() instanceof BarCabinetBlock other) {
+         return neighbor.getValue(FACING) != self.getValue(FACING) ? false : ((BarCabinetBlock)self.getBlock()).getWoodType() == other.getWoodType();
+      } else {
+         return false;
+      }
    }
 
    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -186,52 +212,27 @@ public class BarCabinetBlock extends BaseEntityBlock {
    }
 
    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-      Direction self = (Direction)state.getValue(FACING);
-      Direction left = self.getClockWise();
-      Direction right = self.getCounterClockWise();
-      if (direction == left) {
-         boolean leftIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-         PositionType position = (PositionType)state.getValue(POSITION);
-         if (leftIsCabinet) {
-            if (position == PositionType.SINGLE) {
-               return (BlockState)state.setValue(POSITION, PositionType.RIGHT);
-            }
-
-            if (position == PositionType.LEFT) {
-               return (BlockState)state.setValue(POSITION, PositionType.MIDDLE);
-            }
+      Direction facing = (Direction)state.getValue(FACING);
+      Direction left = facing.getClockWise();
+      Direction right = facing.getCounterClockWise();
+      if (direction != left && direction != right) {
+         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+      } else {
+         boolean leftIsCabinet = canConnect(state, level.getBlockState(pos.relative(left)));
+         boolean rightIsCabinet = canConnect(state, level.getBlockState(pos.relative(right)));
+         PositionType position;
+         if (leftIsCabinet && rightIsCabinet) {
+            position = PositionType.MIDDLE;
+         } else if (leftIsCabinet) {
+            position = PositionType.RIGHT;
+         } else if (rightIsCabinet) {
+            position = PositionType.LEFT;
          } else {
-            if (position == PositionType.RIGHT) {
-               return (BlockState)state.setValue(POSITION, PositionType.SINGLE);
-            }
-
-            if (position == PositionType.MIDDLE) {
-               return (BlockState)state.setValue(POSITION, PositionType.LEFT);
-            }
+            position = PositionType.SINGLE;
          }
-      } else if (direction == right) {
-         boolean rightIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-         PositionType position = (PositionType)state.getValue(POSITION);
-         if (rightIsCabinet) {
-            if (position == PositionType.SINGLE) {
-               return (BlockState)state.setValue(POSITION, PositionType.LEFT);
-            }
 
-            if (position == PositionType.RIGHT) {
-               return (BlockState)state.setValue(POSITION, PositionType.MIDDLE);
-            }
-         } else {
-            if (position == PositionType.LEFT) {
-               return (BlockState)state.setValue(POSITION, PositionType.SINGLE);
-            }
-
-            if (position == PositionType.MIDDLE) {
-               return (BlockState)state.setValue(POSITION, PositionType.RIGHT);
-            }
-         }
+         return (BlockState)state.setValue(POSITION, position);
       }
-
-      return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
    }
 
    @Nullable
@@ -241,9 +242,10 @@ public class BarCabinetBlock extends BaseEntityBlock {
       Direction opposite = context.getHorizontalDirection().getOpposite();
       BlockState left = level.getBlockState(pos.relative(opposite.getClockWise()));
       BlockState right = level.getBlockState(pos.relative(opposite.getCounterClockWise()));
+      BlockState self = (BlockState)this.defaultBlockState().setValue(FACING, opposite);
       PositionType position = PositionType.SINGLE;
-      boolean leftIsCabinet = left.is(this) && left.getValue(FACING) == opposite;
-      boolean rightIsCabinet = right.is(this) && right.getValue(FACING) == opposite;
+      boolean leftIsCabinet = canConnect(self, left);
+      boolean rightIsCabinet = canConnect(self, right);
       if (leftIsCabinet && rightIsCabinet) {
          position = PositionType.MIDDLE;
       } else if (leftIsCabinet) {
@@ -312,13 +314,5 @@ public class BarCabinetBlock extends BaseEntityBlock {
 
    public RenderShape getRenderShape(BlockState state) {
       return RenderShape.MODEL;
-   }
-
-   public BlockState rotate(BlockState state, Rotation rot) {
-      return (BlockState)state.setValue(FACING, rot.rotate((Direction)state.getValue(FACING)));
-   }
-
-   public BlockState mirror(BlockState state, Mirror mirror) {
-      return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
    }
 }

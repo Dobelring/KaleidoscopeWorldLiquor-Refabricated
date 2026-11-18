@@ -2,8 +2,6 @@ package com.bmt.kaleidoscope_world_liquor.event;
 
 import com.bmt.kaleidoscope_world_liquor.block.WallRecordBlock;
 import com.bmt.kaleidoscope_world_liquor.block.entity.WallRecordBlockEntity;
-import com.bmt.kaleidoscope_world_liquor.init.ModItems;
-import com.bmt.kaleidoscope_world_liquor.init.ModJukeboxSongs;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +14,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -64,20 +61,6 @@ public class MusicDiscEvents {
 
    private static InteractionResult onRightClickPlaceRecord(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {
       ItemStack stack = player.getItemInHand(hand);
-      // 模组唱片放入唱片机前随机选定曲目（长/短），使 length_in_seconds 与实际音乐一致——
-      // 否则声音层 50/50 随机会让短曲播完后唱片机仍按长曲时长发音符粒子
-      if (!level.isClientSide
-         && level.getBlockState(hitResult.getBlockPos()).getBlock() instanceof net.minecraft.world.level.block.JukeboxBlock
-         && stack.is(ModItems.CUSTOM_RECORD)) {
-         ResourceKey<net.minecraft.world.item.JukeboxSong> song = level.random.nextBoolean()
-            ? ModJukeboxSongs.RANDOM_DISC
-            : ModJukeboxSongs.RANDOM_DISC_SHORT;
-         stack.set(
-            DataComponents.JUKEBOX_PLAYABLE,
-            new net.minecraft.world.item.JukeboxPlayable(new net.minecraft.world.item.EitherHolder<>(song), true)
-         );
-      }
-
       if (player.isShiftKeyDown()) {
          if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) {
             BlockPlaceContext context = new BlockPlaceContext(player, hand, stack, hitResult);
@@ -145,5 +128,11 @@ public class MusicDiscEvents {
       VANILLA_RECORD_MAP.put(DISC_CREATOR, 16);
       VANILLA_RECORD_MAP.put(DISC_PRECIPICE, 17);
       VANILLA_RECORD_MAP.put(DISC_CREATOR_MUSIC_BOX, 18);
+      // 官方 1.2.0：森罗厨唱片 → 挂墙模型 25-29（唱片实体由 smc 提供，未装 smc 时不存在）
+      VANILLA_RECORD_MAP.put(ResourceLocation.fromNamespaceAndPath("smc", "music_disc_friends_drink"), 25);
+      VANILLA_RECORD_MAP.put(ResourceLocation.fromNamespaceAndPath("smc", "music_disc_laoda"), 26);
+      VANILLA_RECORD_MAP.put(ResourceLocation.fromNamespaceAndPath("smc", "music_disc_bad_apple"), 27);
+      VANILLA_RECORD_MAP.put(ResourceLocation.fromNamespaceAndPath("smc", "music_disc_nyan_cat"), 28);
+      VANILLA_RECORD_MAP.put(ResourceLocation.fromNamespaceAndPath("smc", "music_disc_god_pickaxe"), 29);
    }
 }

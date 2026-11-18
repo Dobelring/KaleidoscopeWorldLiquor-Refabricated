@@ -52,8 +52,8 @@ public class FreezerBlock extends BaseEntityBlock {
    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
    public static final BooleanProperty OPEN = BooleanProperty.create("open");
    public static final BooleanProperty WORKING = BooleanProperty.create("working");
-   // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)
-   private static final java.util.Map<Direction, VoxelShape> SHAPES = com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(0.0, 0.0, 1.0, 16.0, 12.0, 14.0));
+   // 官方 1.2.0：模型改为整格 16×13×16，形状同步
+   private static final java.util.Map<Direction, VoxelShape> SHAPES = com.github.ysbbbbbb.kaleidoscopetavern.util.VoxelShapeUtils.horizontalShapes(Block.box(0.0, 0.0, 0.0, 16.0, 13.0, 16.0));
 
    public FreezerBlock(Properties properties) {
       super(properties);
@@ -106,13 +106,12 @@ public class FreezerBlock extends BaseEntityBlock {
                         level.playSound(null, pos, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
                      }
                   } else {
-                     if (be.tryStartCrafting()) {
-                        level.setBlock(pos, (BlockState)((BlockState)state.setValue(OPEN, false)).setValue(WORKING, true), 3);
+                     if (be.startCraftingAndUpdateState()) {
+                        level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
                      } else {
                         level.setBlock(pos, (BlockState)state.setValue(OPEN, false), 3);
+                        level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
                      }
-
-                     level.playSound(null, pos, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
                   }
                }
             }
@@ -140,9 +139,8 @@ public class FreezerBlock extends BaseEntityBlock {
          } else if (player.isShiftKeyDown()) {
             boolean isOpen = (Boolean)state.getValue(OPEN);
             if (isOpen) {
-               boolean success = be.tryStartCrafting();
+               boolean success = be.startCraftingAndUpdateState();
                if (success) {
-                  level.setBlock(pos, (BlockState)((BlockState)state.setValue(OPEN, false)).setValue(WORKING, true), 3);
                   player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.start_crafting"), true);
                } else {
                   level.setBlock(pos, (BlockState)state.setValue(OPEN, false), 3);
@@ -160,78 +158,87 @@ public class FreezerBlock extends BaseEntityBlock {
             }
 
             return ItemInteractionResult.CONSUME;
-         } else {
-            if ((Boolean)state.getValue(OPEN)) {
-               if (be.hasOutput()) {
-                  be.extractOutput(player, hand);
+         } else if ((Boolean)state.getValue(OPEN)) {
+            // 官方 1.2.0：优先产出（有容器需求时先校验），其次取出输入，最后塞入
+            if (be.hasOutput()) {
+               if (be.extractOutput(player, hand)) {
                   level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+               }
+
+               return ItemInteractionResult.CONSUME;
+            } else {
+               ItemStack held = player.getItemInHand(hand);
+               boolean extracted = be.extractItem(player, held);
+               if (extracted) {
+                  level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
+                  return ItemInteractionResult.CONSUME;
+               } else {
+                  if (!held.isEmpty()) {
+                     if (held.is(Items.MILK_BUCKET) && be.tank.getFluidAmount() + 1000 <= be.tank.getCapacity() && be.tank.fill(new FluidStack(ModFluids.MILK_STILL, 1000), true) > 0) {
+                        be.tank.fill(new FluidStack(ModFluids.MILK_STILL, 1000), false);
+                        if (!player.isCreative()) {
+                           held.shrink(1);
+                           if (held.isEmpty()) {
+                              player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                           } else {
+                              player.addItem(new ItemStack(Items.BUCKET));
+                           }
+                        }
+
+                        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        return ItemInteractionResult.CONSUME;
+                     }
+
+                     // 通用流体桶交互（替代 Forge FluidUtil.interactWithFluidHandler）：
+                     // 任意流体桶（水/岩浆/牛奶/酒馆果汁桶等）倒入 tank；空桶从 tank 吸出对应流体桶
+                     if (held.getItem() instanceof BucketItem) {
+                        Fluid bucketFluid = FluidUtils.findFluidForBucket(held.getItem());
+                        if (bucketFluid != null && bucketFluid != Fluids.EMPTY) {
+                           if (be.tank.getFluidAmount() + 1000 <= be.tank.getCapacity()
+                              && (be.tank.isEmpty() || be.tank.getFluid().getFluid() == bucketFluid)) {
+                              be.tank.fill(new FluidStack(bucketFluid, 1000), false);
+                              if (!player.isCreative()) {
+                                 held.shrink(1);
+                                 if (held.isEmpty()) {
+                                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                                 } else {
+                                    player.addItem(new ItemStack(Items.BUCKET));
+                                 }
+                              }
+
+                              level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+                              return ItemInteractionResult.CONSUME;
+                           }
+                        } else if (be.tank.getFluidAmount() >= 1000) {
+                           // 吸出：空桶 + tank 有流体 → 对应桶物品
+                           Fluid tankFluid = be.tank.getFluid().getFluid();
+                           Item bucketForFluid = tankFluid.getBucket();
+                           if (bucketForFluid != null && bucketForFluid != Items.AIR) {
+                              be.tank.drain(1000, false);
+                              if (!player.isCreative()) {
+                                 held.shrink(1);
+                                 if (held.isEmpty()) {
+                                    player.setItemInHand(hand, new ItemStack(bucketForFluid));
+                                 } else {
+                                    player.addItem(new ItemStack(bucketForFluid));
+                                 }
+                              }
+
+                              level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                              return ItemInteractionResult.CONSUME;
+                           }
+                        }
+                     }
+
+                     if (be.insertItem(held, player, hand)) {
+                        level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
+                     }
+                  }
+
                   return ItemInteractionResult.CONSUME;
                }
-
-               if (!var12.isEmpty()) {
-                  if (var12.is(Items.MILK_BUCKET) && be.tank.getFluidAmount() + 1000 <= be.tank.getCapacity()) {
-                     be.tank.fill(new FluidStack(ModFluids.MILK_STILL, 1000), false);
-                     if (!player.isCreative()) {
-                        var12.shrink(1);
-                        if (var12.isEmpty()) {
-                           player.setItemInHand(hand, new ItemStack(Items.BUCKET));
-                        } else {
-                           player.addItem(new ItemStack(Items.BUCKET));
-                        }
-                     }
-
-                     level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-                     return ItemInteractionResult.CONSUME;
-                  }
-
-                  // 通用流体桶交互（替代 Forge FluidUtil.interactWithFluidHandler）：
-                  // 任意流体桶（水/岩浆/牛奶/酒馆果汁桶等）倒入 tank；空桶从 tank 吸出对应流体桶
-                  if (var12.getItem() instanceof BucketItem) {
-                     Fluid bucketFluid = FluidUtils.findFluidForBucket(var12.getItem());
-                     if (bucketFluid != null && bucketFluid != Fluids.EMPTY) {
-                        if (be.tank.getFluidAmount() + 1000 <= be.tank.getCapacity()
-                           && (be.tank.isEmpty() || be.tank.getFluid().getFluid() == bucketFluid)) {
-                           be.tank.fill(new FluidStack(bucketFluid, 1000), false);
-                           if (!player.isCreative()) {
-                              var12.shrink(1);
-                              if (var12.isEmpty()) {
-                                 player.setItemInHand(hand, new ItemStack(Items.BUCKET));
-                              } else {
-                                 player.addItem(new ItemStack(Items.BUCKET));
-                              }
-                           }
-
-                           level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-                           return ItemInteractionResult.CONSUME;
-                        }
-                     } else if (be.tank.getFluidAmount() >= 1000) {
-                        // 吸出：空桶 + tank 有流体 → 对应桶物品
-                        Fluid tankFluid = be.tank.getFluid().getFluid();
-                        Item bucketForFluid = tankFluid.getBucket();
-                        if (bucketForFluid != null && bucketForFluid != Items.AIR) {
-                           be.tank.drain(1000, false);
-                           if (!player.isCreative()) {
-                              var12.shrink(1);
-                              if (var12.isEmpty()) {
-                                 player.setItemInHand(hand, new ItemStack(bucketForFluid));
-                              } else {
-                                 player.addItem(new ItemStack(bucketForFluid));
-                              }
-                           }
-
-                           level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-                           return ItemInteractionResult.CONSUME;
-                        }
-                     }
-                  }
-
-                  if (be.insertItem(var12, player, hand)) {
-                     level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
-                     return ItemInteractionResult.CONSUME;
-                  }
-               }
             }
-
+         } else {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
          }
       } else {
@@ -250,9 +257,8 @@ public class FreezerBlock extends BaseEntityBlock {
          } else if (player.isShiftKeyDown()) {
             boolean isOpen = (Boolean)state.getValue(OPEN);
             if (isOpen) {
-               boolean success = be.tryStartCrafting();
+               boolean success = be.startCraftingAndUpdateState();
                if (success) {
-                  level.setBlock(pos, (BlockState)((BlockState)state.setValue(OPEN, false)).setValue(WORKING, true), 3);
                   player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.start_crafting"), true);
                } else {
                   level.setBlock(pos, (BlockState)state.setValue(OPEN, false), 3);
@@ -272,12 +278,16 @@ public class FreezerBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
          } else if ((Boolean)state.getValue(OPEN)) {
             if (be.hasOutput()) {
-               be.extractOutput(player, InteractionHand.MAIN_HAND);
-               level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+               if (be.extractOutput(player, InteractionHand.MAIN_HAND)) {
+                  level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+               }
+
                return InteractionResult.CONSUME;
             } else {
-               be.extractItem(player);
-               level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
+               if (be.extractItem(player, ItemStack.EMPTY)) {
+                  level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
+               }
+
                return InteractionResult.CONSUME;
             }
          } else {
@@ -293,7 +303,11 @@ public class FreezerBlock extends BaseEntityBlock {
    }
 
    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
-      if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof FreezerBlockEntity freezer) {
+      // 官方 1.2.0：有产出或配方在途时不再撒出原料
+      if (state.getBlock() != newState.getBlock()
+         && level.getBlockEntity(pos) instanceof FreezerBlockEntity freezer
+         && !freezer.hasOutput()
+         && !freezer.hasMatchingRecipe()) {
          for (int i = 0; i < 4; i++) {
             Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), freezer.inputInventory.getStackInSlot(i));
          }
@@ -314,15 +328,5 @@ public class FreezerBlock extends BaseEntityBlock {
 
    public RenderShape getRenderShape(BlockState state) {
       return RenderShape.MODEL;
-   }
-
-   @NotNull
-   public BlockState rotate(@NotNull BlockState state, @NotNull Rotation rot) {
-      return (BlockState)state.setValue(FACING, rot.rotate((Direction)state.getValue(FACING)));
-   }
-
-   @NotNull
-   public BlockState mirror(@NotNull BlockState state, @NotNull Mirror mirror) {
-      return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
    }
 }

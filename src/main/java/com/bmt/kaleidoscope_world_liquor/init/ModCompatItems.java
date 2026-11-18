@@ -47,6 +47,20 @@ public final class ModCompatItems {
       .build();
    public static final Item ICE_TEA = new com.bmt.kaleidoscope_world_liquor.item.CustomDrinkItem.IceTea(ICE_TEA_BLOCK);
 
+   // ============ smc：干杯之歌（官方 1.2.0）============
+   public static final Block FRIENDS_DRINK_BLOCK = DrinkBlock.create()
+      .maxCount(4)
+      .shapes(
+         new VoxelShape[]{
+            Block.box(6.0, 0.0, 6.0, 10.0, 16.0, 10.0),
+            Block.box(2.0, 0.0, 6.0, 14.0, 16.0, 10.0),
+            Shapes.or(Block.box(2.0, 0.0, 10.0, 14.0, 16.0, 14.0), Block.box(6.0, 0.0, 2.0, 10.0, 16.0, 14.0)),
+            Block.box(2.0, 0.0, 2.0, 14.0, 16.0, 14.0)
+         }
+      )
+      .build();
+   public static final Item FRIENDS_DRINK = new com.github.ysbbbbbb.kaleidoscopetavern.item.DrinkBlockItem(FRIENDS_DRINK_BLOCK);
+
    public static void register() {
       // kaleidoscope_twilight 命名空间
       Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("kaleidoscope_twilight", "liangshan_ice_cone"), LIANGSHAN_ICE_CONE);
@@ -56,5 +70,8 @@ public final class ModCompatItems {
       // smc 命名空间：冰红茶方块 + 物品
       Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath("smc", "ice_tea"), ICE_TEA_BLOCK);
       Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("smc", "ice_tea"), ICE_TEA);
+      // smc 命名空间：干杯之歌方块 + 物品
+      Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath("smc", "friends_drink"), FRIENDS_DRINK_BLOCK);
+      Registry.register(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("smc", "friends_drink"), FRIENDS_DRINK);
    }
 }

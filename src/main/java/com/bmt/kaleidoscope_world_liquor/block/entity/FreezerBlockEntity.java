@@ -7,11 +7,13 @@ import com.bmt.kaleidoscope_world_liquor.fluids.FluidTank;
 import com.bmt.kaleidoscope_world_liquor.init.ModBlockEntities;
 import com.bmt.kaleidoscope_world_liquor.init.ModRecipes;
 import com.bmt.kaleidoscope_world_liquor.inventory.SimpleItemHandler;
+import com.bmt.kaleidoscope_world_liquor.util.ItemUtils;
 import java.util.List;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -19,9 +21,12 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -33,6 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FreezerBlockEntity extends BlockEntity {
+   // 官方 1.2.0：禁止塞入冰箱的物品黑名单（工具/盔甲/桶/潜影盒/碗/花盆/玻璃瓶等）
+   public static final TagKey<Item> FREEZER_BLACKLIST = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("kaleidoscope_world_liquor", "freezer_blacklist"));
    private RecipeHolder<FreezerRecipe> currentRecipeHolder = null;
    private RecipeHolder<FreezerRecipe> cachedRecipeHolder = null;
    public final FluidTank tank = new FluidTank(1000) {
@@ -45,27 +52,70 @@ public class FreezerBlockEntity extends BlockEntity {
             FreezerBlockEntity.this.checkForMatchingRecipe();
          }
       }
+
+      // 官方 1.2.0：有产出或工作中时不允许注入流体
+      @Override
+      public int fill(FluidStack resource, boolean simulate) {
+         return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() ? super.fill(resource, simulate) : 0;
+      }
    };
+   private boolean suppressInputUpdates = false;
    public final SimpleItemHandler inputInventory = new SimpleItemHandler(4) {
       @Override
       protected void onContentsChanged(int slot) {
-         FreezerBlockEntity.this.setChanged();
-         if (FreezerBlockEntity.this.level != null && !FreezerBlockEntity.this.level.isClientSide) {
-            FreezerBlockEntity.this.level
-               .sendBlockUpdated(FreezerBlockEntity.this.worldPosition, FreezerBlockEntity.this.getBlockState(), FreezerBlockEntity.this.getBlockState(), 3);
-            FreezerBlockEntity.this.checkForMatchingRecipe();
-         }
+         FreezerBlockEntity.this.onInputChanged(slot);
       }
 
       @Override
       public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-         return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() ? super.isItemValid(slot, stack) : false;
+         return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking()
+            ? !stack.is(FreezerBlockEntity.FREEZER_BLACKLIST) && ItemUtils.getContainerItem(stack) == Items.AIR
+            : false;
       }
 
       @NotNull
       @Override
       public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-         return !FreezerBlockEntity.this.hasOutput() && !FreezerBlockEntity.this.isWorking() ? super.insertItem(slot, stack, simulate) : stack;
+         return !FreezerBlockEntity.this.hasOutput()
+               && !FreezerBlockEntity.this.isWorking()
+               && !stack.isEmpty()
+               && !stack.is(FreezerBlockEntity.FREEZER_BLACKLIST)
+               && ItemUtils.getContainerItem(stack) == Items.AIR
+            ? super.insertItem(slot, stack, simulate)
+            : stack;
+      }
+
+      // 官方 1.2.0：自动化只能取出不带容器物的输入（如碗装物不可自动取出）
+      @NotNull
+      @Override
+      public ItemStack extractItem(int slot, int amount, boolean simulate) {
+         if (!FreezerBlockEntity.this.isWorking() && amount > 0) {
+            ItemStack stack = this.getStackInSlot(slot);
+            if (!stack.isEmpty() && ItemUtils.getContainerItem(stack) == Items.AIR) {
+               int extractCount = Math.min(amount, stack.getCount());
+               if (extractCount <= 0) {
+                  return ItemStack.EMPTY;
+               } else {
+                  ItemStack extracted = stack.copyWithCount(extractCount);
+                  if (!simulate) {
+                     ItemStack remaining = stack.copy();
+                     remaining.shrink(extractCount);
+                     this.setStackInSlot(slot, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+                  }
+
+                  return extracted;
+               }
+            } else {
+               return ItemStack.EMPTY;
+            }
+         } else {
+            return ItemStack.EMPTY;
+         }
+      }
+
+      @Override
+      public int getSlotLimit(int slot) {
+         return 1;
       }
    };
    public final SimpleItemHandler outputInventory = new SimpleItemHandler(1) {
@@ -79,16 +129,15 @@ public class FreezerBlockEntity extends BlockEntity {
       public ItemStack getStackInSlot(int slot) {
          if (slot != 0) {
             return ItemStack.EMPTY;
-         } else if (FreezerBlockEntity.this.hasOutput()
-            && FreezerBlockEntity.this.currentRecipeHolder != null
-            && FreezerBlockEntity.this.currentRecipeHolder.value().getExtractCondition().isEmpty()) {
-            ItemStack result = FreezerBlockEntity.this.currentRecipeHolder.value()
-               .getResultItem(FreezerBlockEntity.this.level.registryAccess())
-               .copy();
-            result.setCount(1);
-            return result;
          } else {
-            return ItemStack.EMPTY;
+            RecipeHolder<FreezerRecipe> rh = FreezerBlockEntity.this.currentRecipeHolder;
+            if (rh != null && FreezerBlockEntity.this.hasOutput() && rh.value().getCarrier().isEmpty()) {
+               ItemStack result = rh.value().getResultItem(FreezerBlockEntity.this.level.registryAccess()).copy();
+               result.setCount(1);
+               return result;
+            } else {
+               return ItemStack.EMPTY;
+            }
          }
       }
 
@@ -97,32 +146,31 @@ public class FreezerBlockEntity extends BlockEntity {
       public ItemStack extractItem(int slot, int amount, boolean simulate) {
          if (slot != 0 || amount <= 0) {
             return ItemStack.EMPTY;
-         } else if (FreezerBlockEntity.this.hasOutput()
-            && FreezerBlockEntity.this.currentRecipeHolder != null
-            && FreezerBlockEntity.this.currentRecipeHolder.value().getExtractCondition().isEmpty()) {
-            int extractCount = Math.min(amount, FreezerBlockEntity.this.outputCount);
-            if (extractCount <= 0) {
-               return ItemStack.EMPTY;
-            } else {
-               ItemStack result = FreezerBlockEntity.this.currentRecipeHolder.value()
-                  .getResultItem(FreezerBlockEntity.this.level.registryAccess())
-                  .copy();
-               result.setCount(extractCount);
-               if (!simulate) {
-                  FreezerBlockEntity.this.outputCount -= extractCount;
-                  FreezerBlockEntity.this.setChanged();
-                  FreezerBlockEntity.this.level
-                     .sendBlockUpdated(
-                        FreezerBlockEntity.this.worldPosition, FreezerBlockEntity.this.getBlockState(), FreezerBlockEntity.this.getBlockState(), 3
-                     );
-                  FreezerBlockEntity.this.level.updateNeighborsAt(FreezerBlockEntity.this.worldPosition, FreezerBlockEntity.this.getBlockState().getBlock());
-                  FreezerBlockEntity.this.checkForMatchingRecipe();
-               }
-
-               return result;
-            }
          } else {
-            return ItemStack.EMPTY;
+            RecipeHolder<FreezerRecipe> rh = FreezerBlockEntity.this.currentRecipeHolder;
+            if (rh != null && FreezerBlockEntity.this.hasOutput() && rh.value().getCarrier().isEmpty()) {
+               int extractCount = Math.min(amount, FreezerBlockEntity.this.outputCount);
+               if (extractCount <= 0) {
+                  return ItemStack.EMPTY;
+               } else {
+                  ItemStack result = rh.value().getResultItem(FreezerBlockEntity.this.level.registryAccess()).copy();
+                  result.setCount(extractCount);
+                  if (!simulate) {
+                     FreezerBlockEntity.this.outputCount -= extractCount;
+                     FreezerBlockEntity.this.setChanged();
+                     FreezerBlockEntity.this.level
+                        .sendBlockUpdated(
+                           FreezerBlockEntity.this.worldPosition, FreezerBlockEntity.this.getBlockState(), FreezerBlockEntity.this.getBlockState(), 3
+                        );
+                     FreezerBlockEntity.this.level.updateNeighborsAt(FreezerBlockEntity.this.worldPosition, FreezerBlockEntity.this.getBlockState().getBlock());
+                     FreezerBlockEntity.this.checkForMatchingRecipe();
+                  }
+
+                  return result;
+               }
+            } else {
+               return ItemStack.EMPTY;
+            }
          }
       }
 
@@ -146,6 +194,30 @@ public class FreezerBlockEntity extends BlockEntity {
 
    public FreezerBlockEntity(BlockPos pos, BlockState state) {
       super(ModBlockEntities.FREEZER_BE, pos, state);
+   }
+
+   // 官方 1.2.0：配方匹配启动期间的静默清槽（避免触发重复配方检查）
+   protected void onInputChanged(int slot) {
+      if (!this.suppressInputUpdates) {
+         this.setChanged();
+         if (this.level != null && !this.level.isClientSide) {
+            this.level
+               .sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+            this.checkForMatchingRecipe();
+         }
+      }
+   }
+
+   private void clearInputsSilently() {
+      this.suppressInputUpdates = true;
+
+      try {
+         for (int i = 0; i < this.inputInventory.getSlots(); i++) {
+            this.inputInventory.setStackInSlot(i, ItemStack.EMPTY);
+         }
+      } finally {
+         this.suppressInputUpdates = false;
+      }
    }
 
    public static void tick(Level level, BlockPos pos, BlockState state, FreezerBlockEntity be) {
@@ -187,7 +259,7 @@ public class FreezerBlockEntity extends BlockEntity {
             RecipeHolder<FreezerRecipe> oldCachedRecipeHolder = this.cachedRecipeHolder;
             this.cachedRecipeHolder = matchedRecipeHolder;
             if (this.cachedRecipeHolder != null && oldCachedRecipeHolder == null && this.canAutoStart()) {
-               this.autoStartCrafting();
+               this.startCraftingAndUpdateState();
             }
          }
       }
@@ -206,13 +278,6 @@ public class FreezerBlockEntity extends BlockEntity {
    private boolean canAutoStart() {
       BlockState state = this.getBlockState();
       return !this.isWorking() && !state.getValue(FreezerBlock.OPEN) && this.outputCount == 0;
-   }
-
-   private void autoStartCrafting() {
-      if (this.tryStartCrafting()) {
-         BlockState state = this.getBlockState();
-         this.level.setBlock(this.worldPosition, state.setValue(FreezerBlock.WORKING, true), 3);
-      }
    }
 
    private void restoreRecipe() {
@@ -245,16 +310,27 @@ public class FreezerBlockEntity extends BlockEntity {
          this.progress = 0;
          this.currentRecipeHolder = this.cachedRecipeHolder;
          this.pendingRecipeId = recipeId;
+         this.clearInputsSilently();
          this.tank.drain(recipe.getInputFluid().getAmount(), false);
-
-         for (int i = 0; i < 4; i++) {
-            this.inputInventory.setStackInSlot(i, ItemStack.EMPTY);
-         }
-
          this.setChanged();
          return true;
       } else {
          return false;
+      }
+   }
+
+   // 官方 1.2.0：启动成功时一并关闭盖子并进入工作态，供方块交互与红石统一调用
+   public boolean startCraftingAndUpdateState() {
+      if (!this.tryStartCrafting()) {
+         return false;
+      } else {
+         if (this.level != null && !this.level.isClientSide) {
+            BlockState state = this.getBlockState();
+            this.level
+               .setBlock(this.worldPosition, (BlockState)((BlockState)state.setValue(FreezerBlock.OPEN, false)).setValue(FreezerBlock.WORKING, true), 3);
+         }
+
+         return true;
       }
    }
 
@@ -277,15 +353,23 @@ public class FreezerBlockEntity extends BlockEntity {
       this.insertItem(stack, player, InteractionHand.MAIN_HAND);
    }
 
+   // 官方 1.2.0：黑名单拦截 + 创造不消耗 + 带容器物塞入时把容器退还玩家
    public boolean insertItem(ItemStack stack, Player player, InteractionHand hand) {
-      if (!this.hasOutput() && !this.isWorking()) {
+      if (!this.hasOutput() && !this.isWorking() && !stack.isEmpty() && !stack.is(FREEZER_BLACKLIST)) {
+         Item container = ItemUtils.getContainerItem(stack);
+
          for (int i = 0; i < 4; i++) {
             if (this.inputInventory.getStackInSlot(i).isEmpty()) {
-               ItemStack copy = stack.copy();
-               copy.setCount(1);
-               this.inputInventory.setStackInSlot(i, copy);
-               stack.shrink(1);
-               player.setItemInHand(hand, stack);
+               this.inputInventory.setStackInSlot(i, stack.copyWithCount(1));
+               if (!player.isCreative()) {
+                  stack.shrink(1);
+                  player.setItemInHand(hand, stack);
+               }
+
+               if (container != Items.AIR) {
+                  ItemUtils.giveItemToPlayer(player, new ItemStack(container));
+               }
+
                return true;
             }
          }
@@ -296,18 +380,71 @@ public class FreezerBlockEntity extends BlockEntity {
       }
    }
 
-   public void extractItem(Player player) {
-      for (int i = 3; i >= 0; i--) {
-         if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
-            ItemStack extracted = this.inputInventory.extractItem(i, 1, false);
-            if (!extracted.isEmpty()) {
-               player.addItem(extracted);
-               player.containerMenu.broadcastChanges();
+   // 官方 1.2.0：空手取最上层输入；持对应容器物时按容器数量取出（need_item 提示）
+   public boolean extractItem(Player player, ItemStack held) {
+      if (this.isWorking()) {
+         return false;
+      } else {
+         int index = -1;
+
+         for (int i = 3; i >= 0; i--) {
+            if (!this.inputInventory.getStackInSlot(i).isEmpty()) {
+               index = i;
+               break;
+            }
+         }
+
+         if (index < 0) {
+            return false;
+         } else {
+            ItemStack stack = this.inputInventory.getStackInSlot(index);
+            Item container = ItemUtils.getContainerItem(stack);
+            int extractCount;
+            if (container != Items.AIR) {
+               if (!held.is(container)) {
+                  if (held.isEmpty()) {
+                     player.displayClientMessage(
+                        Component.translatable("message.kaleidoscope_world_liquor.freezer.need_item", new Object[]{new ItemStack(container).getHoverName()}),
+                        true
+                     );
+                  }
+
+                  return false;
+               }
+
+               extractCount = player.isCreative() ? stack.getCount() : Math.min(stack.getCount(), held.getCount());
+            } else {
+               if (!held.isEmpty()) {
+                  return false;
+               }
+
+               extractCount = stack.getCount();
             }
 
-            return;
+            if (extractCount <= 0) {
+               return false;
+            } else {
+               ItemStack extracted = stack.copyWithCount(extractCount);
+               if (!ItemUtils.fitsInInventory(player, extracted)) {
+                  return false;
+               } else {
+                  if (container != Items.AIR && !player.isCreative()) {
+                     held.shrink(extractCount);
+                  }
+
+                  ItemStack remaining = stack.copy();
+                  remaining.shrink(extractCount);
+                  this.inputInventory.setStackInSlot(index, remaining.isEmpty() ? ItemStack.EMPTY : remaining);
+                  ItemUtils.giveItemToPlayer(player, extracted);
+                  return true;
+               }
+            }
          }
       }
+   }
+
+   public void extractItem(Player player) {
+      this.extractItem(player, ItemStack.EMPTY);
    }
 
    public boolean hasOutput() {
@@ -379,21 +516,22 @@ public class FreezerBlockEntity extends BlockEntity {
       return this.getBlockState().getValue(FreezerBlock.WORKING);
    }
 
-   public void extractOutput(Player player, InteractionHand hand) {
+   // 官方 1.2.0：取产物改为返回布尔（成功才播音效）；carrier 按需消耗，创造不消耗
+   public boolean extractOutput(Player player, InteractionHand hand) {
       if (this.outputCount > 0 && this.currentRecipeHolder != null) {
          FreezerRecipe recipe = this.currentRecipeHolder.value();
          ItemStack held = player.getItemInHand(hand);
          if (!recipe.canExtract(held)) {
-            Ingredient extractCondition = recipe.getExtractCondition();
-            ItemStack[] displayItems = extractCondition.getItems();
+            Ingredient carrier = recipe.getCarrier();
+            ItemStack[] displayItems = carrier.getItems();
             Component displayName = displayItems.length > 0 ? displayItems[0].getHoverName() : Component.literal("?");
-            player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.need_item", displayName), true);
-            return;
+            player.displayClientMessage(Component.translatable("message.kaleidoscope_world_liquor.freezer.need_item", new Object[]{displayName}), true);
+            return false;
          }
 
          ItemStack stack = recipe.getResultItem(player.level().registryAccess()).copy();
          stack.setCount(1);
-         if (!recipe.getExtractCondition().isEmpty() && !player.isCreative()) {
+         if (!recipe.getCarrier().isEmpty() && !player.isCreative()) {
             held.shrink(1);
             if (held.isEmpty()) {
                player.setItemInHand(hand, stack);
@@ -407,12 +545,14 @@ public class FreezerBlockEntity extends BlockEntity {
             player.drop(stack, false);
          }
 
-         player.containerMenu.broadcastChanges();
          this.outputCount--;
          this.setChanged();
          this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
          this.level.updateNeighborsAt(this.worldPosition, this.getBlockState().getBlock());
          this.checkForMatchingRecipe();
+         return true;
+      } else {
+         return false;
       }
    }
 
@@ -568,7 +708,7 @@ public class FreezerBlockEntity extends BlockEntity {
    /** 漏斗/管道自动取产物的扣减入口（条件产物在 FreezerTransfer 侧已被拦截，不会走到这里）。 */
    public void consumeOutput(int count) {
       if (this.outputCount > 0 && this.currentRecipeHolder != null
-         && this.currentRecipeHolder.value().getExtractCondition().isEmpty()) {
+         && this.currentRecipeHolder.value().getCarrier().isEmpty()) {
          this.outputCount = Math.max(0, this.outputCount - count);
          this.setChanged();
          if (this.level != null && !this.level.isClientSide) {

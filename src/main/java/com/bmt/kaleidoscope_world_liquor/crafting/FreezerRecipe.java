@@ -19,7 +19,8 @@ public class FreezerRecipe implements Recipe<RecipeInput> {
    private final ItemStack resultItem;
    private final int craftTime;
    private final ResourceLocation resultTexture;
-   private final Ingredient extractCondition;
+   // 官方 1.2.0：extract_condition 更名 carrier（取产物需消耗的容器，如碗）
+   private final Ingredient carrier;
    public static final FreezerRecipe EMPTY = new FreezerRecipe(
       FluidStack.EMPTY,
       NonNullList.withSize(4, Ingredient.EMPTY),
@@ -35,14 +36,14 @@ public class FreezerRecipe implements Recipe<RecipeInput> {
       ItemStack resultItem,
       int craftTime,
       ResourceLocation resultTexture,
-      Ingredient extractCondition
+      Ingredient carrier
    ) {
       this.inputFluid = inputFluid;
       this.inputIngredients = inputIngredients;
       this.resultItem = resultItem;
       this.craftTime = craftTime;
       this.resultTexture = resultTexture;
-      this.extractCondition = extractCondition;
+      this.carrier = carrier;
    }
 
    public boolean isEmpty() {
@@ -51,40 +52,55 @@ public class FreezerRecipe implements Recipe<RecipeInput> {
 
    public boolean matches(FluidStack fluid, NonNullList<ItemStack> items, Level level) {
       if (fluid.getFluid().isSame(this.inputFluid.getFluid()) && fluid.getAmount() >= this.inputFluid.getAmount()) {
-         boolean[] used = new boolean[items.size()];
+         // 官方 1.2.0：数量相等 + 双射匹配（NeoForge RecipeMatcher 语义，回溯实现）
+         java.util.List<Ingredient> required = new java.util.ArrayList<>(this.inputIngredients.size());
 
          for (Ingredient ingredient : this.inputIngredients) {
             if (!ingredient.isEmpty()) {
-               boolean matched = false;
-
-               for (int i = 0; i < items.size(); i++) {
-                  if (!used[i] && ingredient.test((ItemStack)items.get(i))) {
-                     used[i] = true;
-                     matched = true;
-                     break;
-                  }
-               }
-
-               if (!matched) {
-                  return false;
-               }
+               required.add(ingredient);
             }
          }
 
-         for (int ix = 0; ix < items.size(); ix++) {
-            if (!((ItemStack)items.get(ix)).isEmpty() && !used[ix]) {
-               return false;
+         java.util.List<ItemStack> present = new java.util.ArrayList<>(items.size());
+
+         for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+               present.add(stack);
             }
          }
 
-         return true;
+         return present.size() == required.size() && (required.isEmpty() || findMatches(present, required));
       } else {
          return false;
       }
    }
 
+   private static boolean findMatches(java.util.List<ItemStack> present, java.util.List<Ingredient> required) {
+      boolean[] used = new boolean[required.size()];
+      return matchAt(present, required, 0, used);
+   }
+
+   private static boolean matchAt(java.util.List<ItemStack> present, java.util.List<Ingredient> required, int index, boolean[] used) {
+      if (index == present.size()) {
+         return true;
+      }
+
+      for (int r = 0; r < required.size(); r++) {
+         if (!used[r] && required.get(r).test(present.get(index))) {
+            used[r] = true;
+            if (matchAt(present, required, index + 1, used)) {
+               return true;
+            }
+
+            used[r] = false;
+         }
+      }
+
+      return false;
+   }
+
    public boolean canExtract(ItemStack heldItem) {
-      return this.extractCondition.isEmpty() ? true : this.extractCondition.test(heldItem);
+      return this.carrier.isEmpty() ? true : this.carrier.test(heldItem);
    }
 
    @Deprecated
@@ -141,7 +157,7 @@ public class FreezerRecipe implements Recipe<RecipeInput> {
       return this.resultTexture;
    }
 
-   public Ingredient getExtractCondition() {
-      return this.extractCondition;
+   public Ingredient getCarrier() {
+      return this.carrier;
    }
 }

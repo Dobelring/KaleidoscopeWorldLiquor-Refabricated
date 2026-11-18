@@ -14,22 +14,22 @@ public class ModFoods {
       .alwaysEdible()
       .build();
    public static final FoodProperties KITA_STUFFED_CRISP = new Builder()
-      .nutrition(5)
-      .saturationModifier(0.4F)
+      .nutrition(6)
+      .saturationModifier(0.5F)
       .effect(new MobEffectInstance(MobEffects.LUCK, 9600), 1.0F)
       .effect(new MobEffectInstance(MobEffects.SATURATION, 9600), 1.0F)
       .alwaysEdible()
       .build();
    public static final FoodProperties POCHI_PUDDING = new Builder()
-      .nutrition(5)
-      .saturationModifier(0.4F)
+      .nutrition(8)
+      .saturationModifier(0.7F)
       .effect(new MobEffectInstance(MobEffects.REGENERATION, 9600), 1.0F)
       .effect(new MobEffectInstance(MobEffects.LUCK, 9600), 1.0F)
       .alwaysEdible()
       .build();
    public static final FoodProperties MAGIC_CRISPY_CORNER = new Builder()
-      .nutrition(5)
-      .saturationModifier(0.4F)
+      .nutrition(4)
+      .saturationModifier(0.3F)
       .effect(new MobEffectInstance(MobEffects.DIG_SPEED, 9600), 1.0F)
       .alwaysEdible()
       .build();

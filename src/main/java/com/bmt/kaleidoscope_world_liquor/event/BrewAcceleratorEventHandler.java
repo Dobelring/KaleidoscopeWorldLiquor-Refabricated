@@ -49,10 +49,12 @@ public class BrewAcceleratorEventHandler {
       }
 
       if (isEnchantedBook && enchantLevel != 0) {
-         if (player.getCooldowns().isOnCooldown(Items.ENCHANTED_BOOK)) {
-            float cooldownPercent = player.getCooldowns().getCooldownPercent(Items.ENCHANTED_BOOK, 0.0F);
-            int remainingTicks = (int)(cooldownPercent * 2400.0F);
-            int remainingSeconds = remainingTicks / 20;
+         // 官方 1.2.0：冷却改为每本书自身 NBT（kaleidoscope_brew_cooldown_until），不再全局冷却附魔书
+         long gameTime = level.getGameTime();
+         net.minecraft.nbt.CompoundTag stackTag = stack.getOrDefault(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+         long cooldownUntil = stackTag.getLong("kaleidoscope_brew_cooldown_until");
+         if (cooldownUntil > gameTime) {
+            int remainingSeconds = (int)((cooldownUntil - gameTime) / 20L);
             player.displayClientMessage(
                Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.cooldown", new Object[]{remainingSeconds}), true
             );
@@ -71,10 +73,10 @@ public class BrewAcceleratorEventHandler {
                      BarrelBlockEntityAccessor accessor = (BarrelBlockEntityAccessor)barrel;
                      int newLevel = Math.min(barrel.getBrewLevel() + 1, 6);
                      accessor.setBrewLevel(newLevel);
-                     int newBrewTime = accessor.invokeGetBrewTimeForLevel();
-                     accessor.setBrewTime(newBrewTime);
+                     accessor.setBrewTime(accessor.invokeGetBrewTimeForLevel());
                      ((BarrelBlockEntity)barrel).refresh();
-                     player.getCooldowns().addCooldown(Items.ENCHANTED_BOOK, 2400);
+                     stackTag.putLong("kaleidoscope_brew_cooldown_until", gameTime + COOLDOWN_TICKS);
+                     stack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(stackTag));
                      level.playSound(null, pos, net.minecraft.sounds.SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, 1.2F);
                      player.displayClientMessage(
                         Component.translatable("message.kaleidoscope_world_liquor.brew_accelerator.success", new Object[]{newLevel}), true

@@ -313,7 +313,7 @@ public final class FreezerTransfer {
       @Override
       public boolean supportsExtraction() {
          return this.be.hasOutput() && this.be.getCurrentRecipeHolder() != null
-            && this.be.getCurrentRecipeHolder().value().getExtractCondition().isEmpty();
+            && this.be.getCurrentRecipeHolder().value().getCarrier().isEmpty();
       }
 
       @Override
