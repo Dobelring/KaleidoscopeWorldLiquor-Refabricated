@@ -47,6 +47,9 @@ public final class ModEffects {
     /** smc:elbow_strike——smc 模组在场时用其 Holder，缺失时本模组代注册 */
     public static Holder<MobEffect> ELBOW_STRIKE;
 
+    /** 官方 1.2.0：smc:ohh_ye_ye（干杯之歌） */
+    public static Holder<MobEffect> OHH_YE_YE;
+
     private static Holder<MobEffect> register(String name, MobEffect effect) {
         return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MOD_ID, name), effect);
     }
@@ -83,6 +86,16 @@ public final class ModEffects {
             ELBOW_STRIKE = smcHolder != null ? smcHolder : registerForeign(SMCEffect.SMC_MODID, "elbow_strike", new SMCEffect());
         } else {
             ELBOW_STRIKE = registerForeign(SMCEffect.SMC_MODID, "elbow_strike", new SMCEffect());
+        }
+
+        // 官方 1.2.0：干杯之歌效果（smc:ohh_ye_ye），同样 smc 在场用其 Holder
+        if (FabricLoader.getInstance().isModLoaded("smc")) {
+            Holder<MobEffect> yeyyeHolder = BuiltInRegistries.MOB_EFFECT
+                    .get(Identifier.fromNamespaceAndPath(SMCEffect.SMC_MODID, "ohh_ye_ye"))
+                    .orElse(null);
+            OHH_YE_YE = yeyyeHolder != null ? yeyyeHolder : registerForeign(SMCEffect.SMC_MODID, "ohh_ye_ye", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x65534F, BaseEffect.TICK_NEVER));
+        } else {
+            OHH_YE_YE = registerForeign(SMCEffect.SMC_MODID, "ohh_ye_ye", new BaseEffect(MobEffectCategory.BENEFICIAL, 0x65534F, BaseEffect.TICK_NEVER));
         }
     }
 }

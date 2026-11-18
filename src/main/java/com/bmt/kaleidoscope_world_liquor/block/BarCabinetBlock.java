@@ -44,11 +44,36 @@ public class BarCabinetBlock extends BaseEntityBlock {
     // 1.20.1 同款：0.001 内缩，防止被引擎判为完整立方体（光照/面剔除按不透明白块处理会让联排内侧发黑）
     public static final VoxelShape FULL_SAFE_SHAPE = Block.box(0.001, 0.001, 0.001, 15.999, 15.999, 15.999);
 
+    // 官方 1.2.0：WoodType 决定相邻拼接——只有同木种酒柜（同朝向）才相接成排；扩展木种各自成类
+    public enum WoodType {
+        OAK, BIRCH, SPRUCE, DARK_OAK, CHERRY, JUNGLE, ACACIA, MANGROVE, PALE_OAK, POPLAR, BAMBOO, CRIMSON, WARPED
+    }
+
+    private final WoodType woodType;
+
     public BarCabinetBlock(Properties properties) {
+        this(properties, WoodType.OAK);
+    }
+
+    public BarCabinetBlock(Properties properties, WoodType woodType) {
         super(properties);
+        this.woodType = woodType;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(POSITION, PositionType.SINGLE));
+    }
+
+    public WoodType getWoodType() {
+        return this.woodType;
+    }
+
+    /** 官方 1.2.0：同木种 + 同朝向才允许拼接 */
+    protected static boolean canConnect(BlockState self, BlockState neighbor) {
+        if (neighbor.getBlock() instanceof BarCabinetBlock other) {
+            return neighbor.getValue(FACING) != self.getValue(FACING) ? false
+                    : ((BarCabinetBlock) self.getBlock()).getWoodType() == other.getWoodType();
+        }
+        return false;
     }
 
     @Override
@@ -255,58 +280,27 @@ public class BarCabinetBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected @NotNull BlockState rotate(@NotNull BlockState state, net.minecraft.world.level.block.Rotation rot) {
-        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected @NotNull BlockState mirror(@NotNull BlockState state, net.minecraft.world.level.block.Mirror mirror) {
-        return this.rotate(state, mirror.getRotation(state.getValue(FACING)));
-    }
-
-    @Override
     protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull net.minecraft.world.level.LevelReader level, @NotNull net.minecraft.world.level.ScheduledTickAccess tickAccess, @NotNull BlockPos pos, @NotNull Direction direction, @NotNull BlockPos neighborPos, @NotNull BlockState neighborState, @NotNull net.minecraft.util.RandomSource random) {
-        Direction self = state.getValue(FACING);
+        Direction facing = state.getValue(FACING);
         // 1.20.1 原版参考系：left = 顺时针、right = 逆时针（写反会导致联排左右模型互换）
-        Direction left = self.getClockWise();
-        Direction right = self.getCounterClockWise();
-        if (direction == left) {
-            boolean leftIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-            PositionType position = state.getValue(POSITION);
-            if (leftIsCabinet) {
-                if (position == PositionType.SINGLE) {
-                    return state.setValue(POSITION, PositionType.RIGHT);
-                }
-                if (position == PositionType.LEFT) {
-                    return state.setValue(POSITION, PositionType.MIDDLE);
-                }
-            } else {
-                if (position == PositionType.RIGHT) {
-                    return state.setValue(POSITION, PositionType.SINGLE);
-                }
-                if (position == PositionType.MIDDLE) {
-                    return state.setValue(POSITION, PositionType.LEFT);
-                }
-            }
-        } else if (direction == right) {
-            boolean rightIsCabinet = neighborState.is(this) && neighborState.getValue(FACING) == self;
-            PositionType position = state.getValue(POSITION);
-            if (rightIsCabinet) {
-                if (position == PositionType.SINGLE) {
-                    return state.setValue(POSITION, PositionType.LEFT);
-                }
-                if (position == PositionType.RIGHT) {
-                    return state.setValue(POSITION, PositionType.MIDDLE);
-                }
-            } else {
-                if (position == PositionType.LEFT) {
-                    return state.setValue(POSITION, PositionType.SINGLE);
-                }
-                if (position == PositionType.MIDDLE) {
-                    return state.setValue(POSITION, PositionType.RIGHT);
-                }
-            }
+        Direction left = facing.getClockWise();
+        Direction right = facing.getCounterClockWise();
+        if (direction != left && direction != right) {
+            return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
         }
-        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
+        // 官方 1.2.0：两侧连接状态一起求值（同木种 + 同朝向）
+        boolean leftIsCabinet = canConnect(state, level.getBlockState(pos.relative(left)));
+        boolean rightIsCabinet = canConnect(state, level.getBlockState(pos.relative(right)));
+        PositionType position;
+        if (leftIsCabinet && rightIsCabinet) {
+            position = PositionType.MIDDLE;
+        } else if (leftIsCabinet) {
+            position = PositionType.RIGHT;
+        } else if (rightIsCabinet) {
+            position = PositionType.LEFT;
+        } else {
+            position = PositionType.SINGLE;
+        }
+        return state.setValue(POSITION, position);
     }
 }

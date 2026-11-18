@@ -3,7 +3,9 @@
   "fluid": "kaleidoscope_tavern:grape_juice",
   "fluid_amount": 1000,
   "ingredients": [
-    "minecraft:slime_ball"
+    {
+      "item": "minecraft:slime_ball"
+    }
   ],
   "result": {
     "id": "kaleidoscope_twilight:pochi_pudding",
@@ -11,5 +13,5 @@
   },
   "craft_time": 1200,
   "texture": "minecraft:block/snow",
-  "extract_condition": "minecraft:bowl"
+  "carrier": "minecraft:bowl"
 }

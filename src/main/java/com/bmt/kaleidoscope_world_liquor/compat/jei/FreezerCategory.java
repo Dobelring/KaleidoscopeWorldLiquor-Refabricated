@@ -35,8 +35,8 @@ public class FreezerCategory implements IRecipeCategory<RecipeHolder<FreezerReci
     public static final IRecipeHolderType<FreezerRecipe> TYPE = IRecipeType.create(ModRecipes.FREEZER_RECIPE_TYPE);
     private static final Identifier BG = Identifier.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MOD_ID, "textures/gui/jei/freezer.png");
     private static final Component TITLE = Component.translatable("block.kaleidoscope_world_liquor.freezer");
-    public static final int WIDTH = 180;
-    public static final int HEIGHT = 150;
+    public static final int WIDTH = 175;
+    public static final int HEIGHT = 145;
 
     private final IDrawable bgDraw;
     private final IDrawable slotDraw;
@@ -110,7 +110,7 @@ public class FreezerCategory implements IRecipeCategory<RecipeHolder<FreezerReci
                 offsetX += 18;
             }
         }
-        r.extractIngredient().ifPresent(bowl ->
+        r.carrier().ifPresent(bowl ->
                 builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 115, 100).addIngredients(bowl));
         ItemStack output = r.result().create();
         int seconds = r.craftTime() / 20;

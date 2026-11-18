@@ -1,6 +1,10 @@
 {
-  "effect.smc.elbow_strike": "Elbow Strike",
-  "effect.smc.elbow_strike.description": "Increases knockback and plays a special sound effect on-hit",
   "item.smc.ice_tea": "Ice Tea",
-  "block.smc.ice_tea": "Ice Tea"
+  "block.smc.ice_tea": "Ice Tea",
+  "item.smc.friends_drink": "Friend's Drink",
+  "block.smc.friends_drink": "Friend's Drink",
+  "effect.smc.elbow_strike": "Elbow Strike",
+  "effect.smc.elbow_strike.description": "Increase knock back strength, add special voices",
+  "effect.smc.ohh_ye_ye": "Ohh Yeah Yeah~",
+  "effect.smc.ohh_ye_ye.description": "Becoming bouncy and rotating! This effect will affect all nearby mobs"
 }
