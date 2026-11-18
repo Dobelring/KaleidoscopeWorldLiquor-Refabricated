@@ -27,7 +27,7 @@ public final class FreezerRecipeSerializer {
                     ItemStackTemplate.CODEC.fieldOf("result").forGetter(FreezerRecipe::result),
                     Codec.INT.optionalFieldOf("craft_time", 200).forGetter(FreezerRecipe::craftTime),
                     Identifier.CODEC.fieldOf("texture").forGetter(FreezerRecipe::resultTexture),
-                    Ingredient.CODEC.optionalFieldOf("extract_condition").forGetter(FreezerRecipe::extractIngredient)
+                    Ingredient.CODEC.optionalFieldOf("carrier").forGetter(FreezerRecipe::carrier)
             ).apply(instance, FreezerRecipe::new)
     );
 
@@ -38,7 +38,7 @@ public final class FreezerRecipeSerializer {
             ItemStackTemplate.STREAM_CODEC, FreezerRecipe::result,
             ByteBufCodecs.VAR_INT, FreezerRecipe::craftTime,
             Identifier.STREAM_CODEC, FreezerRecipe::resultTexture,
-            Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC, FreezerRecipe::extractIngredient,
+            Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC, FreezerRecipe::carrier,
             FreezerRecipe::new
     );
 }

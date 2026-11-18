@@ -1,0 +1,4 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/brew/spruce_glass_bar_cabinet/single",
+  "gui_light": "front"
+}

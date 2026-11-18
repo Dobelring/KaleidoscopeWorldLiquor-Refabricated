@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class WallRecordBlock extends Block implements EntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 24);
+    public static final IntegerProperty MODEL_INDEX = IntegerProperty.create("model_index", 0, 29);
 
     // 官方 1.1.11：四向形状收敛为 tavern VoxelShapeUtils.horizontalShapes(north)（几何与原四向逐值一致）
     private static final java.util.Map<Direction, VoxelShape> WALL_SHAPES =

@@ -78,7 +78,6 @@ public final class ModCreativeModeTabs {
         accept(output, LIQUOR_ITEMS, ModItems.PINE_COLADA);
         accept(output, LIQUOR_ITEMS, ModItems.GIN_TONIC);
         accept(output, LIQUOR_ITEMS, ModItems.FREEZER);
-        accept(output, LIQUOR_ITEMS, ModItems.CUSTOM_RECORD);
         // twilight 缺席时，联动食物由本模组代注册并进酒水栏
         if (!FabricLoader.getInstance().isModLoaded("kaleidoscope_twilight")) {
             accept(output, LIQUOR_ITEMS, KTItems.LIANGSHAN_ICE_CONE);
@@ -88,6 +87,8 @@ public final class ModCreativeModeTabs {
         }
         // smc 冰红茶照 1.20.1/1.21.1：创造栏给最高品质（否则无 tooltip 品质/buff、喝了无效果）
         accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
+        // 官方 1.2.0：干杯之歌（最高酿造等级进栏）
+        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_FRIENDS_DRINK_ITEM));
     }
 
     private static void addFurnitureItems(CreativeModeTab.Output output) {
@@ -111,14 +112,19 @@ public final class ModCreativeModeTabs {
         accept(output, FURNITURE_ITEMS, ModItems.PINK_PENDANT_LAMP);
         accept(output, FURNITURE_ITEMS, ModItems.GREEN_PENDANT_LAMP);
         accept(output, FURNITURE_ITEMS, ModItems.OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.OAK_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.BIRCH_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.BIRCH_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.BIRCH_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.SPRUCE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.SPRUCE_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.SPRUCE_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.DARK_OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.CHERRY_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.CHERRY_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.CHERRY_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.JUNGLE_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.JUNGLE_CELLAR_CABINET);

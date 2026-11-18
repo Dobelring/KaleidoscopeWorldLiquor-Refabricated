@@ -29,7 +29,7 @@ public record FreezerRecipe(
         ItemStackTemplate result,
         int craftTime,
         Identifier resultTexture,
-        java.util.Optional<Ingredient> extractIngredient
+        java.util.Optional<Ingredient> carrier
 ) implements Recipe<FreezerInput> {
 
     public static final int MAX_INGREDIENTS = 4;
@@ -39,33 +39,47 @@ public record FreezerRecipe(
         if (!input.fluidMatches(fluid(), fluidAmount())) {
             return false;
         }
-        boolean[] used = new boolean[input.size()];
+        // 官方 1.2.0：数量相等 + 双射匹配（NeoForge RecipeMatcher 语义，回溯实现）
+        java.util.List<Ingredient> required = new java.util.ArrayList<>();
         for (Ingredient ingredient : ingredients()) {
-            if (ingredient.isEmpty()) {
-                continue;
-            }
-            boolean matched = false;
-            for (int i = 0; i < input.size(); i++) {
-                if (!used[i] && ingredient.test(input.getItem(i))) {
-                    used[i] = true;
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) {
-                return false;
+            if (!ingredient.isEmpty()) {
+                required.add(ingredient);
             }
         }
+        java.util.List<ItemStack> present = new java.util.ArrayList<>();
         for (int i = 0; i < input.size(); i++) {
-            if (!input.getItem(i).isEmpty() && !used[i]) {
-                return false;
+            if (!input.getItem(i).isEmpty()) {
+                present.add(input.getItem(i));
             }
         }
-        return true;
+        if (present.size() != required.size()) {
+            return false;
+        }
+        return required.isEmpty() || findMatches(present, required);
     }
 
+    private static boolean findMatches(java.util.List<ItemStack> present, java.util.List<Ingredient> required) {
+        boolean[] used = new boolean[required.size()];
+        return matchAt(present, required, 0, used);
+    }
+
+    private static boolean matchAt(java.util.List<ItemStack> present, java.util.List<Ingredient> required, int index, boolean[] used) {
+        if (index == present.size()) {
+            return true;
+        }
+        for (int r = 0; r < required.size(); r++) {
+            if (!used[r] && required.get(r).test(present.get(index))) {
+                used[r] = true;
+                if (matchAt(present, required, index + 1, used)) {
+                    return true;
+                }
+                used[r] = false;
+            }
+        }
+        return false;
+    }
     public boolean canExtract(ItemStack heldItem) {
-        return this.extractIngredient.isEmpty() || this.extractIngredient.get().test(heldItem);
+        return this.carrier.isEmpty() || this.carrier.get().test(heldItem);
     }
 
     public @NotNull ItemStack assemble(@NotNull FreezerInput input) {

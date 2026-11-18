@@ -1,6 +1,8 @@
 package com.bmt.kaleidoscope_world_liquor.compat.create;
 
 import com.bmt.kaleidoscope_world_liquor.block.BarCabinetBlock;
+import com.bmt.kaleidoscope_world_liquor.block.FreezerBlock;
+import com.bmt.kaleidoscope_world_liquor.block.WallRecordBlock;
 import com.bmt.kaleidoscope_world_liquor.block.BarCellarCabinetBlock;
 import com.bmt.kaleidoscope_world_liquor.block.ChairBlock;
 import com.zurrtum.create.api.behaviour.interaction.MovingInteractionBehaviour;
@@ -29,6 +31,9 @@ public final class CreateCompat {
         ChairMovingInteraction chairInteraction = new ChairMovingInteraction();
         BarCabinetMovingInteraction cabinetInteraction = new BarCabinetMovingInteraction();
         BarCellarCabinetMovingInteraction cellarCabinetInteraction = new BarCellarCabinetMovingInteraction();
+        // 官方 1.2.0：冰箱与挂墙唱片也支持装置交互
+        FreezerMovingInteraction freezerInteraction = new FreezerMovingInteraction();
+        WallRecordMovingInteraction wallRecordInteraction = new WallRecordMovingInteraction();
 
         for (Block block : BuiltInRegistries.BLOCK) {
             if (block instanceof ChairBlock) {
@@ -38,6 +43,10 @@ public final class CreateCompat {
                 MovingInteractionBehaviour.REGISTRY.register(block, cabinetInteraction);
             } else if (block instanceof BarCellarCabinetBlock) {
                 MovingInteractionBehaviour.REGISTRY.register(block, cellarCabinetInteraction);
+            } else if (block instanceof FreezerBlock) {
+                MovingInteractionBehaviour.REGISTRY.register(block, freezerInteraction);
+            } else if (block instanceof WallRecordBlock) {
+                MovingInteractionBehaviour.REGISTRY.register(block, wallRecordInteraction);
             }
         }
     }

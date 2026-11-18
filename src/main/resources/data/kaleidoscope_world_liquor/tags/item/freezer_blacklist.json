@@ -1,0 +1,20 @@
+{
+  "values": [
+    "#c:tools",
+    "#c:armors",
+    "#c:buckets",
+    "#c:shulker_boxes",
+    "minecraft:bundle",
+    "minecraft:bowl",
+    "minecraft:flower_pot",
+    "minecraft:glass_bottle",
+    {
+      "id":"kaleidoscope_cookery:recipe_item",
+      "required":false
+    },
+    {
+      "id":"kaleidoscope_cookery:empty_cup",
+      "required":false
+    }
+  ]
+}

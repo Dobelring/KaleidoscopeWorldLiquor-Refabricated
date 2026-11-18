@@ -61,6 +61,12 @@ public final class MusicDiscEvents {
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_creator"), 16);
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_precipice"), 17);
         VANILLA_RECORD_MAP.put(Identifier.withDefaultNamespace("music_disc_creator_music_box"), 18);
+        // 官方 1.2.0：森罗厨唱片 → 挂墙模型 25-29（唱片实体由 smc 提供，未装 smc 时不存在）
+        VANILLA_RECORD_MAP.put(Identifier.fromNamespaceAndPath("smc", "music_disc_friends_drink"), 25);
+        VANILLA_RECORD_MAP.put(Identifier.fromNamespaceAndPath("smc", "music_disc_laoda"), 26);
+        VANILLA_RECORD_MAP.put(Identifier.fromNamespaceAndPath("smc", "music_disc_bad_apple"), 27);
+        VANILLA_RECORD_MAP.put(Identifier.fromNamespaceAndPath("smc", "music_disc_nyan_cat"), 28);
+        VANILLA_RECORD_MAP.put(Identifier.fromNamespaceAndPath("smc", "music_disc_god_pickaxe"), 29);
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (!player.isCrouching() || hand != InteractionHand.MAIN_HAND) {
@@ -104,18 +110,7 @@ public final class MusicDiscEvents {
     }
 
     private static InteractionResult onRightClickInsertRecord(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide() || hand != InteractionHand.MAIN_HAND
-                || !stack.is(com.bmt.kaleidoscope_world_liquor.init.ModItems.CUSTOM_RECORD)
-                || !(level.getBlockState(hitResult.getBlockPos()).getBlock() instanceof net.minecraft.world.level.block.JukeboxBlock)) {
-            return InteractionResult.PASS;
-        }
-        var songKey = level.getRandom().nextBoolean()
-                ? com.bmt.kaleidoscope_world_liquor.init.ModItems.JUKEBOX_SONG_RANDOM_DISC
-                : com.bmt.kaleidoscope_world_liquor.init.ModItems.JUKEBOX_SONG_RANDOM_DISC_SHORT;
-        // 26.1.2：JukeboxSong 是数据驱动注册表（不在 BuiltInRegistries），经 Level.registryAccess 解析 Holder
-        stack.set(DataComponents.JUKEBOX_PLAYABLE,
-                new JukeboxPlayable(level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.JUKEBOX_SONG).getOrThrow(songKey)));
+        // 官方 1.2.0：自定义唱片移除，原随机曲目处理一并撤除
         return InteractionResult.PASS;
     }
 

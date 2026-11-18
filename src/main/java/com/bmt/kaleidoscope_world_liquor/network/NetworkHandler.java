@@ -22,6 +22,8 @@ public final class NetworkHandler {
     /** 服务端/通用侧：注册 S2C 载荷类型（由主入口 onInitialize 调用一次）。 */
     public static void register() {
         PayloadTypeRegistry.clientboundPlay().register(TreasureSensePayload.TYPE, TreasureSensePayload.CODEC);
+        // 官方 1.2.0：干杯之歌效果同步包
+        PayloadTypeRegistry.clientboundPlay().register(FriendsDrinkPayload.TYPE, FriendsDrinkPayload.CODEC);
     }
 
     /** 服务端：发宝藏感知目标给单个玩家。 */
@@ -31,6 +33,8 @@ public final class NetworkHandler {
 
     @Environment(EnvType.CLIENT)
     public static void registerClient() {
+        ClientPlayNetworking.registerGlobalReceiver(FriendsDrinkPayload.TYPE,
+                (payload, context) -> context.client().execute(() -> com.bmt.kaleidoscope_world_liquor.client.FriendsDrinkClientState.accept(payload.entityIds(), payload.durations())));
         ClientPlayNetworking.registerGlobalReceiver(TreasureSensePayload.TYPE,
                 (payload, context) -> context.client().execute(
                         () -> com.bmt.kaleidoscope_world_liquor.client.network.ClientPacketHandler.handleTreasureSense(payload)));

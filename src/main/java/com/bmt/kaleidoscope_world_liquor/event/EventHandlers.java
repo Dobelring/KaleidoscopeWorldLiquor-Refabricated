@@ -100,11 +100,11 @@ public final class EventHandlers {
                 if (player.isSpectator()) {
                     continue;
                 }
-                var frost = player.getEffect(ModEffects.FROST_WALKER);
-                if (frost != null) {
-                    applyFrostWalker(player, frost.getAmplifier());
-                }
                 updateCreativeFlight(player);
+                // 官方 1.2.0：效果离身即清缓存
+                if (!player.hasEffect(ModEffects.TREASURE_SENSE)) {
+                    LAST_SENT.remove(player);
+                }
                 // 官方 1.1.11：春野之息移除，改为宝藏感知每 20tick 服务端扫描下发
                 if (player.hasEffect(ModEffects.TREASURE_SENSE) && player.tickCount % 20 == 0) {
                     syncTreasureSenseTargets(player);
@@ -163,7 +163,22 @@ public final class EventHandlers {
             lootMinecartIds.add(minecart.getId());
         }
 
-        NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+        // 官方 1.2.0：目标集缓存去重——排序比较，仅在变化时发包
+        java.util.Collections.sort(targets);
+        java.util.Collections.sort(lootMinecartIds);
+        CachedTargets cached = LAST_SENT.get(player);
+        if (cached == null || !cached.matches(targets, lootMinecartIds)) {
+            LAST_SENT.put(player, new CachedTargets(java.util.List.copyOf(targets), java.util.List.copyOf(lootMinecartIds)));
+            NetworkHandler.send(serverPlayer, new TreasureSensePayload(targets, lootMinecartIds));
+        }
+    }
+
+    private static final java.util.Map<Player, CachedTargets> LAST_SENT = new java.util.WeakHashMap<>();
+
+    private record CachedTargets(java.util.List<BlockPos> positions, java.util.List<Integer> minecartIds) {
+        boolean matches(java.util.List<BlockPos> positions, java.util.List<Integer> minecartIds) {
+            return this.positions.equals(positions) && this.minecartIds.equals(minecartIds);
+        }
     }
 
     /** 龙舌兰（tequila）：单次伤害不超过最大生命的百分比（40%-5%/级，下限 5%） */
@@ -183,21 +198,38 @@ public final class EventHandlers {
         }
         // 破势（ground_crit）：地面近战 20%+10%/级 → 暴击 1.5 倍（非原版跳劈时）
         // Fabric 无伤害修改事件，与龙舌兰同款 cancel+重打一次结算（AFTER_DAMAGE 补刀会被无敌帧吞）
+        // 官方 1.2.0：破势放宽为任意持效果生物（玩家播原版暴击，其余播音效+粒子）
         if (source.getDirectEntity() instanceof LivingEntity critAttacker
-                && critAttacker instanceof Player critPlayer
-                && critPlayer.hasEffect(ModEffects.GROUND_CRIT)
+                && critAttacker.hasEffect(ModEffects.GROUND_CRIT)
                 && isMeleeAttack(source)
                 && !CRIT_PROCESSING.contains(entity.getUUID())) {
-            int critAmplifier = critPlayer.getEffect(ModEffects.GROUND_CRIT).getAmplifier();
+            int critAmplifier = critAttacker.getEffect(ModEffects.GROUND_CRIT).getAmplifier();
             double totalCritChance = 0.2 + critAmplifier * 0.1;
-            if (!isVanillaCrit(critPlayer) && RANDOM.nextDouble() < totalCritChance) {
+            if (!isVanillaCrit(critAttacker) && RANDOM.nextDouble() < totalCritChance) {
                 CRIT_PROCESSING.add(entity.getUUID());
                 try {
-                    critPlayer.crit(entity);
-                    DamageSource critSource = entity.damageSources().playerAttack(critPlayer);
-                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
-                            && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
-                        return false;
+                    if (critAttacker instanceof Player critPlayer) {
+                        critPlayer.crit(entity);
+                        DamageSource critSource = entity.damageSources().playerAttack(critPlayer);
+                        if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
+                                && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
+                            return false;
+                        }
+                    } else {
+                        // 非玩家生物破势：播放暴击音+粒子（官方 1.2.0 spawnCritEffect）
+                        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                                net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_CRIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.5F);
+                        for (int i = 0; i < 5; i++) {
+                            double px = entity.getX() + (entity.level().getRandom().nextDouble() - 0.5) * 2.0;
+                            double py = entity.getY() + entity.getBbHeight() * 0.5 + entity.level().getRandom().nextDouble();
+                            double pz = entity.getZ() + (entity.level().getRandom().nextDouble() - 0.5) * 2.0;
+                            entity.level().addParticle(net.minecraft.core.particles.ParticleTypes.CRIT, px, py, pz, 0.0, -0.1, 0.0);
+                        }
+                        DamageSource critSource = entity.damageSources().mobAttack(critAttacker);
+                        if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel
+                                && entity.hurtServer(serverLevel, critSource, amount * 1.5F)) {
+                            return false;
+                        }
                     }
                     // 结算失败则放行原伤害
                     return true;
@@ -229,7 +261,7 @@ public final class EventHandlers {
                         target.hurt(killSource, 2.0F);
                         if (target.isAlive()) {
                             target.setHealth(0.0F);
-                            target.die(killSource);
+                            target.die(source);
                         }
                     }
                 }
@@ -282,7 +314,7 @@ public final class EventHandlers {
                 ? source.getDirectEntity() == source.getEntity() : false;
     }
 
-    private static boolean isVanillaCrit(Player player) {
+    private static boolean isVanillaCrit(LivingEntity player) {
         return !player.onGround()
                 && !player.onClimbable()
                 && !player.isInWater()
@@ -439,18 +471,4 @@ public final class EventHandlers {
         FLIGHT_CLAIMS.put(player.getUUID(), claim);
     }
 
-    private static void applyFrostWalker(Player player, int amplifier) {
-        if (!(player.level() instanceof ServerLevel serverLevel) || !player.onGround()) {
-            return;
-        }
-        BlockPos center = player.blockPosition();
-        int radius = 2 + Math.min(amplifier, 4);
-        for (BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(
-                center.offset(-radius, -1, -radius), center.offset(radius, -1, radius))) {
-            if (serverLevel.getFluidState(pos).is(net.minecraft.world.level.material.Fluids.WATER) && serverLevel.getBlockState(pos).getBlock() instanceof net.minecraft.world.level.block.LiquidBlock
-                    && serverLevel.getBlockState(pos.above()).isAir()) {
-                serverLevel.setBlockAndUpdate(pos.immutable(), net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState());
-            }
-        }
-    }
 }

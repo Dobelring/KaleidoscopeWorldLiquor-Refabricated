@@ -24,9 +24,12 @@
   "client": [
     "CameraMixin",
     "TreasureSenseCleanupMixin",
+    "LivingEntityFrostWalkerMixin",
+    "LivingEntityEffectMixin",
     "ClientPlayerMixin",
     "GuiGraphicsMixin",
     "EntityRendererMixin",
+    "FriendsDrinkPoseMixin",
     "ReverseGravityStrafeMixin",
     "CreativeModeInventoryScreenMixin",
     "ShakerOverlayMixin",

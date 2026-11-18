@@ -14,6 +14,7 @@
   },
   "anvil_cost": 2,
   "supported_items": "#kaleidoscope_world_liquor:empty_enchantable",
+  "primary_items": "#kaleidoscope_world_liquor:brew_accelerator",
   "slots": [],
   "effects": {}
 }
