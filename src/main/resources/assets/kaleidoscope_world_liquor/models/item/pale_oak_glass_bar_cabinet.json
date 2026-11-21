@@ -1,0 +1,4 @@
+{
+  "parent": "kaleidoscope_world_liquor:block/brew/pale_oak_glass_bar_cabinet/single",
+  "gui_light": "front"
+}

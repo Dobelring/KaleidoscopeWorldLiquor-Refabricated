@@ -198,11 +198,17 @@ public final class ModBlocks {
     }
 
     public static final Block OAK_BAR_CABINET = barCabinetReg("oak_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.OAK);
-    public static final Block OAK_GLASS_BAR_CABINET = barCabinetReg("oak_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.OAK);
+    public static final Block OAK_GLASS_BAR_CABINET = glassCabinetReg("oak_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.OAK);
     public static final Block BIRCH_GLASS_BAR_CABINET = glassCabinetReg("birch_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.BIRCH);
     public static final Block SPRUCE_GLASS_BAR_CABINET = glassCabinetReg("spruce_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.SPRUCE);
     public static final Block DARK_OAK_GLASS_BAR_CABINET = glassCabinetReg("dark_oak_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.DARK_OAK);
     public static final Block CHERRY_GLASS_BAR_CABINET = glassCabinetReg("cherry_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.CHERRY);
+    public static final Block JUNGLE_GLASS_BAR_CABINET = glassCabinetReg("jungle_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.JUNGLE);
+    public static final Block ACACIA_GLASS_BAR_CABINET = glassCabinetReg("acacia_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.ACACIA);
+    public static final Block MANGROVE_GLASS_BAR_CABINET = glassCabinetReg("mangrove_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.MANGROVE);
+    public static final Block BAMBOO_GLASS_BAR_CABINET = glassCabinetReg("bamboo_glass_bar_cabinet", SoundType.BAMBOO_WOOD, BarCabinetBlock.WoodType.BAMBOO);
+    public static final Block CRIMSON_GLASS_BAR_CABINET = glassCabinetReg("crimson_glass_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.CRIMSON);
+    public static final Block WARPED_GLASS_BAR_CABINET = glassCabinetReg("warped_glass_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.WARPED);
     public static final Block BIRCH_BAR_CABINET = barCabinetReg("birch_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.BIRCH);
     public static final Block SPRUCE_BAR_CABINET = barCabinetReg("spruce_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.SPRUCE);
     public static final Block DARK_OAK_BAR_CABINET = barCabinetReg("dark_oak_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.DARK_OAK);
@@ -216,6 +222,7 @@ public final class ModBlocks {
     public static final Block ACACIA_BAR_CABINET = barCabinetReg("acacia_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.ACACIA);
     public static final Block MANGROVE_BAR_CABINET = barCabinetReg("mangrove_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.MANGROVE);
     public static final Block PALE_OAK_BAR_CABINET = barCabinetReg("pale_oak_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.PALE_OAK);
+    public static final Block PALE_OAK_GLASS_BAR_CABINET = glassCabinetReg("pale_oak_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.PALE_OAK);
     public static final Block BAMBOO_BAR_CABINET = barCabinetReg("bamboo_bar_cabinet", SoundType.BAMBOO_WOOD, BarCabinetBlock.WoodType.BAMBOO);
     public static final Block CRIMSON_BAR_CABINET = barCabinetReg("crimson_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.CRIMSON);
     public static final Block WARPED_BAR_CABINET = barCabinetReg("warped_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.WARPED);

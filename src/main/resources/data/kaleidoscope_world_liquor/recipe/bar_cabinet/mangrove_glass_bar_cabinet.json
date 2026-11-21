@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XGX",
+    "XXX"
+  ],
+  "key": {
+    "X": "minecraft:mangrove_slab",
+    "G": "#c:glass_panes"
+  },
+  "result": {
+    "id": "kaleidoscope_world_liquor:mangrove_glass_bar_cabinet",
+    "count": 1
+  },
+  "category": "misc"
+}

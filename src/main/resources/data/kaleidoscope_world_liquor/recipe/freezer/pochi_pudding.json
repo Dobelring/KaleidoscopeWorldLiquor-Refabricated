@@ -3,9 +3,7 @@
   "fluid": "kaleidoscope_tavern:grape_juice",
   "fluid_amount": 1000,
   "ingredients": [
-    {
-      "item": "minecraft:slime_ball"
-    }
+    "minecraft:slime_ball"
   ],
   "result": {
     "id": "kaleidoscope_twilight:pochi_pudding",
