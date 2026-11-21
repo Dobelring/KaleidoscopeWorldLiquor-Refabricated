@@ -428,8 +428,13 @@ public class FreezerBlockEntity extends BlockEntity {
     }
 
     public boolean extractOutput(Player player) {
+        return this.extractOutput(player, InteractionHand.MAIN_HAND);
+    }
+
+    /** 官方 1.2.0：按交互手取产物（载体判定/扣碗/替换均落在该手）。 */
+    public boolean extractOutput(Player player, InteractionHand hand) {
         if (this.outputCount > 0 && this.recipe != FreezerRecipe.EMPTY) {
-            ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
+            ItemStack held = player.getItemInHand(hand);
             if (!this.recipe.canExtract(held)) {
                 // 需碗配方空手取出：actionbar 提示（带物品悬停名），对齐已验收 1.21.1 行为
                 Ingredient extractIngredient = this.recipe.getExtractIngredient();
@@ -444,7 +449,7 @@ public class FreezerBlockEntity extends BlockEntity {
                 if (!this.recipe.getExtractIngredient().isEmpty() && !player.isCreative()) {
                     held.shrink(1);
                     if (held.isEmpty()) {
-                        player.setItemInHand(InteractionHand.MAIN_HAND, result);
+                        player.setItemInHand(hand, result);
                     } else if (!player.addItem(result)) {
                         player.drop(result, false);
                     }
@@ -462,6 +467,22 @@ public class FreezerBlockEntity extends BlockEntity {
         } else {
             return false;
         }
+    }
+
+    /** 官方 1.2.0：虚拟 BE（装置）用——按当前罐/槽内容重建配方缓存。 */
+    public boolean refreshRecipeCache() {
+        if (this.level != null && !this.level.isClientSide) {
+            this.cachedRecipe = this.level
+                .getRecipeManager()
+                .getAllRecipesFor(ModRecipes.FREEZER_TYPE)
+                .stream()
+                .filter(r -> !this.tank.getResource().isBlank()
+                    && r.matches(this.tank.getResource(), this.tank.getFluidAmountMb(), this.inventoryToNonNullList(), this.level))
+                .findFirst()
+                .orElse(FreezerRecipe.EMPTY);
+            return this.cachedRecipe != FreezerRecipe.EMPTY;
+        }
+        return false;
     }
 
     private NonNullList<ItemStack> inventoryToNonNullList() {
@@ -625,6 +646,11 @@ public class FreezerBlockEntity extends BlockEntity {
 
     public void setOutputCount(int outputCount) {
         this.outputCount = outputCount;
+        this.setChanged();
+    }
+
+    public void setMaxOutputCount(int maxOutputCount) {
+        this.maxOutputCount = maxOutputCount;
         this.setChanged();
     }
 

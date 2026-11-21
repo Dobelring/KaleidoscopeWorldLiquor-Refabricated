@@ -78,6 +78,10 @@ public class KaleidoscopeWorldLiquor implements ModInitializer {
         // 原 Forge 仅在 smc 装载时注册本监听——但代注册冰红茶（smc 未装时由本模组提供物品/效果）
         // 同样要给肘击等 buff（行为规格 §57），故改为无条件注册；smc 未装时 elbow_strike 解析到代注册效果。
         SMCIntegrationEvents.register();
+        // 官方 1.2.0：smc 在场时——自家创造栏饮品补满级 + 战利品随机酿造等级（两处均自带 smc 门控）
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCCreativeTabEvents.register();
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCLootFunctionTypes.register();
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCLootTableEvents.register();
 
         // 玩偶联动门控：kaleidoscope_doll 已装 && kaleidoscope_nether 未装 才注册 doll_0..5
         KaleidoscopeDollIntegration.register();

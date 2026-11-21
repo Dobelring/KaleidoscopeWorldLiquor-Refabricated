@@ -158,7 +158,8 @@ public class FreezerBlock extends BaseEntityBlock {
             } else if ((Boolean)state.getValue(OPEN)) {
                 ItemStack held = player.getItemInHand(hand);
                 if (be.hasOutput()) {
-                    boolean extracted = be.extractOutput(player);
+                    // 官方 1.2.0：按交互手取产物
+                    boolean extracted = be.extractOutput(player, hand);
                     if (extracted) {
                         level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
                     }

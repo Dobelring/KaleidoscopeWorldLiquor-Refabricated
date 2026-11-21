@@ -48,18 +48,15 @@ public class WallRecordBlock extends Block implements EntityBlock {
         builder.add(new Property[]{FACING, MODEL_INDEX});
     }
 
+    // 官方 forge 1.2.0：不再要求空手——任意手点击即取下（原 isEmpty 门删除）
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (player.getItemInHand(hand).isEmpty()) {
-            if (level instanceof ServerLevel serverLevel) {
-                getDrops(state, serverLevel, pos, level.getBlockEntity(pos)).forEach(stack -> ItemHandlerHelper.giveItemToPlayer(player, stack));
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
-                level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, player.getSoundSource(), 1.0F, 1.0F);
-            }
-
-            return InteractionResult.SUCCESS;
-        } else {
-            return InteractionResult.PASS;
+        if (level instanceof ServerLevel serverLevel) {
+            getDrops(state, serverLevel, pos, level.getBlockEntity(pos)).forEach(stack -> ItemHandlerHelper.giveItemToPlayer(player, stack));
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), 35);
+            level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, player.getSoundSource(), 1.0F, 1.0F);
         }
+
+        return InteractionResult.SUCCESS;
     }
 
     public List<ItemStack> getDrops(BlockState state, net.minecraft.world.level.storage.loot.LootParams.Builder params) {

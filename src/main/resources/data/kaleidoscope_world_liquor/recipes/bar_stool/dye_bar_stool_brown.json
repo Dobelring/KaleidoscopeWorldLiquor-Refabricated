@@ -1,0 +1,59 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:brown_dye"
+    },
+    [
+      {
+        "item": "kaleidoscope_tavern:white_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:orange_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:magenta_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:light_blue_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:yellow_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:lime_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:pink_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:gray_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:light_gray_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:cyan_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:purple_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:blue_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:green_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:red_bar_stool"
+      },
+      {
+        "item": "kaleidoscope_tavern:black_bar_stool"
+      }
+    ]
+  ],
+  "result": {
+    "item": "kaleidoscope_tavern:brown_bar_stool",
+    "count": 1
+  }
+}

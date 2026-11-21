@@ -73,6 +73,11 @@ public class BarCabinetBlock extends BaseEntityBlock {
         return this.woodType;
     }
 
+    // 官方 1.2.0：noOcclusion 柜体明暗修正（玻璃柜内壁不再过亮）
+    public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return 0.2F;
+    }
+
     public BarCabinetBlock(WoodType woodType) {
         this(SoundType.WOOD, woodType);
     }

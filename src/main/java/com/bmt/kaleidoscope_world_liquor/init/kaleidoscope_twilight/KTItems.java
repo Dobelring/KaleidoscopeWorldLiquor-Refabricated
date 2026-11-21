@@ -17,10 +17,8 @@ import net.minecraft.world.item.Item.Properties;
  */
 public class KTItems {
     public static final String KT_MODID = "kaleidoscope_twilight";
-    public static final ResourceLocation LIANGSHAN_ICE_CONE_ID = new ResourceLocation("kaleidoscope_twilight", "liangshan_ice_cone");
-    public static final ResourceLocation KITA_STUFFED_CRISP_ID = new ResourceLocation("kaleidoscope_twilight", "kita_stuffed_crisp");
-    public static final ResourceLocation POCHI_PUDDING_ID = new ResourceLocation("kaleidoscope_twilight", "pochi_pudding");
-    public static final ResourceLocation MAGIC_CRISPY_CORNER_ID = new ResourceLocation("kaleidoscope_twilight", "magic_crispy_corner");
+    // 官方 1.2.0：四个 *_ID 公开常量移除（DollInteractionEvents 自持需要的 id），
+    // 注册 id 在 registerKTItems 内联。
     public static final Item LIANGSHAN_ICE_CONE = new CompatFoodItem(new Properties().stacksTo(64).food(ModFoods.LIANGSHAN_ICE_CONE), "kaleidoscope_twilight");
     public static final Item KITA_STUFFED_CRISP = new CompatFoodItem(new Properties().stacksTo(64).food(ModFoods.KITA_STUFFED_CRISP), "kaleidoscope_twilight");
     public static final Item POCHI_PUDDING = new CompatFoodItem(new Properties().stacksTo(64).food(ModFoods.POCHI_PUDDING), "kaleidoscope_twilight", Items.BOWL);
@@ -30,9 +28,9 @@ public class KTItems {
     }
 
     public static void registerKTItems() {
-        Registry.register(BuiltInRegistries.ITEM, LIANGSHAN_ICE_CONE_ID, LIANGSHAN_ICE_CONE);
-        Registry.register(BuiltInRegistries.ITEM, KITA_STUFFED_CRISP_ID, KITA_STUFFED_CRISP);
-        Registry.register(BuiltInRegistries.ITEM, POCHI_PUDDING_ID, POCHI_PUDDING);
-        Registry.register(BuiltInRegistries.ITEM, MAGIC_CRISPY_CORNER_ID, MAGIC_CRISPY_CORNER);
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KT_MODID, "liangshan_ice_cone"), LIANGSHAN_ICE_CONE);
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KT_MODID, "kita_stuffed_crisp"), KITA_STUFFED_CRISP);
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KT_MODID, "pochi_pudding"), POCHI_PUDDING);
+        Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(KT_MODID, "magic_crispy_corner"), MAGIC_CRISPY_CORNER);
     }
 }

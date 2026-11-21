@@ -5,6 +5,7 @@ import com.bmt.kaleidoscope_world_liquor.compat.kaleidoscope_contraption.Kaleido
 import com.bmt.kaleidoscope_world_liquor.init.ModBlocks;
 import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.level.block.Block;
 
@@ -26,6 +27,8 @@ public final class CreateCompat {
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.FREEZER, freezerInteraction);
         WallRecordMovingInteraction wallRecordInteraction = new WallRecordMovingInteraction();
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.WALL_RECORD, wallRecordInteraction);
+        // 官方 1.2.0：装置上冰箱实时合成（虚拟 BE 服务端 tick，官方为 ServerTickEvent END）
+        ServerTickEvents.END_SERVER_TICK.register(server -> ContraptionVirtualBlockEntities.tickAll(server));
         if (FabricLoader.getInstance().isModLoaded("kaleidoscope_contraption")) {
             KaleidoscopeContraptionCompat.register();
         }
@@ -72,6 +75,13 @@ public final class CreateCompat {
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.SPRUCE_GLASS_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.DARK_OAK_GLASS_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.CHERRY_GLASS_BAR_CABINET, interaction);
+        // 扩展木种玻璃酒柜（1.2.0 实测修复轮新增柜体，随实木柜一并接入装置交互）
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.JUNGLE_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.ACACIA_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.MANGROVE_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.BAMBOO_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.CRIMSON_GLASS_BAR_CABINET, interaction);
+        MovingInteractionBehaviour.REGISTRY.register(ModBlocks.WARPED_GLASS_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.OAK_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.BIRCH_BAR_CABINET, interaction);
         MovingInteractionBehaviour.REGISTRY.register(ModBlocks.SPRUCE_BAR_CABINET, interaction);

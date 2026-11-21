@@ -94,6 +94,7 @@ public class FreezerScenes {
             be.setProgress(0);
             be.tank.drain(FluidConstants.BUCKET, CustomFluidTank.FluidAction.EXECUTE);
             be.setOutputCount(3);
+            be.setMaxOutputCount(3);
             be.setOutputTexture(iceTexture);
         });
         scene.overlay()

@@ -2,7 +2,6 @@ package com.bmt.kaleidoscope_world_liquor.event;
 
 import com.bmt.kaleidoscope_world_liquor.KaleidoscopeWorldLiquor;
 import com.bmt.kaleidoscope_world_liquor.init.ModSounds;
-import com.bmt.kaleidoscope_world_liquor.init.kaleidoscope_twilight.KTItems;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,6 +33,8 @@ import net.minecraft.world.phys.BlockHitResult;
 public class DollInteractionEvents {
     private static final Map<BlockPos, Long> DOLL_FEED_COOLDOWNS = new HashMap<>();
     private static final int FEED_COOLDOWN_TICKS = 20;
+    // 官方 1.2.0：波奇布丁 id 本地持有（解除对 KTItems 常量的依赖）
+    private static final ResourceLocation POCHI_PUDDING_ID = new ResourceLocation("kaleidoscope_twilight", "pochi_pudding");
     private static final Set<ResourceLocation> SUPPORTED_DOLL_4_IDS = new HashSet<>();
 
     public DollInteractionEvents() {
@@ -51,7 +52,7 @@ public class DollInteractionEvents {
             BlockPos pos = hitResult.getBlockPos();
             Block clickedBlock = level.getBlockState(pos).getBlock();
             ResourceLocation heldItemId = BuiltInRegistries.ITEM.getKey(heldItem.getItem());
-            if (KTItems.POCHI_PUDDING_ID.equals(heldItemId)) {
+            if (POCHI_PUDDING_ID.equals(heldItemId)) {
                 ResourceLocation clickedBlockId = BuiltInRegistries.BLOCK.getKey(clickedBlock);
                 if (SUPPORTED_DOLL_4_IDS.contains(clickedBlockId)) {
                     if (hand == player.getUsedItemHand()) {

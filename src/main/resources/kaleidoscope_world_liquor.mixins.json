@@ -4,7 +4,6 @@
   "package": "com.bmt.kaleidoscope_world_liquor.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "AnvilMenuMixin",
     "BarrelBlockEntityMixin",
     "BoatMixin",
     "CaptainGiftMixin",
@@ -15,7 +14,6 @@
     "MultiJumpFallDamageMixin",
     "LivingEntityFrostWalkerMixin",
     "LivingEntityEffectMixin",
-    "accessor.ItemCombinerMenuAccessor",
     "accessor.LivingEntityAccessor",
     "EnchantmentHelperMixin",
     "LivingEntityMixin",
@@ -26,7 +24,12 @@
     "accessor.RandomizableContainerBlockEntityAccessor",
     "ShakerItemMixin",
     "BottleBlockItemMixin",
-    "LootTableLuckMixin"
+    "LootTableLuckMixin",
+    "accessor.LootTableAccessor",
+    "accessor.LootPoolAccessor",
+    "accessor.LootItemAccessor",
+    "accessor.CompositeEntryBaseAccessor",
+    "accessor.LootPoolSingletonContainerAccessor"
   ],
   "client": [
     "ClientPlayerEntityMixin",
