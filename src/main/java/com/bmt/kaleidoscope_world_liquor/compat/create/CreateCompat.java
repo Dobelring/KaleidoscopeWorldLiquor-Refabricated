@@ -49,5 +49,8 @@ public final class CreateCompat {
                 MovingInteractionBehaviour.REGISTRY.register(block, wallRecordInteraction);
             }
         }
+        // 官方 1.2.0：装置上冰箱实时合成（虚拟 BE 服务端 tick，官方为 ServerTickEvent END）
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK
+                .register(server -> ContraptionVirtualBlockEntities.tickAll(server));
     }
 }

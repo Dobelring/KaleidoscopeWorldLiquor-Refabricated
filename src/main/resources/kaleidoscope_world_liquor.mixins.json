@@ -18,15 +18,19 @@
     "BottleBlockItemMixin",
     "ShakerItemMixin",
     "LootTableLuckMixin",
+    "LivingEntityFrostWalkerMixin",
+    "LivingEntityEffectMixin",
     "accessor.BarrelBlockEntityAccessor",
     "accessor.BrushableBlockEntityAccessor",
-    "accessor.CreativeModeTabAccessor"
+    "accessor.CreativeModeTabAccessor",
+    "accessor.LootTableAccessor",
+    "accessor.LootItemAccessor",
+    "accessor.CompositeEntryBaseAccessor",
+    "accessor.LootPoolSingletonContainerAccessor"
   ],
   "client": [
     "CameraMixin",
     "TreasureSenseCleanupMixin",
-    "LivingEntityFrostWalkerMixin",
-    "LivingEntityEffectMixin",
     "ClientPlayerMixin",
     "GuiGraphicsMixin",
     "EntityRendererMixin",

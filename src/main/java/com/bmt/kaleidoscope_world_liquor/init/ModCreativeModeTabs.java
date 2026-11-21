@@ -85,10 +85,12 @@ public final class ModCreativeModeTabs {
             accept(output, LIQUOR_ITEMS, KTItems.POCHI_PUDDING);
             accept(output, LIQUOR_ITEMS, KTItems.MAGIC_CRISPY_CORNER);
         }
-        // smc 冰红茶照 1.20.1/1.21.1：创造栏给最高品质（否则无 tooltip 品质/buff、喝了无效果）
-        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
-        // 官方 1.2.0：干杯之歌（最高酿造等级进栏）
-        accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_FRIENDS_DRINK_ITEM));
+        // 官方 1.2.0：smc 缺席时代注册进栏给最高品质；smc 在场时由 SMCCreativeTabEvents 把
+        // smc 自家栏的条目补满级（守卫防两栏重复）
+        if (!FabricLoader.getInstance().isModLoaded("smc")) {
+            accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_ICE_TEA_ITEM));
+            accept(output, LIQUOR_ITEMS, BottleBlockItem.getMaxLevelDrink(SMCItems.SMC_FRIENDS_DRINK_ITEM));
+        }
     }
 
     private static void addFurnitureItems(CreativeModeTab.Output output) {
