@@ -38,7 +38,8 @@ public abstract class BlockEntityTypeMixin {
       ModBlocks.BAMBOO_LEAF_GREEN_LIQUOR,
       ModBlocks.COOL_TEA,
       ModBlocks.SOUR_PLUM,
-      ModCompatItems.ICE_TEA_BLOCK
+      ModCompatItems.ICE_TEA_BLOCK,
+      ModCompatItems.FRIENDS_DRINK_BLOCK
    );
 
    @Inject(method = "isValid", at = @At("HEAD"), cancellable = true)
