@@ -145,6 +145,8 @@ public class KaleidoscopeWorldLiquorClient implements ClientModInitializer {
         // 客户端事件（原 ClientForgeEvents / CameraAnglesEvent / TreasureSenseRender 等）
         com.bmt.kaleidoscope_world_liquor.client.event.ClientForgeEvents.register();
         com.bmt.kaleidoscope_world_liquor.client.event.CameraAnglesEvent.register();
+        // 干杯之歌客户端音效/舞蹈状态 tick（原 Forge @EventBusSubscriber 自动注册，1.2.0 同步时漏接）
+        com.bmt.kaleidoscope_world_liquor.client.FriendsDrinkSoundHandler.register();
 
         // 原嵌套 ClientEventHandler（RenderTickEvent END）→ END_CLIENT_TICK（敌对生物发光标记刷新）
         com.bmt.kaleidoscope_world_liquor.event.EventHandlers.ClientEventHandler.register();
