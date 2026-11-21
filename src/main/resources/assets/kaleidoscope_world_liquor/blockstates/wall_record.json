@@ -109,15 +109,15 @@
       "y": 180
     },
     "facing=north,model_index=27": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/2",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 180
     },
     "facing=north,model_index=28": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/3",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 180
     },
     "facing=north,model_index=29": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/4",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 180
     },
     "facing=south,model_index=0": {
@@ -229,15 +229,15 @@
       "y": 0
     },
     "facing=south,model_index=27": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/2",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 0
     },
     "facing=south,model_index=28": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/3",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 0
     },
     "facing=south,model_index=29": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/4",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 0
     },
     "facing=east,model_index=0": {
@@ -349,15 +349,15 @@
       "y": 270
     },
     "facing=east,model_index=27": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/2",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 270
     },
     "facing=east,model_index=28": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/3",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 270
     },
     "facing=east,model_index=29": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/4",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 270
     },
     "facing=west,model_index=0": {
@@ -469,15 +469,15 @@
       "y": 90
     },
     "facing=west,model_index=27": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/2",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 90
     },
     "facing=west,model_index=28": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/3",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 90
     },
     "facing=west,model_index=29": {
-      "model": "kaleidoscope_world_liquor:block/wall_record/smc/4",
+      "model": "kaleidoscope_world_liquor:block/wall_record/minecraft/0",
       "y": 90
     }
   }

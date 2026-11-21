@@ -45,6 +45,10 @@ public final class Clients {
          }
       }
       BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.FREEZER, RenderType.cutout());
+      // 玻璃酒柜：模型 render_type 在 1.21.1 不认（1.21.6+ 字段）→ 与 1.20.1 口径一致注册 cutout
+      BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(),
+         ModBlocks.OAK_GLASS_BAR_CABINET, ModBlocks.BIRCH_GLASS_BAR_CABINET, ModBlocks.SPRUCE_GLASS_BAR_CABINET, ModBlocks.DARK_OAK_GLASS_BAR_CABINET, ModBlocks.CHERRY_GLASS_BAR_CABINET, ModBlocks.JUNGLE_GLASS_BAR_CABINET, ModBlocks.ACACIA_GLASS_BAR_CABINET, ModBlocks.MANGROVE_GLASS_BAR_CABINET, ModBlocks.BAMBOO_GLASS_BAR_CABINET, ModBlocks.CRIMSON_GLASS_BAR_CABINET, ModBlocks.WARPED_GLASS_BAR_CABINET
+      );
       // 垂灯玻璃为半透明（模型 JSON 的 render_type 是 1.21.6+ 字段，1.21.1 不认）→ 与 tavern 自己的垂灯一致注册 translucent
       BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(),
          ModBlocks.GREEN_PENDANT_LAMP, ModBlocks.PINK_PENDANT_LAMP

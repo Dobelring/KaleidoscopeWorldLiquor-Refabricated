@@ -256,6 +256,12 @@ public class ModBlocks {
    public static final Block BAMBOO_BAR_CABINET = new BarCabinetBlock(BarCabinetBlock.WoodType.BAMBOO, SoundType.BAMBOO_WOOD);
    public static final Block CRIMSON_BAR_CABINET = new BarCabinetBlock(BarCabinetBlock.WoodType.CRIMSON, SoundType.NETHER_WOOD);
    public static final Block WARPED_BAR_CABINET = new BarCabinetBlock(BarCabinetBlock.WoodType.WARPED, SoundType.NETHER_WOOD);
+   public static final Block JUNGLE_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.JUNGLE);
+   public static final Block ACACIA_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.ACACIA);
+   public static final Block MANGROVE_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.MANGROVE);
+   public static final Block BAMBOO_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.BAMBOO, SoundType.BAMBOO_WOOD);
+   public static final Block CRIMSON_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.CRIMSON, SoundType.NETHER_WOOD);
+   public static final Block WARPED_GLASS_BAR_CABINET = new GlassBarCabinetBlock(BarCabinetBlock.WoodType.WARPED, SoundType.NETHER_WOOD);
    public static final Block OAK_CELLAR_CABINET = new BarCellarCabinetBlock();
    public static final Block BIRCH_CELLAR_CABINET = new BarCellarCabinetBlock();
    public static final Block SPRUCE_CELLAR_CABINET = new BarCellarCabinetBlock();
@@ -320,6 +326,12 @@ public class ModBlocks {
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "spruce_glass_bar_cabinet"), SPRUCE_GLASS_BAR_CABINET);
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "dark_oak_glass_bar_cabinet"), DARK_OAK_GLASS_BAR_CABINET);
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "cherry_glass_bar_cabinet"), CHERRY_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "jungle_glass_bar_cabinet"), JUNGLE_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "acacia_glass_bar_cabinet"), ACACIA_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "mangrove_glass_bar_cabinet"), MANGROVE_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "bamboo_glass_bar_cabinet"), BAMBOO_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "crimson_glass_bar_cabinet"), CRIMSON_GLASS_BAR_CABINET);
+        Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "warped_glass_bar_cabinet"), WARPED_GLASS_BAR_CABINET);
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "birch_bar_cabinet"), BIRCH_BAR_CABINET);
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "spruce_bar_cabinet"), SPRUCE_BAR_CABINET);
         Registry.register(BuiltInRegistries.BLOCK, ResourceLocation.fromNamespaceAndPath(KaleidoscopeWorldLiquor.MODID, "dark_oak_bar_cabinet"), DARK_OAK_BAR_CABINET);

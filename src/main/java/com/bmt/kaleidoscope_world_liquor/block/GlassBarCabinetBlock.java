@@ -8,6 +8,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -20,7 +21,11 @@ public class GlassBarCabinetBlock extends BarCabinetBlock {
    public static final EnumProperty<GlassBarCabinetBlock.WoodSide> WOOD_SIDE = EnumProperty.create("wood_side", GlassBarCabinetBlock.WoodSide.class);
 
    public GlassBarCabinetBlock(WoodType woodType) {
-      super(woodType);
+      this(woodType, SoundType.WOOD);
+   }
+
+   public GlassBarCabinetBlock(WoodType woodType, SoundType sound) {
+      super(woodType, sound);
       this.registerDefaultState((BlockState)this.defaultBlockState().setValue(WOOD_SIDE, GlassBarCabinetBlock.WoodSide.NONE));
    }
 
