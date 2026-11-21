@@ -67,6 +67,12 @@ public class BarCabinetBlock extends BaseEntityBlock {
         return this.woodType;
     }
 
+    // 官方 1.2.0：noOcclusion 柜体明暗修正（玻璃柜内壁不再过亮）
+    @Override
+    protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return 0.2F;
+    }
+
     /** 官方 1.2.0：同木种 + 同朝向才允许拼接 */
     protected static boolean canConnect(BlockState self, BlockState neighbor) {
         if (neighbor.getBlock() instanceof BarCabinetBlock other) {
