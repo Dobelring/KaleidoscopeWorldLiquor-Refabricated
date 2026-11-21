@@ -109,16 +109,22 @@ public class ModCreativeModeTabs {
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CHERRY_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CHERRY_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.JUNGLE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.JUNGLE_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.JUNGLE_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.ACACIA_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.ACACIA_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.ACACIA_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.MANGROVE_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.MANGROVE_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.MANGROVE_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BAMBOO_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BAMBOO_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.BAMBOO_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CRIMSON_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CRIMSON_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.CRIMSON_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.WARPED_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.WARPED_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, (ItemLike) ModBlocks.WARPED_CELLAR_CABINET);
     }
 

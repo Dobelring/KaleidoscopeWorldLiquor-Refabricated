@@ -125,6 +125,12 @@ public class ModItems {
         blockItem("spruce_glass_bar_cabinet", ModBlocks.SPRUCE_GLASS_BAR_CABINET);
         blockItem("dark_oak_glass_bar_cabinet", ModBlocks.DARK_OAK_GLASS_BAR_CABINET);
         blockItem("cherry_glass_bar_cabinet", ModBlocks.CHERRY_GLASS_BAR_CABINET);
+        blockItem("jungle_glass_bar_cabinet", ModBlocks.JUNGLE_GLASS_BAR_CABINET);
+        blockItem("acacia_glass_bar_cabinet", ModBlocks.ACACIA_GLASS_BAR_CABINET);
+        blockItem("mangrove_glass_bar_cabinet", ModBlocks.MANGROVE_GLASS_BAR_CABINET);
+        blockItem("bamboo_glass_bar_cabinet", ModBlocks.BAMBOO_GLASS_BAR_CABINET);
+        blockItem("crimson_glass_bar_cabinet", ModBlocks.CRIMSON_GLASS_BAR_CABINET);
+        blockItem("warped_glass_bar_cabinet", ModBlocks.WARPED_GLASS_BAR_CABINET);
         blockItem("birch_bar_cabinet", ModBlocks.BIRCH_BAR_CABINET);
         blockItem("spruce_bar_cabinet", ModBlocks.SPRUCE_BAR_CABINET);
         blockItem("dark_oak_bar_cabinet", ModBlocks.DARK_OAK_BAR_CABINET);

@@ -18,8 +18,12 @@
         }
       ]
     },
-    "minecraft:sugar",
-    "minecraft:vine"
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:vine"
+    }
   ],
   "result": {
     "item": "kaleidoscope_world_liquor:tonic_water",

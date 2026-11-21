@@ -18,8 +18,12 @@
         }
       ]
     },
-    "minecraft:sugar",
-    "minecraft:ink_sac"
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:ink_sac"
+    }
   ],
   "result": {
     "item": "kaleidoscope_world_liquor:cola",
