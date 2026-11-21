@@ -217,6 +217,19 @@ public class FreezerBlockEntity extends BaseBlockEntity implements net.minecraft
         this.startCraftingAndUpdateState();
     }
 
+    /** 官方 1.2.0：虚拟 BE（装置）用——按当前罐/槽内容重建配方缓存。 */
+    public boolean refreshRecipeCache() {
+        if (level != null && !level.isClientSide()) {
+            Optional<RecipeHolder<FreezerRecipe>> found = this.freezerRecipes().stream()
+                    .filter(holder -> !this.tank.getResource().isBlank()
+                            && holder.value().matches(new FreezerInput(this.tank, this.inputInventory.getStacks()), level))
+                    .findFirst();
+            this.cachedRecipe = found.orElse(null);
+            return this.cachedRecipe != null;
+        }
+        return false;
+    }
+
     private void restoreRecipe() {
         if (level != null && this.pendingRecipeId != null) {
             this.recipe = this.freezerRecipes().stream()

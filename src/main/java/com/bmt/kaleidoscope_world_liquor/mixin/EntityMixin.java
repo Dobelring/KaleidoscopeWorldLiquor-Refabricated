@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * 冥视发光状态追踪（IGlowingEntity）+ 反重力鼠标反转 + 反重力视线位置修正。
- * 1.21.11 的发光渲染直接走 setGlowingTag 即可（无需 1.20.1 的 setSharedFlag 组合）。
+ * 官方 1.2.0：发光改为叠加标记——不再拦截 setGlowingTag 保存/恢复原状，改为增强
+ * isCurrentlyGlowing 的返回值（26.x 仍保留 isCurrentlyGlowing 方法，javap 实证），
+ * 原版发光位（setGlowingTag/sharedFlag）不再被本模组触碰。
  */
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IGlowingEntity {
@@ -27,26 +29,13 @@ public abstract class EntityMixin implements IGlowingEntity {
     @Shadow public abstract float getYRot();
     @Shadow public abstract float getXRot();
     @Shadow public abstract void turn(double yaw, double pitch);
-    @Shadow protected abstract boolean getSharedFlag(int flag);
-    @Shadow protected abstract void setSharedFlag(int flag, boolean value);
 
     @Unique
     private boolean kaleidoscope_world_liquor$modGlowing = false;
-    @Unique
-    private boolean kaleidoscope_world_liquor$originalGlowing = false;
 
     @Override
     public void setGlowing(boolean glowing) {
-        if (glowing) {
-            this.kaleidoscope_world_liquor$originalGlowing = this.getSharedFlag(6);
-            this.kaleidoscope_world_liquor$modGlowing = true;
-            ((Entity) (Object) this).setGlowingTag(true);
-            this.setSharedFlag(6, true);
-        } else {
-            this.kaleidoscope_world_liquor$modGlowing = false;
-            ((Entity) (Object) this).setGlowingTag(this.kaleidoscope_world_liquor$originalGlowing);
-            this.setSharedFlag(6, this.kaleidoscope_world_liquor$originalGlowing);
-        }
+        this.kaleidoscope_world_liquor$modGlowing = glowing;
     }
 
     @Override
@@ -59,10 +48,10 @@ public abstract class EntityMixin implements IGlowingEntity {
         this.kaleidoscope_world_liquor$modGlowing = modGlowing;
     }
 
-    @Inject(method = "setGlowingTag", at = @At("HEAD"))
-    private void kwl$trackOriginalGlowing(boolean glowing, CallbackInfo ci) {
-        if (!this.kaleidoscope_world_liquor$modGlowing) {
-            this.kaleidoscope_world_liquor$originalGlowing = glowing;
+    @Inject(method = "isCurrentlyGlowing", at = @At("RETURN"), cancellable = true)
+    private void kwl$augmentGlowing(CallbackInfoReturnable<Boolean> cir) {
+        if (this.kaleidoscope_world_liquor$modGlowing) {
+            cir.setReturnValue(true);
         }
     }
 

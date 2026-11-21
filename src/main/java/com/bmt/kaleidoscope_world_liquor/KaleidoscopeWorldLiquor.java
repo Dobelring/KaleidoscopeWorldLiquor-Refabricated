@@ -69,6 +69,10 @@ public final class KaleidoscopeWorldLiquor implements ModInitializer {
         }
         MiscEvents.registerBrewAccelerator();
         BrewCommands.register();
+        // 官方 1.2.0：smc 在场时——自家创造栏饮品补满级 + 战利品随机酿造等级（两处均自带 smc 门控）
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCCreativeTabEvents.register();
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCLootFunctionTypes.register();
+        com.bmt.kaleidoscope_world_liquor.init.smc.SMCLootTableEvents.register();
         LOGGER.info("[Kaleidoscope World Liquor] initialized");
     }
 
