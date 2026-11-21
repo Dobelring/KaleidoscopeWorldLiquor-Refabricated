@@ -19,8 +19,10 @@ public final class ItemUtils {
          return Items.AIR;
       } else {
          net.minecraft.world.item.ItemStackTemplate template = stack.getItem().getCraftingRemainder();
-         if (!template.create().isEmpty()) {
-            return template.create().getItem();
+         // 26.x：无剩余物的物品返回 null 模板（实测空手/无剩余物物品右键冰箱直接 NPE）
+         ItemStack remainder = template == null ? ItemStack.EMPTY : template.create();
+         if (!remainder.isEmpty()) {
+            return remainder.getItem();
          } else {
             return !stack.is(Items.POTION) && !stack.is(Items.HONEY_BOTTLE) ? Items.AIR : Items.GLASS_BOTTLE;
          }

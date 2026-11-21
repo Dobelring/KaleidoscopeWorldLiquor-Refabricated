@@ -133,6 +133,7 @@ public final class ModCreativeModeTabs {
         accept(output, FURNITURE_ITEMS, ModItems.MANGROVE_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.MANGROVE_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.PALE_OAK_BAR_CABINET);
+        accept(output, FURNITURE_ITEMS, ModItems.PALE_OAK_GLASS_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.PALE_OAK_CELLAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.POPLAR_BAR_CABINET);
         accept(output, FURNITURE_ITEMS, ModItems.POPLAR_CELLAR_CABINET);
