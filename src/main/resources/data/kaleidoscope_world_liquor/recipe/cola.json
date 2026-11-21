@@ -2,18 +2,21 @@
   "type": "minecraft:crafting_shapeless",
   "category": "food",
   "ingredients": [
-    [
-      {
-        "fabric:type": "fabric:components",
-        "base": "minecraft:potion",
-        "components": {
-          "minecraft:potion_contents": {
-            "potion": "minecraft:water"
+    {
+      "fabric:type": "fabric:any",
+      "ingredients": [
+        {
+          "fabric:type": "fabric:components",
+          "base": "minecraft:potion",
+          "components": {
+            "minecraft:potion_contents": {
+              "potion": "minecraft:water"
+            }
           }
-        }
-      },
-      "minecraft:potion"
-    ],
+        },
+        "minecraft:potion"
+      ]
+    },
     "minecraft:sugar",
     "minecraft:ink_sac"
   ],

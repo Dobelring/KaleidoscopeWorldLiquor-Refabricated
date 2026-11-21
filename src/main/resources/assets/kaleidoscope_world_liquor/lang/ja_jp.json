@@ -194,5 +194,12 @@
   "subtitles.kaleidoscope_world_liquor.pochi_pudding_feed": "ポチちゃん：ありがとう",
   "subtitles.kaleidoscope_world_liquor.ice_tea_eat": "飲む",
   "subtitles.kaleidoscope_world_liquor.sour_plum_drink": "飲む",
-  "subtitles.kaleidoscope_world_liquor.cool_ice_tea_drink": "飲む"
+  "subtitles.kaleidoscope_world_liquor.cool_ice_tea_drink": "飲む",
+    "block.kaleidoscope_world_liquor.jungle_glass_bar_cabinet": "ジャングルのガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.acacia_glass_bar_cabinet": "アカシアのガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.mangrove_glass_bar_cabinet": "マングローブのガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.bamboo_glass_bar_cabinet": "竹のガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.crimson_glass_bar_cabinet": "真紅のガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.warped_glass_bar_cabinet": "歪んだガラス張りバーキャビネット",
+    "block.kaleidoscope_world_liquor.pale_oak_glass_bar_cabinet": "白い樫のガラス張りバーキャビネット"
 }

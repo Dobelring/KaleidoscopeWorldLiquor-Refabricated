@@ -3,9 +3,7 @@
   "fluid": "kaleidoscope_world_liquor:milk_still",
   "fluid_amount": 1000,
   "ingredients": [
-    {
-      "item": "minecraft:blue_dye"
-    }
+    "minecraft:blue_dye"
   ],
   "result": {
     "id": "kaleidoscope_twilight:liangshan_ice_cone",
