@@ -33,6 +33,7 @@
     "EntityRendererMixin",
     "GuiGraphicsMixin",
     "CameraMixin",
+    "client.EntityRenderDispatcherMixin",
     "client.GameRendererMixin",
     "accessor.CreativeModeInventoryScreenAccessor",
     "accessor.AbstractContainerScreenAccessor",
