@@ -16,7 +16,7 @@ loom {
 
 repositories {
 	flatDir {
-		dirs 'libs'
+		dirs 'libs', 'libs/porting'
 	}
 	maven {
 		name = 'Fabric'
