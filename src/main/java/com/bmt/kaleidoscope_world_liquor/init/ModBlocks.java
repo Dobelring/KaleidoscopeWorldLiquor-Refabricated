@@ -283,7 +283,9 @@ public final class ModBlocks {
                 PINA_COLADA, MAOTAI, BACARDI_CARTA_BLANCA, SPIRYT_VODKA, SKYY_VODKA,
                 JOHNNIE_WALKER, LAFITE_1982, STRONGBOW, DASSAI, KWAS_CHLEBOWY,
                 BAMBOO_LEAF_GREEN_LIQUOR, COOL_TEA, SOUR_PLUM,
-                com.bmt.kaleidoscope_world_liquor.init.smc.SMCItems.SMC_ICE_TEA_BLOCK}) {
+                com.bmt.kaleidoscope_world_liquor.init.smc.SMCItems.SMC_ICE_TEA_BLOCK,
+                // 官方 1.2.0：干杯之歌方块也进饮品 BE（漏=放置即崩 Invalid block entity）
+                com.bmt.kaleidoscope_world_liquor.init.smc.SMCItems.SMC_FRIENDS_DRINK_BLOCK}) {
             drinkBe.addValidBlock(block);
         }
     }
