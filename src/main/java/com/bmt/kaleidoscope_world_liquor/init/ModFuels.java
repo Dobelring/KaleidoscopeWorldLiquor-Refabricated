@@ -27,11 +27,10 @@ public final class ModFuels {
             addBlockFuel(builder, wood + "_cellar_cabinet");
          }
 
-         addBlockFuel(builder, "oak_glass_bar_cabinet");
-         addBlockFuel(builder, "birch_glass_bar_cabinet");
-         addBlockFuel(builder, "spruce_glass_bar_cabinet");
-         addBlockFuel(builder, "dark_oak_glass_bar_cabinet");
-         addBlockFuel(builder, "cherry_glass_bar_cabinet");
+         // 官方 1.2.0 五木 + 14b8d19 扩展七木：玻璃柜同样入燃料表
+         for (String g : List.of("oak", "birch", "spruce", "dark_oak", "cherry", "jungle", "acacia", "mangrove", "pale_oak", "bamboo", "crimson", "warped")) {
+            addBlockFuel(builder, g + "_glass_bar_cabinet");
+         }
          // 官方 1.2.0：酒馆折叠梯也在燃料表里
          builder.add(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath("kaleidoscope_tavern", "stepladder")), BURN_TIME);
       });
