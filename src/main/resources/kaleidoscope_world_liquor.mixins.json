@@ -8,6 +8,7 @@
     "minVersion": "0.5.4"
   },
   "mixins": [
+    "AbstractFurnaceBlockEntityMixin",
     "BarrelBlockEntityMixin",
     "DoubleDamageMixin",
     "LivingEntityMixin",
@@ -25,8 +26,8 @@
     "accessor.CreativeModeTabAccessor",
     "accessor.LootTableAccessor",
     "accessor.LootItemAccessor",
+    "accessor.LootPoolEntryContainerAccessor",
     "accessor.CompositeEntryBaseAccessor",
-    "accessor.LootPoolSingletonContainerAccessor"
   ],
   "client": [
     "CameraMixin",

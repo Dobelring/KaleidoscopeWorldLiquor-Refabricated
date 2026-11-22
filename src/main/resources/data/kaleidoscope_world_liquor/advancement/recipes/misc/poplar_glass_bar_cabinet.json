@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_poplar_slab": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:poplar_slab"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "kaleidoscope_world_liquor:bar_cabinet/poplar_glass_bar_cabinet"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_poplar_slab",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "kaleidoscope_world_liquor:bar_cabinet/poplar_glass_bar_cabinet"
+    ]
+  },
+  "sends_telemetry_event": false
+}

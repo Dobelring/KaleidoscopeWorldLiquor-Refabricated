@@ -36,7 +36,7 @@ public final class ItemUtils {
    public static void giveItemToPlayer(Player player, ItemStack stack) {
       int remaining = moveToInventory(player.getInventory(), stack, false);
       if (remaining > 0) {
-         player.drop(stack.copyWithCount(remaining), false);
+         player.drop(stack.copyWithCount(remaining), false, net.minecraft.util.Prediction.PREDICTED);
       }
    }
 

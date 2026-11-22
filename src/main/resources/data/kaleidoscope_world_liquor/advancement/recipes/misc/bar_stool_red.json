@@ -5,7 +5,9 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          "#c:ingots/iron"
+          {
+            "items": "#c:ingots/iron"
+          }
         ]
       }
     },

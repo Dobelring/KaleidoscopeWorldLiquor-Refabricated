@@ -3,11 +3,10 @@ package com.bmt.kaleidoscope_world_liquor.init.smc;
 import com.bmt.kaleidoscope_world_liquor.loot.RandomBrewLevelFunction;
 import com.bmt.kaleidoscope_world_liquor.mixin.accessor.CompositeEntryBaseAccessor;
 import com.bmt.kaleidoscope_world_liquor.mixin.accessor.LootItemAccessor;
-import com.bmt.kaleidoscope_world_liquor.mixin.accessor.LootPoolSingletonContainerAccessor;
+import com.bmt.kaleidoscope_world_liquor.mixin.accessor.LootPoolEntryContainerAccessor;
 import com.bmt.kaleidoscope_world_liquor.mixin.accessor.LootTableAccessor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
@@ -22,7 +21,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.SequenceFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 
 /**
@@ -73,27 +72,19 @@ public class SMCLootTableEvents {
         }
     }
 
-    private static void attachRandomBrewLevel(LootPoolSingletonContainer entry) {
-        LootPoolSingletonContainerAccessor accessor = (LootPoolSingletonContainerAccessor) entry;
-        List<LootItemFunction> oldFunctions = accessor.kwl$getFunctions();
-
-        for (LootItemFunction function : oldFunctions) {
-            if (function == RandomBrewLevelFunction.INSTANCE) {
-                return;
-            }
+    private static void attachRandomBrewLevel(LootItem entry) {
+        LootPoolEntryContainerAccessor accessor = (LootPoolEntryContainerAccessor) entry;
+        java.util.Optional<Holder<LootItemFunction>> oldModifier = accessor.kwl();
+        // 26.3：SequenceFunction.functions 无公开访问器，无法完全展开查重；表对象每次加载均为新实例，
+        // 单次加载内每条目只访问一次，顶层判重足够
+        if (oldModifier.isPresent() && oldModifier.get().value() == RandomBrewLevelFunction.INSTANCE) {
+            return;
         }
-
-        List<LootItemFunction> newFunctions = new ArrayList<>(oldFunctions);
-        newFunctions.add(RandomBrewLevelFunction.INSTANCE);
-        accessor.kwl$setFunctions(newFunctions);
-        BiFunction<ItemStack, LootContext, ItemStack> composite = (stack, context) -> {
-            for (LootItemFunction functionx : newFunctions) {
-                stack = functionx.apply(stack, context);
-            }
-
-            return stack;
-        };
-        accessor.kwl$setCompositeFunction(composite);
+        Holder<LootItemFunction> appended = Holder.direct(RandomBrewLevelFunction.INSTANCE);
+        Holder<LootItemFunction> composed = oldModifier.isPresent()
+                ? Holder.direct(SequenceFunction.of(List.of(oldModifier.get(), appended)))
+                : appended;
+        accessor.kwl(java.util.Optional.of(composed));
     }
 
     private static List<Item> getSmcDrinks() {

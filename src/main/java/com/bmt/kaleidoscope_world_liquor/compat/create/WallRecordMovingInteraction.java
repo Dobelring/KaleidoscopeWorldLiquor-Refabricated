@@ -33,7 +33,7 @@ public class WallRecordMovingInteraction extends BlockEntityDelegatingMovingInte
             if (!record.isEmpty()) {
                 ItemStack give = record.copyWithCount(1);
                 if (!player.getInventory().add(give)) {
-                    player.drop(give, false);
+                    player.drop(give, false, net.minecraft.util.Prediction.PREDICTED);
                 }
             }
         }

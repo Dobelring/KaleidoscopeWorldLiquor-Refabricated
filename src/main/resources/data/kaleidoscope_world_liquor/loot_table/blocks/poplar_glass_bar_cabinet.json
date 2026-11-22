@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "kaleidoscope_world_liquor:poplar_glass_bar_cabinet"
+        }
+      ],
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
+    }
+  ],
+  "random_sequence": "kaleidoscope_world_liquor:blocks/poplar_glass_bar_cabinet"
+}

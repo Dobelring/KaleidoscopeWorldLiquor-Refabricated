@@ -1,4 +1,4 @@
-﻿{
+{
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_spruce_slab": {
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "kaleidoscope_world_liquor:bar_cabinet/spruce_glass_bar_cabinet"
+        "recipes": "kaleidoscope_world_liquor:bar_cabinet/spruce_glass_bar_cabinet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

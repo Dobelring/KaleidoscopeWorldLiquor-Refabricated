@@ -224,6 +224,7 @@ public final class ModBlocks {
     public static final Block PALE_OAK_BAR_CABINET = barCabinetReg("pale_oak_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.PALE_OAK);
     public static final Block POPLAR_BAR_CABINET = barCabinetReg("poplar_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.POPLAR);
     public static final Block PALE_OAK_GLASS_BAR_CABINET = glassCabinetReg("pale_oak_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.PALE_OAK);
+    public static final Block POPLAR_GLASS_BAR_CABINET = glassCabinetReg("poplar_glass_bar_cabinet", SoundType.WOOD, BarCabinetBlock.WoodType.POPLAR);
     public static final Block BAMBOO_BAR_CABINET = barCabinetReg("bamboo_bar_cabinet", SoundType.BAMBOO_WOOD, BarCabinetBlock.WoodType.BAMBOO);
     public static final Block CRIMSON_BAR_CABINET = barCabinetReg("crimson_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.CRIMSON);
     public static final Block WARPED_BAR_CABINET = barCabinetReg("warped_bar_cabinet", SoundType.NETHER_WOOD, BarCabinetBlock.WoodType.WARPED);

@@ -137,6 +137,7 @@ public final class ModItems {
     public static final Item ACACIA_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.ACACIA_GLASS_BAR_CABINET);
     public static final Item MANGROVE_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.MANGROVE_GLASS_BAR_CABINET);
     public static final Item PALE_OAK_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.PALE_OAK_GLASS_BAR_CABINET);
+    public static final Item POPLAR_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.POPLAR_GLASS_BAR_CABINET);
     public static final Item BAMBOO_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.BAMBOO_GLASS_BAR_CABINET);
     public static final Item CRIMSON_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.CRIMSON_GLASS_BAR_CABINET);
     public static final Item WARPED_GLASS_BAR_CABINET = registerItemViaBlock(ModBlocks.WARPED_GLASS_BAR_CABINET);

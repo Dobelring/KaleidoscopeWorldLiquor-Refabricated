@@ -118,7 +118,7 @@ public class FreezerMovingInteraction extends MovingInteractionBehaviour {
         if (held.isEmpty()) {
             player.setItemInHand(InteractionHand.MAIN_HAND, bucket);
         } else if (!player.getInventory().add(bucket)) {
-            player.drop(bucket, false);
+            player.drop(bucket, false, net.minecraft.util.Prediction.PREDICTED);
         }
     }
 }
